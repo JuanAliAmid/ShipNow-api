@@ -26,6 +26,34 @@ El flujo básico de la API es:
 
 El pedido contiene una lista de items, una dirección de entrega, un total calculado y un estado.
 
+## Instalación y ejecución local
+
+1. Cloná el repositorio y entrá a la carpeta del proyecto.
+2. Instalá las dependencias:
+```bash
+   npm install
+```
+3. Creá un archivo `.env` en la raíz, copiando `.env.example`, y completá tus valores:
+```bash
+   cp .env.example .env
+```
+   Variables requeridas: `PORT`, `MONGODB_URI`, `NODE_ENV`.
+4. Iniciá el servidor:
+```bash
+   npm start
+```
+   Si falta alguna variable obligatoria en `.env`, la app va a lanzar un error descriptivo y no va a arrancar.
+
+## Arquitectura por capas
+
+El proyecto separa responsabilidades en tres capas:
+
+- **Repository**: es el único lugar que conoce Mongoose. Se encarga solo de leer y guardar datos, y encapsula detalles de acceso (por ejemplo, excluye el campo `password` de las respuestas de usuario, y filtra por defecto las tiendas activas en `getStores`).
+- **Service**: contiene la lógica de negocio (validaciones de datos obligatorios, cálculo del total de un pedido, verificación de que existan el usuario y la tienda antes de crear una orden). Llama al Repository, pero nunca a Mongoose directamente.
+- **Controller**: es la única puerta de entrada HTTP. Recibe `req`/`res`, llama al Service, y devuelve la respuesta con el status code correspondiente.
+
+Esta separación evita mezclar reglas de negocio con acceso a datos, y permite cambiar la base de datos o la lógica interna sin tocar las otras capas.
+
 ### Entidades principales
 
 ### User
@@ -356,15 +384,15 @@ app.js
 server.js
 models
 routes
+controllers
+services
+repositories
 config/db.js
 ```
 
 Todavía no incorpora:
 
 ```txt
-controllers
-services
-repositories
 middleware global de errores
 logger profesional
 Swagger

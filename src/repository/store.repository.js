@@ -3,7 +3,7 @@ import StoreModel from '../models/store.model.js';
 export const storeRepository = {
 
   getStores: async () => {
-    return StoreModel.find();
+    return StoreModel.find({ isActive: true });
   },
 
   findById: async (id) => {
@@ -17,7 +17,7 @@ export const storeRepository = {
   updateStore: async (id, newData) => {
     return StoreModel.findByIdAndUpdate(
       id,
-       newData,
+      newData,
       { new: true, runValidators: true },
     );
   },
