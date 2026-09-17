@@ -1,6 +1,7 @@
 import { orderRepository } from '../repository/order.repository.js';
 import { userRepository } from '../repository/user.repository.js';
 import { storeRepository } from '../repository/store.repository.js';
+import { ORDER_STATUS } from '../constants/constants.js';
 
 export const orderService = {
   getOrders: async () => {
@@ -47,7 +48,7 @@ export const orderService = {
     const newOrder = {
       ...orderData,
       total,
-      status: 'created',
+      status: ORDER_STATUS.CREATED,
       priority: priority ? priority : 'normal',
     };
 

@@ -1,6 +1,6 @@
 import { orderService } from '../service/order.service.js';
 
-export const getOrders = async (req, res) => {
+export const getOrders = async (_req, res) => {
   try {
     const orders = await orderService.getOrders();
 
