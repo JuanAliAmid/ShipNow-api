@@ -1,5 +1,5 @@
 export const USER_ROLES = Object.freeze({
-    ADMIN: 'admin'.object.freeze(),
+    ADMIN: 'admin',
     USER: 'customer',
     STORE: 'store'
 });

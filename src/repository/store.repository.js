@@ -3,7 +3,7 @@ import StoreModel from '../models/store.model.js';
 export const storeRepository = {
 
   getStores: async () => {
-    return StoreModel.findAll();
+    return StoreModel.find();
   },
 
   findById: async (id) => {

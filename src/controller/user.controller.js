@@ -29,27 +29,35 @@ export const userController = {
         }
     },
 
-    updateUser: async (id, newData) => {
-        const userUpdate = await userService.findByIdAndUpdate(
-            id,
-            newData,
-            { new: true, runValidators: true },
-        );
-        if (!userUpdate) {
-            const error = new Error('Usuario no encontrado');
-            error.status = 404;
-            throw error;
+    updateUser: async (req, res) => {
+        try {
+            const userUpdate = await userService.updateUser(
+                req.params.uid,
+                req.body,
+            );
+            if (!userUpdate) {
+                const error = new Error('Usuario no encontrado');
+                error.status = 404;
+                throw error;
+            }
+            res.json({ status: 'success', payload: userUpdate })
+        } catch (error) {
+            res.status(500).json({ status: 'error', message: error.message });
         }
-        return userUpdate;
     },
 
-    delete: async (id) => {
-        const userDelete = await userService.findByIdAndDelete(id);
-        if (!userDelete) {
-            const error = new Error('Usuario no encontrado');
-            error.status = 404;
-            throw error;
+    delete: async (req, res) => {
+        try {
+            const userDelete = await userService.delete(req.params.uid);
+            if (!userDelete) {
+                const error = new Error('Usuario no encontrado');
+                error.status = 404;
+                throw error;
+            }
+            res.json({ status: 'success', payload: userDelete })
+        } catch (error) {
+            res.status(500).json({ status: 'error', message: error.message });
         }
-        return userDelete;
+
     }
 }

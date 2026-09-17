@@ -3,7 +3,7 @@ import { userController } from "../controller/user.controller.js";
 
 const router = Router();
 
-router.get("/", ), userController.getUsers;
+router.get("/", userController.getUsers);
 
 router.get("/:uid", userController.findById);
 

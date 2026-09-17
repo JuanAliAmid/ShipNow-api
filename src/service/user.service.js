@@ -12,7 +12,7 @@ export const userService = {
     },
 
     getUsers: async () => {
-        return userRepository.findAll()
+        return userRepository.getUsers()
     },
 
     create: async (userData) => {
@@ -27,7 +27,7 @@ export const userService = {
     },
 
     updateUser: async (id, newData) => {
-        const userUpdate = await userRepository.findByIdAndUpdate(
+        const userUpdate = await userRepository.updateUser(
             id,
             newData,
             { new: true, runValidators: true },
@@ -41,7 +41,7 @@ export const userService = {
     },
 
     delete: async (id) => {
-        const userDelete = await userRepository.findByIdAndDelete(id);
+        const userDelete = await userRepository.delete(id);
         if (!userDelete) {
             const error = new Error('Usuario no encontrado');
             error.status = 404;

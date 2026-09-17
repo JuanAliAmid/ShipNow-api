@@ -6,7 +6,7 @@ export const userRepository = {
   },
 
   getUsers: async () => {
-    return UserModel.findAll()
+    return UserModel.find()
   },
 
   create: async (userData) => {
