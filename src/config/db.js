@@ -1,11 +1,8 @@
 import mongoose from "mongoose";
+import { env } from "./index.js";
 
 const connectDB = async () => {
-  const mongoUri = process.env.MONGODB_URI;
-
-  if (!mongoUri) {
-    throw new Error("Falta la variable MONGODB_URI");
-  }
+  const mongoUri = env.mongodb_uri;
 
   await mongoose.connect(mongoUri);
   console.log("MongoDB conectado");

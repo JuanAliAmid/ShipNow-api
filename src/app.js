@@ -9,13 +9,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.json({
-    status: "success",
-    message: "ShipNow API"
-  });
-});
-
 app.get("/health", (req, res) => {
   res.json({
     status: "success",
