@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
-import { ORDER_STATUS } from '../constants/constants.js';
+import { ORDER_PRORITY, ORDER_STATUS } from '../constants/constants.js';
+
 
 const orderItemSchema = new mongoose.Schema(
   {
@@ -52,8 +53,8 @@ const orderSchema = new mongoose.Schema(
     },
     priority: {
       type: String,
-      enum: ["low", "normal", "high"],
-      default: "normal"
+      enum: [ORDER_PRORITY.LOW, ORDER_PRORITY.NORMAL, ORDER_PRORITY.HIGH],
+      default: ORDER_PRORITY.NORMAL
     },
     proof: {
       type: Object,
