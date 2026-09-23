@@ -26,3 +26,8 @@ export const DELIVERY_STATUS = Object.freeze({
     DELIVERED: 'delivered',
     CANCELLED: 'cancelled'
 });
+
+export const PRODUCT_STATUS = Object.freeze({
+    AVAILABLE: 'available',
+    OUT_OF_STOCK: 'out of stock'
+})

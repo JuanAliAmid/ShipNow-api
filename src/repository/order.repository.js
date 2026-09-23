@@ -1,13 +1,12 @@
 import OrderModel from '../models/order.model.js';
-import { USER_ROLES } from '../constants/constants.js';
 
 export const orderRepository = {
   findAll: async () => {
-    return OrderModel.find().populate(USER_ROLES.USER).populate(USER_ROLES.STORE);
+    return OrderModel.find().populate('customer').populate('store');
   },
 
   findById: async (id) => {
-    return OrderModel.findById(id).populate(USER_ROLES.USER).populate(USER_ROLES.STORE);
+    return OrderModel.findById(id).populate('customer').populate('store');
   },
 
   create: async (orderData) => {

@@ -5,7 +5,7 @@ export const userService = {
         const user = await userRepository.findById(id);
         if (!user) {
             const error = new Error('"Usuario no encontrado"');
-            error.status = 404;
+            error.statusCode = 404;
             throw error
         }
         return user;
@@ -34,7 +34,7 @@ export const userService = {
         );
         if (!userUpdate) {
             const error = new Error('Usuario no encontrado');
-            error.status = 404;
+            error.statusCode = 404;
             throw error;
         }
         return userUpdate;
@@ -44,7 +44,7 @@ export const userService = {
         const userDelete = await userRepository.delete(id);
         if (!userDelete) {
             const error = new Error('Usuario no encontrado');
-            error.status = 404;
+            error.statusCode = 404;
             throw error;
         }
         return userDelete;

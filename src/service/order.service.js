@@ -2,6 +2,8 @@ import { orderRepository } from '../repository/order.repository.js';
 import { userRepository } from '../repository/user.repository.js';
 import { storeRepository } from '../repository/store.repository.js';
 import { ORDER_STATUS } from '../constants/constants.js';
+import { productService } from './product.service.js';
+import { productRepository } from '../repository/product.repository.js';
 
 export const orderService = {
   getOrders: async () => {
@@ -43,10 +45,19 @@ export const orderService = {
       throw error;
     }
 
-    const total = items.reduce((accumulator, item) => accumulator + item.price * item.quantity, 0);
+    const ordersItems = [];
+    
+    for (const item of items) {
+      const product = await productRepository.findById(item.product)
+      await productService.decrementStock(item.product, item.quantity);
+      ordersItems.push({name: product.name, price: product.price, quantity: item.quantity, product: item.product })
+    }
 
+    const total = ordersItems.reduce((accumulator, item) => accumulator + item.price * item.quantity, 0);
+    
     const newOrder = {
       ...orderData,
+      items: ordersItems,
       total,
       status: ORDER_STATUS.CREATED,
       priority: priority ? priority : 'normal',

@@ -8,10 +8,9 @@ export const storeService = {
             const error = new Error('No hay tiendas disponibles');
             error.statusCode = 404;
             throw error;
-        }
+        };
 
         return stores;
-
     },
 
     create: async (storeData) => {
@@ -20,10 +19,10 @@ export const storeService = {
             const error = new Error('Faltan datos obligatorios');
             error.statusCode = 400;
             throw error;
-        }
+        };
         const store = await storeRepository.create(storeData);
 
-        return store
+        return store;
     },
 
     findById: async (id) => {
@@ -32,7 +31,7 @@ export const storeService = {
             const error = new Error('Comercio no encontrado');
             error.statusCode = 404;
             throw error;
-        }
+        };
         return store;
     },
 
@@ -45,11 +44,11 @@ export const storeService = {
 
         if (!storeUpdate) {
             const error = new Error('Comercio no encontrado');
-            error.status = 404;
+            error.statusCode = 404;
             throw error;
-        }
+        };
 
-        return storeUpdate
+        return storeUpdate;
 
     },
 
@@ -58,11 +57,11 @@ export const storeService = {
 
         if (!store) {
             const error = new Error('Comercio no encontrado');
-            error.status = 400;
+            error.statusCode = 400;
             throw error;
-        }
+        };
 
-        return store
+        return store;
     }
 
-}
+};

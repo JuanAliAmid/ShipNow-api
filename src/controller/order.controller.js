@@ -6,7 +6,7 @@ export const getOrders = async (_req, res) => {
 
     res.json({ status: 'success', payload: orders });
   } catch (error) {
-    res.status(500).json({ status: 'error', message: error.message });
+    res.status(error.statusCode).json({ status: 'error', message: error.message });
   }
 };
 
@@ -16,7 +16,7 @@ export const getOrderById = async (req, res) => {
 
     res.json({ status: 'success', payload: order });
   } catch (error) {
-    res.status(500).json({ status: 'error', message: error.message });
+    res.status(error.statusCode).json({ status: 'error', message: error.message });
   }
 };
 
@@ -26,7 +26,7 @@ export const createOrder = async (req, res) => {
 
     res.json({ status: 'success', payload: order });
   } catch (error) {
-    res.status(500).json({ status: 'error', message: error.message });
+    res.status(error.statusCode).json({ status: 'error', message: error.message });
   }
 };
 
@@ -36,7 +36,7 @@ export const updateOrderStatus = async (req, res) => {
 
     res.json({ status: 'success', payload: order });
   } catch (error) {
-    res.status(500).json({ status: 'error', message: error.message });
+    res.status(error.statusCode).json({ status: 'error', message: error.message });
   }
 };
 
@@ -46,6 +46,6 @@ export const deleteOrder = async (req, res) => {
 
     res.json({ status: 'success', payload: order });
   } catch (error) {
-    res.status(500).json({ status: 'error', message: error.message });
+    res.status(error.statusCode).json({ status: 'error', message: error.message });
   }
 };

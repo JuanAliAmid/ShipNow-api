@@ -6,7 +6,7 @@ export const storeController = {
             const stores = await storeService.getStores();
             res.json({ status: 'success', payload: stores });
         } catch (error) {
-            res.status(500).json({ status: 'error', message: error.message });
+            res.status(error.statusCode).json({ status: 'error', message: error.message });
         }
     },
 
@@ -16,7 +16,7 @@ export const storeController = {
             const store = await storeService.create(req.body);
             res.json({ status: 'success', payload: store });
         } catch (error) {
-            res.status(500).json({ status: 'error', message: error.message });
+            res.status(error.statusCode).json({ status: 'error', message: error.message });
         }
 
     },
@@ -27,7 +27,7 @@ export const storeController = {
             const store = await storeService.findById(sid)
             res.json({ status: 'success', payload: store });
         } catch (error) {
-            res.status(500).json({ status: 'error', message: error.message });
+            res.status(error.statusCode).json({ status: 'error', message: error.message });
         }
     },
 
@@ -38,7 +38,7 @@ export const storeController = {
             const storeUpdate = await storeService.updateStore(sid, req.body)
             res.json({ status: 'success', payload: storeUpdate });
         } catch (error) {
-            res.status(500).json({ status: 'error', message: error.message });
+            res.status(error.statusCode).json({ status: 'error', message: error.message });
         }
 
     },
@@ -49,7 +49,7 @@ export const storeController = {
             const store = await storeService.delete(sid);
             res.json({ status: 'success', payload: store });
         } catch (error) {
-            res.status(500).json({ status: 'error', message: error.message });
+            res.status(error.statusCode).json({ status: 'error', message: error.message });
         }
     }
 
