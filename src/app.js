@@ -4,6 +4,7 @@ import storesRouter from "./routes/stores.router.js";
 import ordersRouter from "./routes/orders.router.js";
 import productsRouter from './routes/products.router.js';
 import mocksRouter from './routes/mocks.router.js';
+import errorHandler from "./middlewares/errorHandler.js";
 
 const app = express();
 
@@ -28,5 +29,7 @@ app.use((_req, res) => {
     message: "Ruta no encontrada"
   });
 });
+
+app.use(errorHandler.error);
 
 export default app;

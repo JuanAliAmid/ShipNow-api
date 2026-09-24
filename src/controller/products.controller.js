@@ -1,51 +1,51 @@
 import { productService } from "../service/product.service.js";
 
 export const productController = {
-    findAll: async (_req, res) => {
+    findAll: async (_req, res, next) => {
         try {
             const products = await productService.findAll();
             res.json({ status: 'success', payload: products });
         } catch (error) {
-            res.status(error.statusCode).json({ status: 'error', message: error.message })
+            next(error);
         }
 
     },
 
-    findById: async (req, res) => {
+    findById: async (req, res, next) => {
         try {
             const producto = await productService.findById(req.params.id);
             res.json({ status: 'success', payload: producto });
         } catch (error) {
-            res.status(error.statusCode).json({ status: 'error', message: error.message })
+            next(error);
         }
 
     },
 
-    create: async (req, res) => {
+    create: async (req, res, next) => {
 
         try {
             const producto = await productService.create(req.body);
             res.json({ status: 'success', payload: producto })
         } catch (error) {
-            res.status(error.statusCode).json({ status: 'error', message: error.message })
+            next(error);
         };
     },
 
-    updateStatus: async (req, res) => {
+    updateStatus: async (req, res, next) => {
         try {
             const newStatus = await productService.updateStatus(req.params.id, req.body)
             res.json({ status: 'success', payload: newStatus })
         } catch (error) {
-            res.status(error.statusCode).json({ status: 'error', message: error.message })
+            next(error);
         }
     },
 
-    delete: async (req, res) => {
+    delete: async (req, res, next) => {
         try {
             const deleteProduct = await productService.delete(req.params.id);
             res.json({ status: 'success', payload: deleteProduct });
         } catch (error) {
-            res.status(error.statusCode).json({ status: 'error', message: error.message })
+            next(error);
         }
     }
 };

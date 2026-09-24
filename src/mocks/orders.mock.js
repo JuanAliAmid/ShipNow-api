@@ -1,7 +1,6 @@
-import mongoose from "mongoose";
 import { ORDER_PRORITY, ORDER_STATUS } from "../constants/constants.js";
 
-const generateMockOrder = (userId, index) => {
+const generateMockOrder = (userId,storeId, index) => {
     const items = [
         {
             name: `Paquete${index}`,
@@ -15,7 +14,7 @@ const generateMockOrder = (userId, index) => {
     return {
         customer: userId,
         items,
-        store: new mongoose.Types.ObjectId(),
+        store: storeId,
         deliveryAddress: `Av. Brasil ${200 + index}`,
         total,
         status: ORDER_STATUS.CREATED,
@@ -23,11 +22,12 @@ const generateMockOrder = (userId, index) => {
     };
 };
 
-const generateMockOrders = (userIds, quantity) => {
+const generateMockOrders = (userIds, storeIds, quantity) => {
     const orders = [];
     for (let i = 0; i < quantity; i++) {
         const userId = userIds[i % userIds.length];
-        orders.push(generateMockOrder(userId, i + 1));
+        const storeId = storeIds[i % storeIds.length];
+        orders.push(generateMockOrder(userId, storeId, i + 1));
     };
     return orders;
 }

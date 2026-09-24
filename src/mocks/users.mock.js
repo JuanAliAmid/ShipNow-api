@@ -25,11 +25,22 @@ const generateMockDrivers = (quantity) => {
         role: USER_ROLES.DRIVER,
         isAvailable: true
     }));
+}
 
+const generateMockUserWithStoreRole = (quantity) => {
+    const random = Date.now();
+    return Array.from({ length: quantity }, (_, index) => ({
+        firstName: `Store${index + 1}`,
+        lastName: `Demo${index + 1}`,
+        email: `store${index + 1}-${random}@test.com`,
+        password: 'coder123',
+        role: USER_ROLES.STORE,
+    }));
 }
 
 export default {
     generateMockUser,
     generateMockUserQuantity,
-    generateMockDrivers
+    generateMockDrivers,
+    generateMockUserWithStoreRole
 }

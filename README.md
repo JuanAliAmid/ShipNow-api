@@ -513,12 +513,12 @@ controllers
 services
 repositories
 config/db.js
+middleware global de errores
 ```
 
 Todavía no incorpora:
 
 ```txt
-middleware global de errores
 logger profesional
 Swagger
 tests automatizados
