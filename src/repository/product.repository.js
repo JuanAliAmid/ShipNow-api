@@ -14,14 +14,14 @@ export const productRepository = {
         return productModel.create(productData);
     },
 
-    updateStatus: async (id, status) => {
+    update: async (id, newData) => {
         return productModel.findByIdAndUpdate(
             id,
-            { status },
+            newData,
             { new: true, runValidators: true },
         );
     },
-
+//updateStatus
     updateQuantity: async (id, quantity) => {
         return productModel.findByIdAndUpdate(
             id,

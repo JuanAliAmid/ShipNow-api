@@ -50,7 +50,7 @@ export const productService = {
          newQuantity = producto.quantity - quantity
          if (newQuantity === 0) {
 
-            await productRepository.updateStatus(producto._id, PRODUCT_STATUS.OUT_OF_STOCK)
+            await productRepository.update(producto._id,{ status: PRODUCT_STATUS.OUT_OF_STOCK})
             await productRepository.updateQuantity(producto._id, 0)
             return
          }
@@ -62,18 +62,14 @@ export const productService = {
       }
    },
 
-   updateStatus: async (id, status) => {
-      const newStatus = await productRepository.updateStatus(
-         id,
-         { status },
-         { new: true, runValidators: true },
-      );
-      if (!newStatus) {
+   update: async (id, newData) => {
+      const newProduct = await productRepository.update(id, newData)
+      if (!newProduct) {
          const error = new Error('Producto no encontrado');
          error.statusCode = 404;
          throw error
       }
-      return newStatus;
+      return newProduct;
    },
 
    delete: async (id) => {

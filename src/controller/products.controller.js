@@ -7,8 +7,7 @@ export const productController = {
             res.json({ status: 'success', payload: products });
         } catch (error) {
             next(error);
-        }
-
+        };
     },
 
     findById: async (req, res, next) => {
@@ -17,8 +16,7 @@ export const productController = {
             res.json({ status: 'success', payload: producto });
         } catch (error) {
             next(error);
-        }
-
+        };
     },
 
     create: async (req, res, next) => {
@@ -31,13 +29,13 @@ export const productController = {
         };
     },
 
-    updateStatus: async (req, res, next) => {
+    update: async (req, res, next) => {
         try {
-            const newStatus = await productService.updateStatus(req.params.id, req.body)
-            res.json({ status: 'success', payload: newStatus })
+            const newProduct = await productService.update(req.params.id, req.body)
+            res.json({ status: 'success', payload: newProduct })
         } catch (error) {
             next(error);
-        }
+        };
     },
 
     delete: async (req, res, next) => {
@@ -46,6 +44,6 @@ export const productController = {
             res.json({ status: 'success', payload: deleteProduct });
         } catch (error) {
             next(error);
-        }
+        };
     }
 };

@@ -6,7 +6,7 @@ const router = Router();
 router.get('/', productController.findAll)
 router.get('/:id', productController.findById)
 router.post('/', productController.create)
-router.put('/:id/status', productController.updateStatus)
+router.put('/:id/', productController.update)
 router.delete('/:id', productController.delete)
 
 export default router;

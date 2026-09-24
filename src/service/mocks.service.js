@@ -3,12 +3,12 @@ import { orderRepository } from '../repository/order.repository.js';
 import { deliveryRepository } from '../repository/delivery.repository.js';
 import { storeRepository } from '../repository/store.repository.js';
 import { USER_ROLES } from '../constants/constants.js';
+import { productRepository } from '../repository/product.repository.js';
 import usersMock from '../mocks/users.mock.js';
 import ordersMock from '../mocks/orders.mock.js';
 import deliveriesMock from '../mocks/deliveries.mock.js';
 import mongoose from 'mongoose';
 import storesMock from '../mocks/store.mock.js';
-import { productRepository } from '../repository/product.repository.js';
 
 const users = async (quantity) => {
 

@@ -321,13 +321,24 @@ Body de ejemplo:
 }
 ```
 
-### Actualizar estado del producto
+### Actualizar campos del producto
 
 ```http
-PUT /api/products/:id/status
+PUT /api/products/:id
 ```
 
-Body de ejemplo:
+Acepta cualquier combinación de campos del producto (`name`, `price`, `quantity`, `status`); solo actualiza las claves que vengan en el body.
+
+Body de ejemplo (cambiar precio y stock):
+
+```json
+{
+  "price": 1800,
+  "quantity": 15
+}
+```
+
+Body de ejemplo (cambiar solo el estado):
 
 ```json
 {
@@ -435,10 +446,19 @@ DELETE /api/orders/:oid
 
 ## Mocking y carga de datos de prueba
 
-Módulo bajo `/api/mocks`, respeta la arquitectura por capas del resto del proyecto.
-
 * **GET** (genera sin guardar): `/api/mocks/users`, `/api/mocks/drivers`, `/api/mocks/orders`, `/api/mocks/deliveries` — todos aceptan `?qty=N`.
-* **POST** (genera e inserta en MongoDB): `/api/mocks/seed?type=<users|drivers|orders|deliveries>&qty=N`
+* **POST** (genera e inserta en MongoDB): `/api/mocks/seed?type=<storeOwner|stores|users|drivers|orders|deliveries>&qty=N`
+
+**Orden recomendado para sembrar datos de prueba desde una base vacía**, porque `orders` necesita `customer`, `store` y `product` reales, y `deliveries` necesita `order` y `driver` reales:
+
+1. `POST /api/mocks/seed?type=storeOwner&qty=N` — usuarios con rol `store` (dueños de comercio).
+2. `POST /api/mocks/seed?type=stores&qty=N` — comercios reales, usando los owners del paso anterior.
+3. `POST /api/mocks/seed?type=users&qty=N` y `type=drivers&qty=N` — clientes y repartidores.
+4. Cargar al menos un `Product` real vía `POST /api/products` (el mocking no genera productos).
+5. `POST /api/mocks/seed?type=orders&qty=N` — ahora encuentra `customer`, `store` y `product` reales.
+6. `POST /api/mocks/seed?type=deliveries&qty=N` — asocia `order` y `driver` reales.
+
+Módulo bajo `/api/mocks`, respeta la arquitectura por capas del resto del proyecto.
 
 Ejemplo:
 
@@ -464,15 +484,6 @@ POST /api/mocks/seed?type=users&qty=10
 }
 ```
 
-Orden recomendado para sembrar (por dependencias entre entidades):
-
-```txt
-1. users
-2. drivers
-3. orders
-4. deliveries
-```
-
 Roles, estados y prioridades usados en los mocks salen siempre de las constantes centralizadas (`USER_ROLES`, `ORDER_STATUS`, `ORDER_PRORITY`, `DELIVERY_STATUS`).
 
 ## Formato general de respuestas
@@ -486,7 +497,7 @@ Las respuestas exitosas siguen una estructura simple:
 }
 ```
 
-Las respuestas de error, en esta versión base, todavía se manejan de forma simple desde las rutas:
+Las respuestas de error se manejan de forma centralizada mediante un middleware (`errorHandler`) registrado al final de `app.js`. Los controllers no responden el error directamente: lo delegan con `next(error)`.
 
 ```json
 {
@@ -495,7 +506,7 @@ Las respuestas de error, en esta versión base, todavía se manejan de forma sim
 }
 ```
 
-Más adelante, el proyecto será refactorizado para incorporar una capa centralizada de manejo de errores.
+El middleware determina el `statusCode` según el tipo de error: usa `error.statusCode` si el error lo trae seteado (como los que lanzan los services), devuelve `400` si es un `CastError` de Mongoose (ej. un `id` con formato inválido), `409` si es un error de clave duplicada (`code: 11000`, ej. email repetido), y `500` como fallback para cualquier otro caso no contemplado.
 
 ## Estado actual del proyecto
 
