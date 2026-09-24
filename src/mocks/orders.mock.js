@@ -1,11 +1,12 @@
 import { ORDER_PRORITY, ORDER_STATUS } from "../constants/constants.js";
 
-const generateMockOrder = (userId,storeId, index) => {
+const generateMockOrder = (userId,storeId, productId, index) => {
     const items = [
         {
             name: `Paquete${index}`,
             quantity: 1,
-            price: 2000
+            price: 2000,
+            product: productId
         }
     ];
 
@@ -22,12 +23,13 @@ const generateMockOrder = (userId,storeId, index) => {
     };
 };
 
-const generateMockOrders = (userIds, storeIds, quantity) => {
+const generateMockOrders = (userIds, storeIds, productIds, quantity) => {
     const orders = [];
     for (let i = 0; i < quantity; i++) {
         const userId = userIds[i % userIds.length];
         const storeId = storeIds[i % storeIds.length];
-        orders.push(generateMockOrder(userId, storeId, i + 1));
+        const productId = productIds[i % productIds.length];
+        orders.push(generateMockOrder(userId, storeId, productId, i + 1));
     };
     return orders;
 }
