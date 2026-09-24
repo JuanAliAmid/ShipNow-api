@@ -15,6 +15,11 @@ const orderItemSchema = new mongoose.Schema(
     price: {
       type: Number,
       required: true
+    },
+    product: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+      required: true
     }
   },
   {

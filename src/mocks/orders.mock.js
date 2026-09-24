@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { ORDER_PRORITY, ORDER_STATUS } from "../constants/constants.js";
 
 const generateMockOrder = (userId, index) => {
@@ -12,8 +13,9 @@ const generateMockOrder = (userId, index) => {
     const total = items.reduce((a, b) => a + b.quantity * b.price, 0);
 
     return {
-        user: userId,
+        customer: userId,
         items,
+        store: new mongoose.Types.ObjectId(),
         deliveryAddress: `Av. Brasil ${200 + index}`,
         total,
         status: ORDER_STATUS.CREATED,

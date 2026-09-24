@@ -2,17 +2,19 @@
 
 ShipNow API es una aplicación backend construida con Node.js, Express y MongoDB.
 
-En su estado base, la API permite trabajar con tres entidades principales:
+En su estado actual, la API permite trabajar con cuatro entidades principales:
 
 * Usuarios
 * Comercios
+* Productos
 * Pedidos
 
 La idea del proyecto es simular una API simple de logística/envíos.
 
 Un usuario puede representar a un cliente.
 Un comercio representa el lugar desde donde sale el pedido.
-Un pedido representa una solicitud de envío asociada a un usuario y a un comercio.
+Un producto representa un artículo que un comercio puede vender, con stock y precio propios.
+Un pedido representa una solicitud de envío asociada a un usuario y a un comercio, que contiene uno o más productos.
 
 ### Flujo principal
 
@@ -20,11 +22,12 @@ El flujo básico de la API es:
 
 1. Crear un usuario.
 2. Crear un comercio.
-3. Crear un pedido usando el ID del usuario y el ID del comercio.
-4. Consultar los pedidos.
-5. Actualizar el estado de un pedido.
+3. Crear productos.
+4. Crear un pedido usando el ID del usuario, el ID del comercio y los productos (con su cantidad).
+5. Consultar los pedidos.
+6. Actualizar el estado de un pedido.
 
-El pedido contiene una lista de items, una dirección de entrega, un total calculado y un estado.
+Al crear un pedido, la API busca cada producto solicitado, descuenta su stock (`quantity`) y, si llega a 0, actualiza su `status` a `out of stock`. El pedido guarda una copia de `name` y `price` de cada producto al momento de la compra, además de la referencia al producto original.
 
 ## Instalación y ejecución local
 
@@ -102,6 +105,32 @@ El campo `owner` guarda el ID de un usuario asociado al comercio.
 
 ---
 
+### Product
+
+Representa un producto disponible para la venta.
+
+Campos principales:
+
+```json
+{
+  "name": "Caja mediana",
+  "price": 1500,
+  "quantity": 20,
+  "status": "available"
+}
+```
+
+Estados posibles del producto:
+
+```txt
+available
+out of stock
+```
+
+El stock (`quantity`) se descuenta automáticamente cuando el producto se incluye en un pedido. Al llegar a 0, el `status` pasa a `out of stock` y el producto deja de aparecer en el listado general (`GET /api/products`), que por defecto solo devuelve productos disponibles.
+
+---
+
 ### Order
 
 Representa un pedido o envío.
@@ -115,13 +144,14 @@ Campos principales:
   "deliveryAddress": "Av. Siempre Viva 742",
   "items": [
     {
-      "name": "Caja mediana",
-      "quantity": 2,
-      "price": 1500
+      "product": "ID_DEL_PRODUCTO",
+      "quantity": 2
     }
   ]
 }
 ```
+
+El body de creación solo necesita el `id` del producto y la cantidad pedida. Internamente, la API busca cada producto, descuenta su stock, y guarda en el pedido una copia con `name`, `price` y la referencia (`product`) en el momento de la compra.
 
 Cuando se crea un pedido, la API calcula el total automáticamente recorriendo los items.
 
@@ -259,6 +289,58 @@ DELETE /api/stores/:sid
 
 ---
 
+## Products
+
+### Obtener productos disponibles
+
+```http
+GET /api/products
+```
+
+Devuelve solo los productos con `status: "available"`.
+
+### Obtener producto por ID
+
+```http
+GET /api/products/:id
+```
+
+### Crear producto
+
+```http
+POST /api/products
+```
+
+Body de ejemplo:
+
+```json
+{
+  "name": "Caja mediana",
+  "price": 1500,
+  "quantity": 20
+}
+```
+
+### Actualizar estado del producto
+
+```http
+PUT /api/products/:id/status
+```
+
+Body de ejemplo:
+
+```json
+{
+  "status": "out of stock"
+}
+```
+
+### Eliminar producto
+
+```http
+DELETE /api/products/:id
+```
+
 ## Orders
 
 ### Obtener pedidos
@@ -288,14 +370,12 @@ Body de ejemplo:
   "deliveryAddress": "Av. Siempre Viva 742",
   "items": [
     {
-      "name": "Caja mediana",
-      "quantity": 2,
-      "price": 1500
+      "product": "ID_DEL_PRODUCTO_1",
+      "quantity": 2
     },
     {
-      "name": "Sobre chico",
-      "quantity": 1,
-      "price": 800
+      "product": "ID_DEL_PRODUCTO_2",
+      "quantity": 1
     }
   ]
 }
@@ -312,14 +392,16 @@ Respuesta esperada:
     "store": "ID_DEL_COMERCIO",
     "items": [
       {
+        "product": "ID_DEL_PRODUCTO_1",
         "name": "Caja mediana",
-        "quantity": 2,
-        "price": 1500
+        "price": 1500,
+        "quantity": 2
       },
       {
+        "product": "ID_DEL_PRODUCTO_2",
         "name": "Sobre chico",
-        "quantity": 1,
-        "price": 800
+        "price": 800,
+        "quantity": 1
       }
     ],
     "deliveryAddress": "Av. Siempre Viva 742",
@@ -351,6 +433,48 @@ DELETE /api/orders/:oid
 
 ---
 
+## Mocking y carga de datos de prueba
+
+Módulo bajo `/api/mocks`, respeta la arquitectura por capas del resto del proyecto.
+
+* **GET** (genera sin guardar): `/api/mocks/users`, `/api/mocks/drivers`, `/api/mocks/orders`, `/api/mocks/deliveries` — todos aceptan `?qty=N`.
+* **POST** (genera e inserta en MongoDB): `/api/mocks/seed?type=<users|drivers|orders|deliveries>&qty=N`
+
+Ejemplo:
+
+```http
+GET /api/mocks/users?qty=2
+```
+```json
+{
+  "status": "success",
+  "payload": [
+    { "firstName": "Ana", "lastName": "Pérez", "email": "ana.perez@test.com", "role": "customer" }
+  ]
+}
+```
+
+```http
+POST /api/mocks/seed?type=users&qty=10
+```
+```json
+{
+  "status": "success",
+  "payload": { "insertados": 10, "coleccion": "users" }
+}
+```
+
+Orden recomendado para sembrar (por dependencias entre entidades):
+
+```txt
+1. users
+2. drivers
+3. orders
+4. deliveries
+```
+
+Roles, estados y prioridades usados en los mocks salen siempre de las constantes centralizadas (`USER_ROLES`, `ORDER_STATUS`, `ORDER_PRORITY`, `DELIVERY_STATUS`).
+
 ## Formato general de respuestas
 
 Las respuestas exitosas siguen una estructura simple:
@@ -375,7 +499,7 @@ Más adelante, el proyecto será refactorizado para incorporar una capa centrali
 
 ## Estado actual del proyecto
 
-Esta versión base de ShipNow funciona, pero todavía no representa una API completamente profesional.
+Esta versión de ShipNow ya cuenta con las 4 entidades principales y un sistema de mocking funcional para poblar la base con datos de prueba, aunque todavía no representa una API completamente profesional.
 
 Actualmente el proyecto tiene:
 
@@ -384,6 +508,7 @@ app.js
 server.js
 models
 routes
+mocks
 controllers
 services
 repositories

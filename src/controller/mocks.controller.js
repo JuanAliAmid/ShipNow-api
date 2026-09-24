@@ -1,4 +1,4 @@
-import mocksService from "../service/mocks.service";
+import mocksService from "../service/mocks.service.js";
 
 const users = async (req, res) => {
     const { qty } = req.query;
@@ -46,6 +46,7 @@ const saveMocks = async (req, res) => {
         const save = await mocksService.saveMocks(type, qty)
         res.json({ status: 'success', payload: { insertados: save.length, coleccion: type } });
     } catch (error) {
+        console.log(error);
         res.status(error.statusCode).json({ status: 'error', message: error.message });
     };
 };
