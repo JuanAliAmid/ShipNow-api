@@ -53,7 +53,7 @@ const deliveries = async (quantity) => {
       return deliveriesMock.generateMockDelivery(orderId[index % orderId.length], driverId[index % driverId.length], index)
    });
    if (!delivery) {
-      const error = new Error('Dekivery no encontrado');
+      const error = new Error('Delivery no encontrado');
       error.statusCode = 404;
       throw error
    }
@@ -75,6 +75,22 @@ const saveMocks = async (type, qty) => {
          const ids = (await userRepository.getUsers()).filter((a) => a.role === USER_ROLES.USER);
          const idsStore = await storeRepository.getStores();
          const idsProduct = await productRepository.findAll();
+         if (ids.length === 0) {
+            const error = new Error('Usuarios no encontrados');
+            error.statusCode = 404;
+            throw error
+         }
+         if (idsStore.length === 0) {
+            const error = new Error('Tiendas no encontradas');
+            error.statusCode = 404;
+            throw error
+         }
+         if (idsProduct.length === 0) {
+            const error = new Error('Productos no encontrados');
+            error.statusCode = 404;
+            throw error
+         }
+
          const orders = ordersMock.generateMockOrders(ids.map((a) => a._id), idsStore.map((a) => a._id), idsProduct.map((a) => a._id), qty).map((a) => orderRepository.create(a))
          return await Promise.all(orders);
 
@@ -87,6 +103,17 @@ const saveMocks = async (type, qty) => {
 
          const orderId = (await orderRepository.findAll()).map((a) => a._id);
          const driverId = (await userRepository.getUsers()).filter((a) => a.role === USER_ROLES.DRIVER).map((a) => a._id);
+         if (orderId.length === 0) {
+            const error = new Error('Orden no encontrada');
+            error.statusCode = 404;
+            throw error
+         }
+         if (driverId.length === 0) {
+            const error = new Error('Driver no encontrado');
+            error.statusCode = 404;
+            throw error
+         }
+
          const delivery = Array.from({ length: qty }, (_, index) => {
             return deliveriesMock.generateMockDelivery(orderId[index % orderId.length], driverId[index % driverId.length], index)
          })
@@ -96,6 +123,11 @@ const saveMocks = async (type, qty) => {
       case 'stores':
 
          const userId = (await userRepository.getUsers()).filter((a) => a.role === USER_ROLES.STORE);
+         if (userId.length === 0) {
+            const error = new Error('Usuario no encontrado');
+            error.statusCode = 404;
+            throw error
+         }
          const stores = storesMock.generateMockStores(userId.map((a) => a._id), qty).map((a) => storeRepository.create(a));
          return await Promise.all(stores);
 
