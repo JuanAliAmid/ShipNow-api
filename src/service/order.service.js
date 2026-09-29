@@ -41,9 +41,19 @@ export const orderService = {
       const ordersItems = [];
 
       for (const item of items) {
-         const product = await productRepository.findById(item.product)
+         const product = await productRepository.findById(item.product);
+
+         if(!product) {
+            throw createError(ERROR_CODES.PRODUCT_NOT_FOUND);
+         };
+         if(product.quantity < item.quantity) {
+            throw createError(ERROR_CODES.PRODUCT_NOT_AVAILABLE);
+         };
+         ordersItems.push({name: product.name, price: product.price, quantity: item.quantity, product: item.product})
+      }
+
+      for (const item of items) {
          await productService.decrementStock(item.product, item.quantity);
-         ordersItems.push({ name: product.name, price: product.price, quantity: item.quantity, product: item.product })
       }
 
       const total = ordersItems.reduce((accumulator, item) => accumulator + item.price * item.quantity, 0);

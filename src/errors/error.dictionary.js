@@ -25,11 +25,15 @@ const errorsDictionary = {
         statusCode: 400,
         message: 'El formato de los datos ingresados es incorrecto'
     },
+    [ERROR_CODES.INVALID_QUANTITY]: {
+        statusCode: 400,
+        message: 'El formato de la cantidad es incorrecta'
+    },
     [ERROR_CODES.INVALID_DELIVERY_STATUS]: {
         statusCode: 400,
         message: 'El estado ingresado no es válido para una entrega'
     },
-    [ERROR_CODES.DRIVER_NOT_AVAILABLE]: {
+    [ERROR_CODES.DRIVERS_NOT_AVAILABLE]: {
         statusCode: 409,
         message: 'El repartidor no está disponible para la entrega'
     },
@@ -74,8 +78,12 @@ const errorsDictionary = {
         message: 'Drivers no encontrados'
     },
     [ERROR_CODES.TYPE_NOT_FOUND]: {
-        statusCode: 404 ,
+        statusCode: 404,
         message: 'Tipo no encontrado'
+    },
+    [ERROR_CODES.SAVE_MOCKS_FAILED]: {
+        statusCode: 500,
+        message: 'Error de guardado en base de datos'
     }
 };
 

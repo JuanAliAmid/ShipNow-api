@@ -1,4 +1,5 @@
 import { storeService } from "../service/store.service.js";
+import { successResponse } from "../utils/apiResponse.js";
 
 export const storeController = {
     getStores: async (_req, res, next) => {

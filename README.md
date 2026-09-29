@@ -512,6 +512,50 @@ El middleware determina el `statusCode` según el tipo de error: usa `error.stat
 
 Esta versión de ShipNow ya cuenta con las 4 entidades principales y un sistema de mocking funcional para poblar la base con datos de prueba, aunque todavía no representa una API completamente profesional.
 
+## Manejo de errores
+
+Todos los errores de la API se manejan de forma centralizada:
+
+- **Services**: detectan el error y lo lanzan con `throw createError(ERROR_CODES.X)`.
+- **Controllers**: no arman respuestas de error, solo hacen `next(error)`.
+- **Middleware global** (`middlewares/errorHandler.js`): es el único lugar que responde errores al cliente.
+
+Los errores del dominio son instancias de `AppError` (`errors/app.error.js`), y sus códigos, status y mensajes están en `errors/error.codes.js` y `errors/error.dictionary.js`.
+
+### Estructura de la respuesta de error
+
+```json
+{
+  "status": "error",
+  "error": "PRODUCT_NOT_FOUND",
+  "message": "Producto no encontrado"
+}
+```
+
+- `status`: siempre `"error"`.
+- `error`: código del error (clave del diccionario).
+- `message`: mensaje legible para el cliente.
+
+Los errores inesperados responden `INTERNAL_SERVER_ERROR` con un mensaje genérico; el detalle real solo se registra en la consola del servidor.
+
+### Cómo probar los casos inválidos
+
+| Caso | Request | Error esperado |
+|---|---|---|
+| Cantidad de mocks no numérica | `POST /api/mocks/seed?type=users&qty=abc` | `INVALID_QUANTITY` |
+| Cantidad cero o negativa | `POST /api/mocks/seed?type=users&qty=-5` | `INVALID_QUANTITY` |
+| Cantidad decimal | `POST /api/mocks/seed?type=users&qty=2.5` | `INVALID_QUANTITY` |
+| Cantidad sobre el máximo (50) | `POST /api/mocks/seed?type=users&qty=51` | `INVALID_QUANTITY` |
+| Sin cantidad | `POST /api/mocks/seed?type=users` | `INVALID_QUANTITY` |
+| Tipo de mock inexistente | `POST /api/mocks/seed?type=xyz&qty=3` | `TYPE_NOT_FOUND` |
+| Falla al guardar en MongoDB | fallo de conexión o de inserción durante `POST /api/mocks/seed` | `SAVE_MOCKS_FAILED` |
+| Orden con stock insuficiente | `POST /api/orders` con `quantity` mayor al stock | `PRODUCT_NOT_AVAILABLE` |
+| Producto inexistente en una orden | `POST /api/orders` con un ObjectId válido que no existe | `PRODUCT_NOT_FOUND` |
+| Id con formato inválido | `GET /api/products/abc` | `INVALID_DATA` |
+| JSON mal formado | `POST /api/orders` con body `{ "customer": }` | `INVALID_DATA` |
+
+Caso válido de referencia: `POST /api/mocks/seed?type=users&qty=3` responde `201` con `insertados: 3`.
+
 Actualmente el proyecto tiene:
 
 ```txt
