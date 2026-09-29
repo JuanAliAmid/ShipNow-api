@@ -1,12 +1,12 @@
 import { userRepository } from "../repository/user.repository.js";
+import { createError } from "../utils/apiResponse.js";
+import ERROR_CODES from "../errors/error.codes.js";
 
 export const userService = {
    findById: async (id) => {
       const user = await userRepository.findById(id);
       if (!user) {
-         const error = new Error('"Usuario no encontrado"');
-         error.statusCode = 404;
-         throw error
+         throw createError(ERROR_CODES.USER_NOT_FOUND);
       }
       return user;
    },
@@ -18,12 +18,10 @@ export const userService = {
    create: async (userData) => {
       const { firstName, lastName, email, password } = userData
       if (!firstName || !lastName || !email || !password) {
-         const error = new Error('Faltan datos obligatorios');
-         error.statusCode = 400;
-         throw error;
+         throw createError(ERROR_CODES.REQUIRED_FIELDS);
       }
       const newUser = await userRepository.create(userData);
-      return newUser
+      return newUser;
    },
 
    updateUser: async (id, newData) => {
@@ -33,9 +31,7 @@ export const userService = {
          { new: true, runValidators: true },
       );
       if (!userUpdate) {
-         const error = new Error('Usuario no encontrado');
-         error.statusCode = 404;
-         throw error;
+         throw createError(ERROR_CODES.USER_NOT_FOUND);
       }
       return userUpdate;
    },
@@ -43,9 +39,7 @@ export const userService = {
    delete: async (id) => {
       const userDelete = await userRepository.delete(id);
       if (!userDelete) {
-         const error = new Error('Usuario no encontrado');
-         error.statusCode = 404;
-         throw error;
+         throw createError(ERROR_CODES.USER_NOT_FOUND);
       }
       return userDelete;
    }

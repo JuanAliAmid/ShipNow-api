@@ -1,12 +1,12 @@
 import { ORDER_PRORITY, ORDER_STATUS } from "../constants/constants.js";
 
-const generateMockOrder = (userId,storeId, productId, index) => {
+const generateMockOrder = (userId,storeId, product, index) => {
     const items = [
         {
-            name: `Paquete${index}`,
+            name: product.name,
             quantity: 1,
-            price: 2000,
-            product: productId
+            price: product.price,
+            product: product._id
         }
     ];
 

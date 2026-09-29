@@ -22,8 +22,7 @@ const generateMockDrivers = (quantity) => {
         lastName: `Demo${index + 1}`,
         email: `driver${index + 1}-${random}@test.com`,
         password: 'coder123',
-        role: USER_ROLES.DRIVER,
-        isAvailable: true
+        role: USER_ROLES.DRIVER
     }));
 }
 

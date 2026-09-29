@@ -1,13 +1,13 @@
 import { storeRepository } from "../repository/store.repository.js";
+import { createError } from "../utils/apiResponse.js";
+import ERROR_CODES from "../errors/error.codes.js";
 
 export const storeService = {
    getStores: async () => {
 
       const stores = await storeRepository.getStores();
       if (!stores) {
-         const error = new Error('No hay tiendas disponibles');
-         error.statusCode = 404;
-         throw error;
+         throw createError(ERROR_CODES.STORE_NOT_FOUND);
       };
 
       return stores;
@@ -16,9 +16,7 @@ export const storeService = {
    create: async (storeData) => {
       const { name, address, owner } = storeData
       if (!name || !address || !owner) {
-         const error = new Error('Faltan datos obligatorios');
-         error.statusCode = 400;
-         throw error;
+         throw createError(ERROR_CODES.REQUIRED_FIELDS);
       };
       const store = await storeRepository.create(storeData);
 
@@ -28,9 +26,7 @@ export const storeService = {
    findById: async (id) => {
       const store = await storeRepository.findById(id)
       if (!store) {
-         const error = new Error('Comercio no encontrado');
-         error.statusCode = 404;
-         throw error;
+         throw createError(ERROR_CODES.STORE_NOT_FOUND);
       };
       return store;
    },
@@ -43,9 +39,7 @@ export const storeService = {
       );
 
       if (!storeUpdate) {
-         const error = new Error('Comercio no encontrado');
-         error.statusCode = 404;
-         throw error;
+         throw createError(ERROR_CODES.STORE_NOT_FOUND);
       };
 
       return storeUpdate;
@@ -56,9 +50,7 @@ export const storeService = {
       const store = await storeRepository.delete(id);
 
       if (!store) {
-         const error = new Error('Comercio no encontrado');
-         error.statusCode = 400;
-         throw error;
+         throw createError(ERROR_CODES.STORE_NOT_FOUND);
       };
 
       return store;

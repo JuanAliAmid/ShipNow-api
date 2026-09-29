@@ -1,10 +1,11 @@
 import { productService } from "../service/product.service.js";
+import { successResponse } from "../utils/apiResponse.js";
 
 export const productController = {
     findAll: async (_req, res, next) => {
         try {
             const products = await productService.findAll();
-            res.json({ status: 'success', payload: products });
+            successResponse(res, { message: 'Lista de productos', payload: products });
         } catch (error) {
             next(error);
         };
@@ -12,8 +13,8 @@ export const productController = {
 
     findById: async (req, res, next) => {
         try {
-            const producto = await productService.findById(req.params.id);
-            res.json({ status: 'success', payload: producto });
+            const product = await productService.findById(req.params.id);
+            successResponse(res, { message: 'Producto encontrado por id', payload: product });
         } catch (error) {
             next(error);
         };
@@ -22,8 +23,8 @@ export const productController = {
     create: async (req, res, next) => {
 
         try {
-            const producto = await productService.create(req.body);
-            res.json({ status: 'success', payload: producto })
+            const product = await productService.create(req.body);
+            successResponse(res, { statusCode: 201, message: 'Producto creado', payload: product });
         } catch (error) {
             next(error);
         };
@@ -32,7 +33,7 @@ export const productController = {
     update: async (req, res, next) => {
         try {
             const newProduct = await productService.update(req.params.id, req.body)
-            res.json({ status: 'success', payload: newProduct })
+            successResponse(res, { message: 'Producto actualizado', payload: newProduct });
         } catch (error) {
             next(error);
         };
@@ -41,7 +42,7 @@ export const productController = {
     delete: async (req, res, next) => {
         try {
             const deleteProduct = await productService.delete(req.params.id);
-            res.json({ status: 'success', payload: deleteProduct });
+            successResponse(res, { message: 'Producto elminado', payload: deleteProduct });
         } catch (error) {
             next(error);
         };

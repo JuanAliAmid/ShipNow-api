@@ -9,39 +9,35 @@ import ordersMock from '../mocks/orders.mock.js';
 import deliveriesMock from '../mocks/deliveries.mock.js';
 import mongoose from 'mongoose';
 import storesMock from '../mocks/store.mock.js';
+import { createError } from '../utils/apiResponse.js';
+import ERROR_CODES from '../errors/error.codes.js';
 
 const users = async (quantity) => {
 
    const user = usersMock.generateMockUserQuantity(quantity);
    if (!user) {
-      const error = new Error('Usuario no encontrado');
-      error.statusCode = 404;
-      throw error
+      throw createError(ERROR_CODES.USER_NOT_FOUND);
    }
    return user;
 };
 
 const orders = async (quantity) => {
 
-   const userIds = Array.from({ length: quantity }, () => { return new mongoose.Types.ObjectId() })
-   const storeIds = Array.from({ length: quantity }, () => { return new mongoose.Types.ObjectId() })
-   const productIds = Array.from({ length: quantity }, () => { return new mongoose.Types.ObjectId() })
-   const order = ordersMock.generateMockOrders(userIds, storeIds, productIds, quantity)
-   if (!order) {
-      const error = new Error('Orden no encontrada');
-      error.statusCode = 404;
-      throw error
-   }
-   return order;
+   const userIds = Array.from({ length: quantity }, () => { return new mongoose.Types.ObjectId() });
+   const storeIds = Array.from({ length: quantity }, () => { return new mongoose.Types.ObjectId() });
+   const products = await productRepository.findAll();
+
+   if (products.length === 0) {
+      throw createError(ERROR_CODES.NO_SAVED_PRODUCTS);
+   };
+   return ordersMock.generateMockOrders(userIds, storeIds, products, quantity);
 };
 
 const drivers = async (quantity) => {
    const drivers = usersMock.generateMockDrivers(quantity)
 
    if (!drivers) {
-      const error = new Error('Drivers no encontrados');
-      error.statusCode = 404;
-      throw error
+      throw createError(ERROR_CODES.DRIVERS_NOT_FOUND);
    }
    return drivers;
 
@@ -53,9 +49,7 @@ const deliveries = async (quantity) => {
       return deliveriesMock.generateMockDelivery(orderId[index % orderId.length], driverId[index % driverId.length], index)
    });
    if (!delivery) {
-      const error = new Error('Delivery no encontrado');
-      error.statusCode = 404;
-      throw error
+      throw createError(ERROR_CODES.DELIVERY_NOT_FOUND)
    }
    return delivery;
 };
@@ -76,19 +70,13 @@ const saveMocks = async (type, qty) => {
          const idsStore = await storeRepository.getStores();
          const idsProduct = await productRepository.findAll();
          if (ids.length === 0) {
-            const error = new Error('Usuarios no encontrados');
-            error.statusCode = 404;
-            throw error
+            throw createError(ERROR_CODES.USER_NOT_FOUND);
          }
          if (idsStore.length === 0) {
-            const error = new Error('Tiendas no encontradas');
-            error.statusCode = 404;
-            throw error
+            throw createError(ERROR_CODES.STORE_NOT_FOUND);
          }
          if (idsProduct.length === 0) {
-            const error = new Error('Productos no encontrados');
-            error.statusCode = 404;
-            throw error
+            throw createError(ERROR_CODES.PRODUCT_NOT_FOUND);
          }
 
          const orders = ordersMock.generateMockOrders(ids.map((a) => a._id), idsStore.map((a) => a._id), idsProduct.map((a) => a._id), qty).map((a) => orderRepository.create(a))
@@ -104,14 +92,10 @@ const saveMocks = async (type, qty) => {
          const orderId = (await orderRepository.findAll()).map((a) => a._id);
          const driverId = (await userRepository.getUsers()).filter((a) => a.role === USER_ROLES.DRIVER).map((a) => a._id);
          if (orderId.length === 0) {
-            const error = new Error('Orden no encontrada');
-            error.statusCode = 404;
-            throw error
+            throw createError(ERROR_CODES.ORDER_NOT_FOUND);
          }
          if (driverId.length === 0) {
-            const error = new Error('Driver no encontrado');
-            error.statusCode = 404;
-            throw error
+            throw createError(ERROR_CODES.DRIVERS_NOT_FOUND);
          }
 
          const delivery = Array.from({ length: qty }, (_, index) => {
@@ -124,9 +108,8 @@ const saveMocks = async (type, qty) => {
 
          const userId = (await userRepository.getUsers()).filter((a) => a.role === USER_ROLES.STORE);
          if (userId.length === 0) {
-            const error = new Error('Usuario no encontrado');
-            error.statusCode = 404;
-            throw error
+            throw createError(ERROR_CODES.USER_NOT_FOUND);
+
          }
          const stores = storesMock.generateMockStores(userId.map((a) => a._id), qty).map((a) => storeRepository.create(a));
          return await Promise.all(stores);
@@ -137,9 +120,7 @@ const saveMocks = async (type, qty) => {
          return await Promise.all(store);
 
       default:
-         const error = new Error('Tipo no encontrado');
-         error.statusCode = 400;
-         throw error
+         throw createError(ERROR_CODES.TYPE_NOT_FOUND);
    };
 };
 
