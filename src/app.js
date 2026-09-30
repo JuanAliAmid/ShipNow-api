@@ -26,7 +26,7 @@ app.use("/api/products", productsRouter);
 app.use("/api/mocks", mocksRouter);
 
 app.use((_req, _res, next) => {
-  next(createError(ERROR_CODES.STORE_NOT_FOUND));
+  next(createError(ERROR_CODES.ROUTE_NOT_FOUND));
 });
 
 app.use(errorHandler.error);

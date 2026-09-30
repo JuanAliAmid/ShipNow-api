@@ -493,24 +493,10 @@ Las respuestas exitosas siguen una estructura simple:
 ```json
 {
   "status": "success",
+  "message": "",
   "payload": {}
 }
 ```
-
-Las respuestas de error se manejan de forma centralizada mediante un middleware (`errorHandler`) registrado al final de `app.js`. Los controllers no responden el error directamente: lo delegan con `next(error)`.
-
-```json
-{
-  "status": "error",
-  "message": "Usuario no encontrado"
-}
-```
-
-El middleware determina el `statusCode` según el tipo de error: usa `error.statusCode` si el error lo trae seteado (como los que lanzan los services), devuelve `400` si es un `CastError` de Mongoose (ej. un `id` con formato inválido), `409` si es un error de clave duplicada (`code: 11000`, ej. email repetido), y `500` como fallback para cualquier otro caso no contemplado.
-
-## Estado actual del proyecto
-
-Esta versión de ShipNow ya cuenta con las 4 entidades principales y un sistema de mocking funcional para poblar la base con datos de prueba, aunque todavía no representa una API completamente profesional.
 
 ## Manejo de errores
 
@@ -520,7 +506,7 @@ Todos los errores de la API se manejan de forma centralizada:
 - **Controllers**: no arman respuestas de error, solo hacen `next(error)`.
 - **Middleware global** (`middlewares/errorHandler.js`): es el único lugar que responde errores al cliente.
 
-Los errores del dominio son instancias de `AppError` (`errors/app.error.js`), y sus códigos, status y mensajes están en `errors/error.codes.js` y `errors/error.dictionary.js`.
+Los errores del dominio son instancias de `AppError` (`errors/appError.js`), y sus códigos, status y mensajes están en `errors/error.codes.js` y `errors/error.dictionary.js`.
 
 ### Estructura de la respuesta de error
 
@@ -555,6 +541,9 @@ Los errores inesperados responden `INTERNAL_SERVER_ERROR` con un mensaje genéri
 | JSON mal formado | `POST /api/orders` con body `{ "customer": }` | `INVALID_DATA` |
 
 Caso válido de referencia: `POST /api/mocks/seed?type=users&qty=3` responde `201` con `insertados: 3`.
+## Estado actual del proyecto
+
+Esta versión de ShipNow ya cuenta con las 4 entidades principales y un sistema de mocking funcional para poblar la base con datos de prueba, aunque todavía no representa una API completamente profesional.
 
 Actualmente el proyecto tiene:
 

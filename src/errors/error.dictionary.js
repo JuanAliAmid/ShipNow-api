@@ -27,7 +27,7 @@ const errorsDictionary = {
     },
     [ERROR_CODES.INVALID_QUANTITY]: {
         statusCode: 400,
-        message: 'El formato de la cantidad es incorrecta'
+        message: 'El formato de la cantidad es incorrecto'
     },
     [ERROR_CODES.INVALID_DELIVERY_STATUS]: {
         statusCode: 400,
@@ -40,10 +40,6 @@ const errorsDictionary = {
     [ERROR_CODES.DUPLICATE_EMAIL_ADDRESS]: {
         statusCode: 409,
         message: 'El email ingresado ya se encuentra registrado'
-    },
-    [ERROR_CODES.INVALID_MOCK_AMOUNT]: {
-        statusCode: 400,
-        message: 'La cantidad de registros a generar debe ser un número positivo'
     },
     [ERROR_CODES.ROUTE_NOT_FOUND]: {
         statusCode: 404,
