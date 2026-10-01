@@ -3,12 +3,13 @@ import errorsDictionary from '../errors/error.dictionary.js';
 
 
 const error = ((err, _req, res, _next) => {
-
+  
    let statusCode = err.statusCode || 500;
    let errCode = err.code || ERROR_CODES.INTERNAL_SERVER_ERROR;
    let message = err.message;
    const itHasThatClue = err.code in errorsDictionary;
    const isCastError = err.name === 'CastError';
+   const isValidationError = err.name === 'ValidationError';
    const isDuplicateKey = err.code === 11000;
    const isBadJson = err.type === 'entity.parse.failed';
 
@@ -16,13 +17,19 @@ const error = ((err, _req, res, _next) => {
       statusCode = errorsDictionary[ERROR_CODES.INVALID_DATA].statusCode;
       errCode = ERROR_CODES.INVALID_DATA;
       message = errorsDictionary[ERROR_CODES.INVALID_DATA].message;
-      
+
    } else if (isDuplicateKey) {
       statusCode = errorsDictionary[ERROR_CODES.DUPLICATE_EMAIL_ADDRESS].statusCode;
       errCode = ERROR_CODES.DUPLICATE_EMAIL_ADDRESS;
       message = errorsDictionary[ERROR_CODES.DUPLICATE_EMAIL_ADDRESS].message;
 
    } else if (isBadJson) {
+      statusCode = errorsDictionary[ERROR_CODES.INVALID_DATA].statusCode;
+      errCode = ERROR_CODES.INVALID_DATA;
+      message = errorsDictionary[ERROR_CODES.INVALID_DATA].message;
+
+   } else if (isValidationError) {
+      console.error(err);
       statusCode = errorsDictionary[ERROR_CODES.INVALID_DATA].statusCode;
       errCode = ERROR_CODES.INVALID_DATA;
       message = errorsDictionary[ERROR_CODES.INVALID_DATA].message;

@@ -40,16 +40,25 @@ export const orderService = {
 
       const ordersItems = [];
 
+      if (items.length <= 0 || !Array.isArray(items)) {
+         throw createError(ERROR_CODES.INVALID_DATA);
+      }
+
       for (const item of items) {
+
+         if (item.quantity <= 0 || Number.isInteger(item.quantity) === false) {
+            throw createError(ERROR_CODES.INVALID_QUANTITY);
+         };
+
          const product = await productRepository.findById(item.product);
 
-         if(!product) {
+         if (!product) {
             throw createError(ERROR_CODES.PRODUCT_NOT_FOUND);
          };
-         if(product.quantity < item.quantity) {
+         if (product.quantity < item.quantity) {
             throw createError(ERROR_CODES.PRODUCT_NOT_AVAILABLE);
          };
-         ordersItems.push({name: product.name, price: product.price, quantity: item.quantity, product: item.product})
+         ordersItems.push({ name: product.name, price: product.price, quantity: item.quantity, product: item.product })
       }
 
       for (const item of items) {
@@ -66,10 +75,15 @@ export const orderService = {
          priority: priority ? priority : 'normal',
       };
 
+
       return orderRepository.create(newOrder);
    },
 
    updateOrderStatus: async (id, status) => {
+
+      if (!Object.values(ORDER_STATUS).includes(status)) {
+         throw createError(ERROR_CODES.INVALID_ORDER_STATUS);
+      };
       const order = await orderRepository.updateStatus(id, status);
       if (!order) {
          throw createError(ERROR_CODES.ORDER_NOT_FOUND);

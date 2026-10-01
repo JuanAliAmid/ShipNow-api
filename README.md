@@ -1,5 +1,8 @@
 ## Funcionamiento base de la API
-
+6ab430314443efb186ab6a65
+6ab5b04d56b3c9a6590af9b3
+6abab330698f838d55f8cac8
+6ab4331ecc0e40d9547ef359
 ShipNow API es una aplicación backend construida con Node.js, Express y MongoDB.
 
 En su estado actual, la API permite trabajar con cuatro entidades principales:
@@ -193,7 +196,7 @@ Respuesta esperada:
 ```json
 {
   "status": "success",
-  "message": "API funcionando correctamente"
+  "message": "API funcionando"
 }
 ```
 
@@ -534,13 +537,19 @@ Los errores inesperados responden `INTERNAL_SERVER_ERROR` con un mensaje genéri
 | Cantidad sobre el máximo (50) | `POST /api/mocks/seed?type=users&qty=51` | `INVALID_QUANTITY` |
 | Sin cantidad | `POST /api/mocks/seed?type=users` | `INVALID_QUANTITY` |
 | Tipo de mock inexistente | `POST /api/mocks/seed?type=xyz&qty=3` | `TYPE_NOT_FOUND` |
-| Falla al guardar en MongoDB | fallo de conexión o de inserción durante `POST /api/mocks/seed` | `SAVE_MOCKS_FAILED` |
+| Falla al guardar en MongoDB | `POST /api/mocks/seed?type=users&qty=3` con Mongo caído mientras la API ya está corriendo | `SAVE_MOCKS_FAILED` (500) |
 | Orden con stock insuficiente | `POST /api/orders` con `quantity` mayor al stock | `PRODUCT_NOT_AVAILABLE` |
 | Producto inexistente en una orden | `POST /api/orders` con un ObjectId válido que no existe | `PRODUCT_NOT_FOUND` |
+| Cantidad inválida en un item | `POST /api/orders` con `quantity` de `-5`, `0`, `2.5` o `"abc"` | `INVALID_QUANTITY` |
+| Items vacío o que no es array | `POST /api/orders` con `"items": []` | `INVALID_DATA` |
+| Estado de pedido inválido | `PUT /api/orders/:oid/status` con `{"status": "hola"}` | `INVALID_ORDER_STATUS` |
 | Id con formato inválido | `GET /api/products/abc` | `INVALID_DATA` |
 | JSON mal formado | `POST /api/orders` con body `{ "customer": }` | `INVALID_DATA` |
 
 Caso válido de referencia: `POST /api/mocks/seed?type=users&qty=3` responde `201` con `insertados: 3`.
+
+Si Mongo no está disponible al iniciar el servidor, la API no levanta y se cierra con un mensaje en consola.
+
 ## Estado actual del proyecto
 
 Esta versión de ShipNow ya cuenta con las 4 entidades principales y un sistema de mocking funcional para poblar la base con datos de prueba, aunque todavía no representa una API completamente profesional.

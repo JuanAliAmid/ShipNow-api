@@ -28,9 +28,7 @@ const users = async (quantity) => {
    quantity = qtyConditional(quantity);
 
    const user = usersMock.generateMockUserQuantity(quantity);
-   if (!user) {
-      throw createError(ERROR_CODES.USER_NOT_FOUND);
-   }
+
    return user;
 };
 
@@ -52,11 +50,7 @@ const drivers = async (quantity) => {
 
    const drivers = usersMock.generateMockDrivers(quantity)
 
-   if (!drivers) {
-      throw createError(ERROR_CODES.DRIVERS_NOT_FOUND);
-   }
    return drivers;
-
 };
 const deliveries = async (quantity) => {
    quantity = qtyConditional(quantity);
@@ -66,9 +60,7 @@ const deliveries = async (quantity) => {
    const delivery = Array.from({ length: quantity }, (_, index) => {
       return deliveriesMock.generateMockDelivery(orderId[index % orderId.length], driverId[index % driverId.length], index)
    });
-   if (!delivery) {
-      throw createError(ERROR_CODES.DELIVERY_NOT_FOUND)
-   }
+
    return delivery;
 };
 
