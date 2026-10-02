@@ -4,12 +4,7 @@ import ERROR_CODES from "../errors/error.codes.js";
 
 export const storeService = {
    getStores: async () => {
-
       const stores = await storeRepository.getStores();
-      if (!stores) {
-         throw createError(ERROR_CODES.STORE_NOT_FOUND);
-      };
-
       return stores;
    },
 

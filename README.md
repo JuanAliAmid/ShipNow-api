@@ -537,7 +537,7 @@ Los errores inesperados responden `INTERNAL_SERVER_ERROR` con un mensaje genéri
 | Cantidad sobre el máximo (50) | `POST /api/mocks/seed?type=users&qty=51` | `INVALID_QUANTITY` |
 | Sin cantidad | `POST /api/mocks/seed?type=users` | `INVALID_QUANTITY` |
 | Tipo de mock inexistente | `POST /api/mocks/seed?type=xyz&qty=3` | `TYPE_NOT_FOUND` |
-| Falla al guardar en MongoDB | `POST /api/mocks/seed?type=drivers&qty=3` quitando password de `generateMockDrivers` | `SAVE_MOCKS_FAILED` (500) |
+| Falla al guardar en MongoDB | `POST /api/mocks/seed?type=drivers&qty=3` poner una `MONGODB_URI` inválida o apagar `Mongo` y hacer el `POST` | `SAVE_MOCKS_FAILED` (500) |
 | Orden con stock insuficiente | `POST /api/orders` con `quantity` mayor al stock | `PRODUCT_NOT_AVAILABLE` |
 | Producto inexistente en una orden | `POST /api/orders` con un ObjectId válido que no existe | `PRODUCT_NOT_FOUND` |
 | Cantidad inválida en un item | `POST /api/orders` con `quantity` de `-5`, `0`, `2.5` o `"abc"` | `INVALID_QUANTITY` |

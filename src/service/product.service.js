@@ -6,9 +6,6 @@ import ERROR_CODES from "../errors/error.codes.js";
 export const productService = {
    findAll: async () => {
       const products = await productRepository.findAll({ status: PRODUCT_STATUS.AVAILABLE });
-      if (!products) {
-         throw createError(ERROR_CODES.PRODUCT_NOT_FOUND);
-      }
       return products;
    },
 
@@ -24,11 +21,14 @@ export const productService = {
       const { name, price, quantity } = productData;
       if (!name || !price || !quantity) {
          throw createError(ERROR_CODES.REQUIRED_FIELDS);
-      }
+      };
+      if (price <= 0 || quantity < 0) {
+         throw createError(ERROR_CODES.INVALID_DATA);
+      };
       const producto = await productRepository.create(productData);
       if (!producto) {
          throw createError(ERROR_CODES.PRODUCT_NOT_FOUND);
-      }
+      };
       return producto;
    },
 
