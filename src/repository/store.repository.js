@@ -23,5 +23,8 @@ export const storeRepository = {
    },
    delete: async (id) => {
       return StoreModel.findByIdAndDelete(id);
+   },
+   createMany: async (storeData) => {
+      return StoreModel.insertMany(storeData);
    }
 };

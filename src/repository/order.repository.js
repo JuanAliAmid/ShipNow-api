@@ -23,5 +23,9 @@ export const orderRepository = {
 
    delete: async (id) => {
       return OrderModel.findByIdAndDelete(id)
+   },
+
+   createMany: async (orderData) => {
+      return OrderModel.insertMany(orderData);
    }
 };

@@ -26,5 +26,13 @@ export const userRepository = {
 
    delete: async (id) => {
       return UserModel.findByIdAndDelete(id).select('-password');
+   },
+
+   createMany: async (userData) => {
+      const users = await UserModel.insertMany(userData);
+      return users.map((a) => {
+         const { password, ...resto } = a.toObject();
+         return resto;
+      });
    }
 }

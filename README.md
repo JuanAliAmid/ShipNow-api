@@ -1,8 +1,5 @@
 ## Funcionamiento base de la API
-6ab430314443efb186ab6a65
-6ab5b04d56b3c9a6590af9b3
-6abab330698f838d55f8cac8
-6ab4331ecc0e40d9547ef359
+
 ShipNow API es una aplicación backend construida con Node.js, Express y MongoDB.
 
 En su estado actual, la API permite trabajar con cuatro entidades principales:
@@ -84,6 +81,7 @@ Roles disponibles:
 admin
 customer
 store
+driver
 ```
 
 En esta versión base, el usuario se usa principalmente como cliente del pedido.
@@ -462,6 +460,7 @@ DELETE /api/orders/:oid
 6. `POST /api/mocks/seed?type=deliveries&qty=N` — asocia `order` y `driver` reales.
 
 Módulo bajo `/api/mocks`, respeta la arquitectura por capas del resto del proyecto.
+El seed inserta con `insertMany` en una sola operación. Si falla, responde `SAVE_MOCKS_FAILED`
 
 Ejemplo:
 
@@ -534,10 +533,11 @@ Los errores inesperados responden `INTERNAL_SERVER_ERROR` con un mensaje genéri
 | Cantidad de mocks no numérica | `POST /api/mocks/seed?type=users&qty=abc` | `INVALID_QUANTITY` |
 | Cantidad cero o negativa | `POST /api/mocks/seed?type=users&qty=-5` | `INVALID_QUANTITY` |
 | Cantidad decimal | `POST /api/mocks/seed?type=users&qty=2.5` | `INVALID_QUANTITY` |
+| Cantidad en notación científica | `POST /api/mocks/seed?type=users&qty=1e1` | `INVALID_QUANTITY` |
 | Cantidad sobre el máximo (50) | `POST /api/mocks/seed?type=users&qty=51` | `INVALID_QUANTITY` |
 | Sin cantidad | `POST /api/mocks/seed?type=users` | `INVALID_QUANTITY` |
 | Tipo de mock inexistente | `POST /api/mocks/seed?type=xyz&qty=3` | `TYPE_NOT_FOUND` |
-| Falla al guardar en MongoDB | `POST /api/mocks/seed?type=users&qty=3` con Mongo caído mientras la API ya está corriendo | `SAVE_MOCKS_FAILED` (500) |
+| Falla al guardar en MongoDB | `POST /api/mocks/seed?type=drivers&qty=3` quitando password de `generateMockDrivers` | `SAVE_MOCKS_FAILED` (500) |
 | Orden con stock insuficiente | `POST /api/orders` con `quantity` mayor al stock | `PRODUCT_NOT_AVAILABLE` |
 | Producto inexistente en una orden | `POST /api/orders` con un ObjectId válido que no existe | `PRODUCT_NOT_FOUND` |
 | Cantidad inválida en un item | `POST /api/orders` con `quantity` de `-5`, `0`, `2.5` o `"abc"` | `INVALID_QUANTITY` |

@@ -22,5 +22,8 @@ export const deliveryRepository = {
     },
     delete: async (id) => {
         return deliveryModel.findByIdAndDelete(id)
+    },
+    createMany: async (deliveryData) => {
+        return deliveryModel.insertMany(deliveryData);
     }
 };

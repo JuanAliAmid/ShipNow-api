@@ -4,16 +4,22 @@ import { deliveryRepository } from '../repository/delivery.repository.js';
 import { storeRepository } from '../repository/store.repository.js';
 import { USER_ROLES } from '../constants/constants.js';
 import { productRepository } from '../repository/product.repository.js';
+import { createError } from '../utils/apiResponse.js';
 import usersMock from '../mocks/users.mock.js';
 import ordersMock from '../mocks/orders.mock.js';
 import deliveriesMock from '../mocks/deliveries.mock.js';
 import mongoose from 'mongoose';
 import storesMock from '../mocks/store.mock.js';
-import { createError } from '../utils/apiResponse.js';
 import ERROR_CODES from '../errors/error.codes.js';
 
+
 const qtyConditional = (quantity) => {
+   if(!/^\d+$/.test(quantity)) {
+      throw createError(ERROR_CODES.INVALID_QUANTITY)
+   };
+   
    quantity = Number(quantity);
+
    if (!Number.isInteger(quantity)) {
       throw createError(ERROR_CODES.INVALID_QUANTITY);
    } else if (quantity <= 0) {
@@ -21,6 +27,7 @@ const qtyConditional = (quantity) => {
    } else if (quantity > 50) {
       throw createError(ERROR_CODES.INVALID_QUANTITY);
    }
+
    return quantity;
 }
 
@@ -42,6 +49,7 @@ const orders = async (quantity) => {
    if (products.length === 0) {
       throw createError(ERROR_CODES.NO_SAVED_PRODUCTS);
    };
+
    return ordersMock.generateMockOrders(userIds, storeIds, products, quantity);
 };
 
@@ -52,6 +60,7 @@ const drivers = async (quantity) => {
 
    return drivers;
 };
+
 const deliveries = async (quantity) => {
    quantity = qtyConditional(quantity);
 
@@ -72,8 +81,8 @@ const saveMocks = async (type, qty) => {
       switch (type) {
          case 'users':
 
-            const users = usersMock.generateMockUserQuantity(qty).map((a) => userRepository.create(a))
-            return await Promise.all(users);
+            const users = usersMock.generateMockUserQuantity(qty)
+            return await userRepository.createMany(users);
 
          case 'orders':
 
@@ -91,13 +100,13 @@ const saveMocks = async (type, qty) => {
                throw createError(ERROR_CODES.PRODUCT_NOT_FOUND);
             }
 
-            const orders = ordersMock.generateMockOrders(ids.map((a) => a._id), idsStore.map((a) => a._id), idsProduct.map((a) => a._id), qty).map((a) => orderRepository.create(a))
-            return await Promise.all(orders);
+            const orders = ordersMock.generateMockOrders(ids.map((a) => a._id), idsStore.map((a) => a._id), idsProduct, qty);
+            return await orderRepository.createMany(orders);
 
          case 'drivers':
 
-            const drivers = usersMock.generateMockDrivers(qty).map((a) => userRepository.create(a));
-            return await Promise.all(drivers);
+            const drivers = usersMock.generateMockDrivers(qty);
+            return await userRepository.createMany(drivers);
 
          case 'deliveries':
 
@@ -115,8 +124,7 @@ const saveMocks = async (type, qty) => {
                return deliveriesMock.generateMockDelivery(orderId[index % orderId.length], driverId[index % driverId.length], index)
             })
 
-            const saveDelivery = delivery.map((a) => deliveryRepository.create(a));
-            return await Promise.all(saveDelivery);
+            return await deliveryRepository.createMany(delivery);
 
          case 'stores':
 
@@ -127,13 +135,13 @@ const saveMocks = async (type, qty) => {
 
             }
             
-            const stores = storesMock.generateMockStores(userId.map((a) => a._id), qty).map((a) => storeRepository.create(a));
-            return await Promise.all(stores);
+            const stores = storesMock.generateMockStores(userId.map((a) => a._id), qty);
+            return await storeRepository.createMany(stores);
 
          case 'storeOwner':
 
-            const store = usersMock.generateMockUserWithStoreRole(qty).map((a) => userRepository.create(a));
-            return await Promise.all(store);
+            const store = usersMock.generateMockUserWithStoreRole(qty);
+            return await userRepository.createMany(store);
 
          default:
             throw createError(ERROR_CODES.TYPE_NOT_FOUND);
