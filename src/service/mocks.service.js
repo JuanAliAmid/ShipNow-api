@@ -12,12 +12,19 @@ import mongoose from 'mongoose';
 import storesMock from '../mocks/store.mock.js';
 import ERROR_CODES from '../errors/error.codes.js';
 
+const removePassword = (array) => {
+   const arrayMap = array.map((a) => {
+      const { password, ...resto } = a;
+      return resto;
+   });
+   return arrayMap;
+}
 
 const qtyConditional = (quantity) => {
-   if(!/^\d+$/.test(quantity)) {
+   if (!/^\d+$/.test(quantity)) {
       throw createError(ERROR_CODES.INVALID_QUANTITY)
    };
-   
+
    quantity = Number(quantity);
 
    if (!Number.isInteger(quantity)) {
@@ -34,9 +41,9 @@ const qtyConditional = (quantity) => {
 const users = async (quantity) => {
    quantity = qtyConditional(quantity);
 
-   const user = usersMock.generateMockUserQuantity(quantity);
+   const mockUsers = usersMock.generateMockUserQuantity(quantity);
 
-   return user;
+   return removePassword(mockUsers);
 };
 
 const orders = async (quantity) => {
@@ -56,9 +63,9 @@ const orders = async (quantity) => {
 const drivers = async (quantity) => {
    quantity = qtyConditional(quantity);
 
-   const drivers = usersMock.generateMockDrivers(quantity)
+   const mockDrivers = usersMock.generateMockDrivers(quantity);
 
-   return drivers;
+   return removePassword(mockDrivers);
 };
 
 const deliveries = async (quantity) => {
@@ -134,7 +141,7 @@ const saveMocks = async (type, qty) => {
                throw createError(ERROR_CODES.USER_NOT_FOUND);
 
             }
-            
+
             const stores = storesMock.generateMockStores(userId.map((a) => a._id), qty);
             return await storeRepository.createMany(stores);
 

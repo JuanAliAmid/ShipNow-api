@@ -460,7 +460,7 @@ DELETE /api/orders/:oid
 6. `POST /api/mocks/seed?type=deliveries&qty=N` — asocia `order` y `driver` reales.
 
 Módulo bajo `/api/mocks`, respeta la arquitectura por capas del resto del proyecto.
-El seed inserta con `insertMany` en una sola operación. Si falla, responde `SAVE_MOCKS_FAILED`
+El seed inserta con `insertMany` en una sola operación. Si falla, responde `SAVE_MOCKS_FAILED`.
 
 Ejemplo:
 

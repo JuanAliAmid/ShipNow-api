@@ -33,8 +33,4 @@ export const productRepository = {
     delete: async (id) => {
         return productModel.findByIdAndDelete(id)
     },
-
-    createMany: async (productData) => {
-        return productModel.insertMany(productData);
-    }
 };
