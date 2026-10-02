@@ -19,16 +19,20 @@ export const productService = {
 
    create: async (productData) => {
       const { name, price, quantity } = productData;
-      if (!name || !price || !quantity) {
+
+      if (!name || price === undefined || quantity === undefined) {
          throw createError(ERROR_CODES.REQUIRED_FIELDS);
       };
+
       if (price <= 0 || quantity < 0) {
          throw createError(ERROR_CODES.INVALID_DATA);
       };
+
       const producto = await productRepository.create(productData);
       if (!producto) {
          throw createError(ERROR_CODES.PRODUCT_NOT_FOUND);
       };
+      
       return producto;
    },
 
