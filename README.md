@@ -532,7 +532,7 @@ Los errores del dominio son instancias de `AppError` (`errors/appError.js`), y s
 - `error`: código del error (clave del diccionario).
 - `message`: mensaje legible para el cliente.
 
-Los errores inesperados responden `INTERNAL_SERVER_ERROR` con un mensaje genérico; el detalle real solo se registra en la consola del servidor.
+Los errores inesperados responden `INTERNAL_SERVER_ERROR` con un mensaje genérico; el detalle real solo se registra en la consola del servidor y en la carpeta /logs.
 
 ### Cómo probar los casos inválidos
 

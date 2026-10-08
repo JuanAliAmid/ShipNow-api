@@ -9,7 +9,6 @@ import { createError } from "./utils/apiResponse.js";
 import ERROR_CODES from "./errors/error.codes.js";
 import loggerRouter from './routes/logger.router.js';
 
-
 const app = express();
 
 app.use(express.json());
