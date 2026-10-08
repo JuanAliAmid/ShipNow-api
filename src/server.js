@@ -13,10 +13,9 @@ const startServer = async () => {
       logger.info(`Servidor escuchando en el puerto ${PORT}`);
     });
   } catch (error) {
-    logger.error(`Error al iniciar el servidor: ${error.message}`);
+    logger.fatal(`Error al iniciar el servidor: ${error.message}`);
     errorRotateTransport.on("finish", () => process.exit(1));
     logger.end();;
-
   };
 };
 

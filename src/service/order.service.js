@@ -6,6 +6,7 @@ import { productService } from './product.service.js';
 import { productRepository } from '../repository/product.repository.js';
 import { createError } from '../utils/apiResponse.js';
 import ERROR_CODES from '../errors/error.codes.js';
+import logger from '../config/logger.js';
 
 export const orderService = {
    getOrders: async () => {
@@ -75,8 +76,11 @@ export const orderService = {
          priority: priority ? priority : 'normal',
       };
 
+      const newOrderCreate = await orderRepository.create(newOrder);
 
-      return orderRepository.create(newOrder);
+      logger.info(`Orden ${newOrderCreate._id} creada correctamente`);
+
+      return newOrderCreate;
    },
 
    updateOrderStatus: async (id, status) => {
@@ -86,6 +90,7 @@ export const orderService = {
       };
       const order = await orderRepository.updateStatus(id, status);
       if (!order) {
+         logger.warning(`Orden con id: ${id} no encontrada`);
          throw createError(ERROR_CODES.ORDER_NOT_FOUND);
       };
 

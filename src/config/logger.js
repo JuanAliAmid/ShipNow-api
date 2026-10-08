@@ -1,14 +1,15 @@
 import winston from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
+import { env } from "../config/index.js";
 
-const levelCustom = { levels: { fatal: 0, error: 1, warn: 2, info: 3, http: 4, debug: 5 } };
+const levelCustom = { levels: { fatal: 0, error: 1, warning: 2, info: 3, http: 4, debug: 5 } };
 
 const logger = winston.createLogger({
     levels: levelCustom.levels,
-    level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
+    leveel: env.isProd === 'production' ? 'info' : 'debug',
 
     format: winston.format.combine(
-        winston.format.timestamp(),
+        winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
         winston.format.printf(({ timestamp, level, message }) => {
             return `${timestamp} [${level}] ${message}`
         })

@@ -1,0 +1,2 @@
+En esta carpeta se guardan los archivos diarios con los `errores` y `fatales` de cada día.
+Los archivos se guardan bajo el nombre de `error-YYYY-MM-DD.log`, no aparecen en `GitHub` porque estan ginorados desde el gitignore como el archivo `json` que `winston-daily-rotate-file` genera para llevar la cuenta de qué logs borrar al rotar.

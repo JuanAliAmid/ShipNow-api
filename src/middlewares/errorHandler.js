@@ -1,8 +1,9 @@
 import ERROR_CODES from '../errors/error.codes.js'
 import errorsDictionary from '../errors/error.dictionary.js';
+import logger from '../config/logger.js';
 
 
-const error = ((err, _req, res, _next) => {
+const error = ((err, req, res, _next) => {
   
    let statusCode = err.statusCode || 500;
    let errCode = err.code || ERROR_CODES.INTERNAL_SERVER_ERROR;
@@ -29,23 +30,27 @@ const error = ((err, _req, res, _next) => {
       message = errorsDictionary[ERROR_CODES.INVALID_DATA].message;
 
    } else if (isValidationError) {
-      console.error(err);
       statusCode = errorsDictionary[ERROR_CODES.INVALID_DATA].statusCode;
       errCode = ERROR_CODES.INVALID_DATA;
       message = errorsDictionary[ERROR_CODES.INVALID_DATA].message;
 
    } else if (!itHasThatClue) {
-      console.error(err);
       statusCode = 500;
       errCode = ERROR_CODES.INTERNAL_SERVER_ERROR;
       message = errorsDictionary[ERROR_CODES.INTERNAL_SERVER_ERROR].message;
 
-   }
+   };
 
    const response = {
       status: 'error',
       error: errCode,
       message: message || errorsDictionary[ERROR_CODES.VALIDATION_ERROR].message
+   };
+
+   if (statusCode >= 400 && statusCode < 500) {
+      logger.warning(`${err.message}, ${req.method}, ${req.originalUrl}`);
+   } else {
+      logger.error(`${err.message}, ${req.method}, ${req.originalUrl}, ${err.stack}`);
    };
 
    res.status(statusCode).json(response);

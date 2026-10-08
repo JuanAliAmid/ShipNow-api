@@ -9,7 +9,7 @@ router.get('/loggerTest', (req, res) => {
     logger.info('prueba info');
     logger.error('prueba error');
     logger.fatal('prueba fatal');
-    logger.warn('prueba warn');
+    logger.warning('prueba warning');
 
     res.json({status: 'sucess', message: 'logs generados correctamente'});
 })

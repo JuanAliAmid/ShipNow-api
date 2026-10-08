@@ -11,6 +11,7 @@ import deliveriesMock from '../mocks/deliveries.mock.js';
 import mongoose from 'mongoose';
 import storesMock from '../mocks/store.mock.js';
 import ERROR_CODES from '../errors/error.codes.js';
+import logger from '../config/logger.js';
 
 const removePassword = (array) => {
    const arrayMap = array.map((a) => {
@@ -21,27 +22,22 @@ const removePassword = (array) => {
 }
 
 const qtyConditional = (quantity) => {
-   if (!/^\d+$/.test(quantity)) {
-      throw createError(ERROR_CODES.INVALID_QUANTITY)
+   if (!/^\d+$/.test(quantity) || quantity <= 0 || quantity > 50) {
+      logger.warning(`Cantidad invalida: ${quantity}`);
+      throw createError(ERROR_CODES.INVALID_QUANTITY);
    };
 
    quantity = Number(quantity);
 
-   if (!Number.isInteger(quantity)) {
-      throw createError(ERROR_CODES.INVALID_QUANTITY);
-   } else if (quantity <= 0) {
-      throw createError(ERROR_CODES.INVALID_QUANTITY);
-   } else if (quantity > 50) {
-      throw createError(ERROR_CODES.INVALID_QUANTITY);
-   }
-
    return quantity;
-}
+};
 
 const users = async (quantity) => {
    quantity = qtyConditional(quantity);
 
    const mockUsers = usersMock.generateMockUserQuantity(quantity);
+
+   logger.info(`Se generaron ${quantity} mocks de users`);
 
    return removePassword(mockUsers);
 };
@@ -57,13 +53,20 @@ const orders = async (quantity) => {
       throw createError(ERROR_CODES.NO_SAVED_PRODUCTS);
    };
 
-   return ordersMock.generateMockOrders(userIds, storeIds, products, quantity);
+   const orders = ordersMock.generateMockOrders(userIds, storeIds, products, quantity);
+
+   logger.info(`Se generaron ${quantity} mocks de orders`);
+
+   return orders;
+
 };
 
 const drivers = async (quantity) => {
    quantity = qtyConditional(quantity);
 
    const mockDrivers = usersMock.generateMockDrivers(quantity);
+
+   logger.info(`Se generaron ${quantity} mocks de drivers`);
 
    return removePassword(mockDrivers);
 };
@@ -77,6 +80,8 @@ const deliveries = async (quantity) => {
       return deliveriesMock.generateMockDelivery(orderId[index % orderId.length], driverId[index % driverId.length], index)
    });
 
+   logger.info(`Se generaron ${quantity} mocks de deliveries`);
+
    return delivery;
 };
 
@@ -89,7 +94,12 @@ const saveMocks = async (type, qty) => {
          case 'users':
 
             const users = usersMock.generateMockUserQuantity(qty)
-            return await userRepository.createMany(users);
+
+            const usersSave = await userRepository.createMany(users);
+
+            logger.info(`Users guardados correctamente`);
+
+            return usersSave;
 
          case 'orders':
 
@@ -108,12 +118,22 @@ const saveMocks = async (type, qty) => {
             }
 
             const orders = ordersMock.generateMockOrders(ids.map((a) => a._id), idsStore.map((a) => a._id), idsProduct, qty);
-            return await orderRepository.createMany(orders);
+
+            const ordersSave = await orderRepository.createMany(orders);
+
+            logger.info(`Orders guardados correctamente`);
+
+            return ordersSave;
 
          case 'drivers':
 
             const drivers = usersMock.generateMockDrivers(qty);
-            return await userRepository.createMany(drivers);
+
+            const driversSave = await userRepository.createMany(drivers);
+
+            logger.info(`Drivers guardados correctamente`);
+
+            return driversSave;
 
          case 'deliveries':
 
@@ -131,7 +151,11 @@ const saveMocks = async (type, qty) => {
                return deliveriesMock.generateMockDelivery(orderId[index % orderId.length], driverId[index % driverId.length], index)
             })
 
-            return await deliveryRepository.createMany(delivery);
+            const deliverySave = await deliveryRepository.createMany(delivery);
+
+            logger.info(`Deliverys guardados correctamente`);
+
+            return deliverySave;
 
          case 'stores':
 
@@ -139,23 +163,29 @@ const saveMocks = async (type, qty) => {
 
             if (userId.length === 0) {
                throw createError(ERROR_CODES.USER_NOT_FOUND);
-
             }
 
             const stores = storesMock.generateMockStores(userId.map((a) => a._id), qty);
-            return await storeRepository.createMany(stores);
+
+            const storesSave = await storeRepository.createMany(stores);
+
+            logger.info(`Stores guardados correctamente`);
+
+            return storesSave;
 
          case 'storeOwner':
 
             const store = usersMock.generateMockUserWithStoreRole(qty);
-            return await userRepository.createMany(store);
+            const storeSave = await userRepository.createMany(store);
+            logger.info(`storeOwners guardados correctamente`);
+            return storeSave;
 
          default:
             throw createError(ERROR_CODES.TYPE_NOT_FOUND);
       };
    } catch (error) {
       if (error.statusCode) throw error;
-      console.error(error);
+      logger.error(`${error.message}, ${error.stack}, ${type}, ${qty}`)
       throw createError(ERROR_CODES.SAVE_MOCKS_FAILED)
    }
 

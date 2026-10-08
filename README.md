@@ -445,6 +445,14 @@ DELETE /api/orders/:oid
 
 ---
 
+## lOGGER
+
+### Probar logger
+
+```http
+GET /loggerTest
+```
+
 ## Mocking y carga de datos de prueba
 
 * **GET** (genera sin guardar): `/api/mocks/users`, `/api/mocks/drivers`, `/api/mocks/orders`, `/api/mocks/deliveries` — todos aceptan `?qty=N`.
@@ -550,6 +558,44 @@ Caso válido de referencia: `POST /api/mocks/seed?type=users&qty=3` responde `20
 
 Si Mongo no está disponible al iniciar el servidor, la API no levanta y se cierra con un mensaje en consola.
 
+## Logger
+
+### Herramientas
+
+- Winston
+- winston-daily-rotate-file
+
+### Niveles
+
+- `fatal: 0` → para ocasiones críticas como por ejemplo: `Falla de conexión a mongoDB`.
+- `error: 1` → para errores que no controlamos como por ejemplo: `un error con status 500`.
+- `warning: 2` → para errores controlados como por ejemplo: `Cantidad inválida` o un `Not found`.
+- `info: 3` → para los casos de éxito como por ejemplo: `Servidor escuchando en el puerto...`.
+- `http: 4` → para capturar información sobre las peticiones que entran o salen del servidor, hoy solo se ejecuta desde `/loggerTest`.
+- `debug: 5` → para tener un registro del recorrido de nuestro código, solo está activo en desarrollo.
+
+### Dónde se guardan los logs
+
+Solo se registran los niveles error y fatal en una carpeta llamada logs en la raíz del proyecto, con el nombre de 'error-YYYY-MM-DD.log'. Se crea un archivo por día reúniendo todos los errores y fatales de ese día, cada archivo de registro creado tiene una duración de 14 días, pasado ese lapso de tiempo se borran solos.
+
+### Archivos ignorados en Git
+
+Se ignoran `logs/*.log` (los registros de errores y fatales) y `logs/*.json` (control de rotación) porque cambian todo el tiempo, pueden tener información sensible y cada entorno tiene sus propios archivos.
+
+### Cómo probar el logger
+
+- URL → http://localhost:3000/loggerTest/
+
+Cambiar el entorno con `NODE_ENV` (production = producción y development = desarrollo), reiniciar el servidor y hacer el GET nuevamente.
+En ambos entornos la carpeta logs solo contendrá archivos que registran error y fatal del día.
+
+### Comportamiento según el entorno
+
+`NODE_ENV` decide el nivel mínimo: `debug` en desarrollo, `info` en producción.
+
+- En desarrollo se podrán ver en la terminal los 6 niveles (fatal, error, warning, info, http, debug).
+- En producción se podrán ver en la terminal los 4 niveles (fatal, error, warning, info).
+
 ## Estado actual del proyecto
 
 Esta versión de ShipNow ya cuenta con las 4 entidades principales y un sistema de mocking funcional para poblar la base con datos de prueba, aunque todavía no representa una API completamente profesional.
@@ -567,12 +613,12 @@ services
 repositories
 config/db.js
 middleware global de errores
+config/logger.js (Winston)
 ```
 
 Todavía no incorpora:
 
 ```txt
-logger profesional
 Swagger
 tests automatizados
 Multer
