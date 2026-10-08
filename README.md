@@ -443,16 +443,6 @@ Body de ejemplo:
 DELETE /api/orders/:oid
 ```
 
----
-
-## lOGGER
-
-### Probar logger
-
-```http
-GET /loggerTest
-```
-
 ## Mocking y carga de datos de prueba
 
 * **GET** (genera sin guardar): `/api/mocks/users`, `/api/mocks/drivers`, `/api/mocks/orders`, `/api/mocks/deliveries` — todos aceptan `?qty=N`.

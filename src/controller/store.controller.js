@@ -50,5 +50,4 @@ export const storeController = {
             next(error);
         };
     }
-
-}
+};

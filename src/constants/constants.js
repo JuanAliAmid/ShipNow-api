@@ -30,4 +30,4 @@ export const DELIVERY_STATUS = Object.freeze({
 export const PRODUCT_STATUS = Object.freeze({
     AVAILABLE: 'available',
     OUT_OF_STOCK: 'out of stock'
-})
+});
