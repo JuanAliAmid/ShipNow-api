@@ -1,0 +1,243 @@
+tags:
+  - name: Orders
+    description: Gestión de pedidos
+
+paths:
+  /api/orders:
+    get:
+      tags:
+        - Orders
+      summary: Listar pedidos
+      responses: 
+        "200":
+          description: Lista de pedidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdersResponse'
+        "500":
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        -   Orders
+      summary: Crear pedido
+      requestBody: 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderInput'
+      responses:
+        "201":
+          description: Pedido creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        "400":
+          description: Faltan datos obligatorios
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description:  ID inválido
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description:  Error interno del servidor 
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/orders/{oid}:
+    parameters:
+      - name: oid
+        in: path
+        required: true
+        description: ID del pedido
+        schema:
+          type: string
+        example: 6ab4331ecc0e40d9547ef358
+    get:
+      tags: 
+        - Orders
+      summary: Obtener un pedido por ID
+      responses:
+        "200":
+          description: Pedido obtenido por ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        "404":
+          description:  ID inválido
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description:  Error interno del servidor 
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - Orders
+      summary: Actualizar el estado del pedido
+      requestBody: 
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status: 
+                  type: string
+                  enum:
+                    - created
+                    - picked_up
+                    - assigned
+                    - in_transit
+                    - delivered
+                    - cancelled
+                  example: assigned
+      responses:
+        "200":
+          description: Pedido Actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        "404":
+          description:  ID inválido
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+        "400":
+          description: Estado inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description:  Error interno del servidor 
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags: 
+        - Orders
+      summary: Eliminar un pedido
+      responses:
+        "200":
+          description: Elimina un pedido por ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        "404":
+          description:  ID inválido
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description:  Error interno del servidor 
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    Order: 
+      type: object
+      properties: 
+        _id:
+          type: string
+          example: 6ab4331ecc0e40d9547ef359
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        deliveryAddress:
+          type: string
+          example: Av. Brasil 202
+        total: 
+          type: number
+          example: 5000
+        status: 
+          type: string
+          example: created
+        priority: 
+          type: string
+          example: normal
+    OrderResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        message: 
+          type: string
+          example: Orden obtenida por _id
+        payload:
+          $ref: "#/components/schemas/Order"
+    OrdersResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        message: 
+          type: string
+          example: Ordenes obtenidas 
+        payload:
+          type: array
+          items:
+            $ref: "#/components/schemas/Order"
+    OrderInput:
+      type: object
+      properties:
+        customer:
+          type: string
+          example: 6ab430314443efb186ab6a63
+        store:
+          type: string
+          example: 6ab4331ecc0e40d9547ef340
+        items: 
+          type: array
+          items: 
+            $ref: '#/components/schemas/OrderItem'
+        deliveryAddress:
+          type: string
+          example: Av. Brasil 202
+        priority:
+          type: string
+          enum: 
+            - low
+            - normal
+            - high
+          example: normal 
+    OrderItem:
+        type: object
+        properties:
+          name:
+            type: string
+            example: Paquete2
+          quantity:
+            type: number
+            example: 2
+          price:
+            type: number
+            example: 500

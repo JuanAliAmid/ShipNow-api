@@ -1,0 +1,223 @@
+tags:
+  - name: Users
+    description: Gestión de Usuarios
+
+paths:
+  /api/users:
+    get:
+      tags:
+        - Users
+      summary: Listar usuarios
+      responses: 
+        "200":
+          description: Lista de usuarios
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsersResponse'
+        "500":
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        -   Users
+      summary: Crear usuario
+      requestBody: 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+      responses:
+        "201":
+          description: Usuario creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        "400":
+          description: Faltan datos obligatorios
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description:  Error interno del servidor 
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/users/{uid}:
+    parameters:
+      - name: uid
+        in: path
+        required: true
+        description: ID del usuario
+        schema:
+          type: string
+        example: 6ab4331ecc0e40d9547ef358
+    get:
+      tags: 
+        - Users
+      summary: Obtener un usuario por ID
+      responses:
+        "200":
+          description: Usuario obtenido por ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        "404":
+          description:  ID inválido
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description:  Error interno del servidor 
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - Users
+      summary: Actualizar usuario
+      requestBody: 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+
+      responses:
+        "200":
+          description: Usuario Actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        "404":
+          description:  ID inválido
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description:  Error interno del servidor 
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags: 
+        - Users
+      summary: Eliminar un usuario
+      responses:
+        "200":
+          description: Elimina un usuario por ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        "404":
+          description:  ID inválido
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description:  Error interno del servidor 
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    User: 
+      type: object
+      properties: 
+        _id:
+          type: string
+          example: 6ab4331ecc0e40d9547ef359
+        firstName:
+          type: string
+          example: Sofia
+        lastName:
+          type: string
+          example: Ramirez
+        email:
+          type: string
+          example: sofia15@email.com
+        role: 
+          type: string
+          enum:
+            - admin
+            - customer
+            - store
+            - driver
+          default: customer
+    UserResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        message: 
+          type: string
+          example: Usuario obtenido por _id
+        payload:
+          $ref: "#/components/schemas/User"
+    UsersResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        message: 
+          type: string
+          example: Usuarios obtenidos 
+        payload:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+    UserInput:
+      type: object
+      properties:
+        firstName:
+          type: string
+          example: Sofia
+        lastName:
+          type: string
+          example: Ramirez
+        email:
+          type: string
+          example: sofia15@email.com
+        password:
+          type: string
+          example: miClave123
+        role:
+          type: string
+          enum: 
+            - admin
+            - customer
+            - store
+            - driver
+          example: customer
+
+    ErrorResponse:
+      type: object
+      properties:
+        status: 
+          type: string
+          example: Error
+        message:
+          type: string
+          example: Usuario no encontrado
+        code:
+          type: string
+          example: NOT_FOUND

@@ -1,0 +1,23 @@
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: error
+        message:
+          type: string
+          example: Recurso no encontrado
+        code:
+          type: string
+          example: NOT_FOUND
+    SuccessResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        message:
+          type: string
+          example: Operación realizada correctamente

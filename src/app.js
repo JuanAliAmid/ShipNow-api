@@ -7,6 +7,8 @@ import mocksRouter from './routes/mocks.router.js';
 import errorHandler from "./middlewares/errorHandler.js";
 import ERROR_CODES from "./errors/error.codes.js";
 import loggerRouter from './routes/logger.router.js';
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpecs from './config/swagger.config.js';
 import { createError } from "./utils/apiResponse.js";
 
 const app = express();
@@ -26,6 +28,8 @@ app.use("/api/stores", storesRouter);
 app.use("/api/orders", ordersRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/mocks", mocksRouter);
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
+
 
 app.use((_req, _res, next) => {
   next(createError(ERROR_CODES.ROUTE_NOT_FOUND));
