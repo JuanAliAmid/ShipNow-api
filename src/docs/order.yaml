@@ -8,6 +8,7 @@ paths:
       tags:
         - Orders
       summary: Listar pedidos
+      description: Obtiene una lista de pedidos
       responses: 
         "200":
           description: Lista de pedidos
@@ -15,16 +16,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OrdersResponse'
-        "404":
-          description: Ordenes no encontradas 
-          content: 
-            application/json:
-              schema: 
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                status: error
-                error: ORDER_NOT_FOUND
-                message: Orden no encontrada
         "500":
           description: Error interno del servidor
           content:
@@ -39,6 +30,7 @@ paths:
       tags:
         -   Orders
       summary: Crear pedido
+      description: Crea un nuevo pedido
       requestBody: 
         required: true
         content:
@@ -129,6 +121,7 @@ paths:
       tags:
         - Orders
       summary: Actualizar el estado del pedido
+      description: Actualiza el pedido con el nuevo estado ingresado
       requestBody: 
         required: true
         content:
@@ -203,6 +196,7 @@ paths:
       tags: 
         - Orders
       summary: Obtener un pedido por ID
+      description: Obtiene un pedido a través de su ID
       responses:
         "200":
           description: Pedido obtenido por ID
@@ -244,6 +238,7 @@ paths:
       tags: 
         - Orders
       summary: Eliminar un pedido
+      description: Elimina un pedido a través de su ID
       responses:
         "200":
           description: Elimina un pedido por ID

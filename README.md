@@ -574,7 +574,7 @@ Se ignoran `logs/*.log` (los registros de errores y fatales) y `logs/*.json` (co
 
 ### Cómo probar el logger
 
-- URL → http://localhost:3000/loggerTest/
+- URL → http://localhost:<PORT>/loggerTest/
 
 Cambiar el entorno con `NODE_ENV` (production = producción y development = desarrollo), reiniciar el servidor y hacer el GET nuevamente.
 En ambos entornos la carpeta logs solo contendrá archivos que registran error y fatal del día.
@@ -588,7 +588,7 @@ En ambos entornos la carpeta logs solo contendrá archivos que registran error y
 
 ## Documentación (Swagger)
 
-La documentación interactiva está disponible en `http://localhost:8080/api/docs` con el servidor levantado.
+La documentación interactiva está disponible en `http://localhost:<PORT>/api/docs` con el servidor levantado.
 
 ### Módulos documentados
 - **Users**: `/api/users`

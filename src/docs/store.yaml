@@ -8,6 +8,7 @@ paths:
       tags:
         - Stores
       summary: Listar tiendas
+      description: Obtiene una lista de tiendas
       responses: 
         "200":
           description: Lista de tiendas
@@ -15,16 +16,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StoresResponse'
-        "404":
-          description:  Tiendas no encontradas
-          content: 
-            application/json:
-              schema: 
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                status: error
-                error: STORE_NOT_FOUND
-                message: Tienda no encontrada
         "500":
           description: Error interno del servidor
           content:
@@ -39,6 +30,7 @@ paths:
       tags:
         -   Stores
       summary: Crear tienda
+      description: Crea una nueva tienda
       requestBody: 
         required: true
         content:
@@ -94,6 +86,7 @@ paths:
       tags: 
         - Stores
       summary: Obtener una tienda por ID
+      description: Obtiene una tienda a través de su ID
       responses:
         "200":
           description: Tienda obtenida por ID
@@ -135,6 +128,7 @@ paths:
       tags:
         - Stores
       summary: Actualizar tienda
+      description: Actualiza la tienda con los nuevos datos ingresados
       requestBody: 
         required: true
         content:
@@ -182,6 +176,7 @@ paths:
       tags: 
         - Stores
       summary: Eliminar una tienda
+      description: Elimina una tienda a través de su ID
       responses:
         "200":
           description: Elimina una tienda por ID

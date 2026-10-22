@@ -8,6 +8,7 @@ paths:
       tags:
         - Users
       summary: Listar usuarios
+      description: Obtiene un lista de usuarios
       responses: 
         "200":
           description: Lista de usuarios
@@ -15,16 +16,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UsersResponse'
-        "404":
-          description: Usuario no encontrado 
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UsersResponse'
-              example:
-                status: error
-                error: USER_NOT_FOUND
-                message: Usuario no encontrado 
         "500":
           description: Error interno del servidor
           content:
@@ -33,12 +24,13 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
               example:
                 status: error
-                error: INVALID_DATA
-                message: El formato de los datos ingresados es incorrecto
+                error: INTERNAL_SERVER_ERROR
+                message: Error interno del servidor
     post:
       tags:
         - Users
       summary: Crear usuario
+      description: Crea un nuevo usuario
       requestBody: 
         required: true
         content:
@@ -53,15 +45,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/UserResponse'
         "400":
-          description: El formato de los datos ingresados es incorrecto
+          description: El formato de los datos ingresados es incorrecto o Faltan datos obligatorios 
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalidData:
+                  status: error
+                  error: INVALID_DATA
+                  message: El formato de los datos ingresados es incorrecto
+                requiredFields:
+                  status: error
+                  error: REQUIRED_FIELDS
+                  message: Faltan datos obligatorios
+        "409":
+          description: El email ingresado ya se encuentra registrado
           content: 
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
               example:
                 status: error
-                error: INVALID_DATA
-                message: El formato de los datos ingresados es incorrecto
+                error: DUPLICATE_EMAIL_ADDRESS
+                message: El email ingresado ya se encuentra registrado
         "500":
           description:  Error interno del servidor 
           content: 
@@ -85,6 +92,7 @@ paths:
       tags: 
         - Users
       summary: Obtener un usuario por ID
+      description: Obtiene un usuario por el ID ingresado
       responses:
         "200":
           description: Usuario obtenido por ID
@@ -126,6 +134,7 @@ paths:
       tags:
         - Users
       summary: Actualizar usuario
+      description: Actualiza el usuario con lo nuevos datos ingresados
       requestBody: 
         required: true
         content:
@@ -173,6 +182,7 @@ paths:
       tags: 
         - Users
       summary: Eliminar un usuario
+      description: Elimina un usuario a través de su ID
       responses:
         "200":
           description: Elimina un usuario por ID
