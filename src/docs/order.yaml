@@ -33,19 +33,25 @@ paths:
               $ref: '#/components/schemas/OrderInput'
       responses:
         "201":
-          description: Pedido creado
+          description: Orden generada
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/OrderResponse'
         "400":
-          description: Faltan datos obligatorios
+          description: El formato de la cantidad es incorrecto (INVALID_QUANTITY) / Faltan datos obligatorios (REQUIRED_FIELDS) / El formato de los datos ingresados es incorrecto (INVALID_DATA)
           content: 
             application/json:
-              schema:
+              schema: 
                 $ref: '#/components/schemas/ErrorResponse'
         "404":
-          description:  ID inválido
+          description: Usuario no encontrado (USER_NOT_FOUND) / Tienda no encontrada (STORE_NOT_FOUND) / Producto no encontrado (PRODUCT_NOT_FOUND)
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+        "409":
+          description: Producto no disponible (PRODUCT_NOT_AVAILABLE)
           content: 
             application/json:
               schema: 
@@ -56,7 +62,7 @@ paths:
             application/json:
               schema: 
                 $ref: '#/components/schemas/ErrorResponse'
-  /api/orders/{oid}:
+  /api/orders/{oid}/status:
     parameters:
       - name: oid
         in: path
@@ -65,29 +71,6 @@ paths:
         schema:
           type: string
         example: 6ab4331ecc0e40d9547ef358
-    get:
-      tags: 
-        - Orders
-      summary: Obtener un pedido por ID
-      responses:
-        "200":
-          description: Pedido obtenido por ID
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OrderResponse'
-        "404":
-          description:  ID inválido
-          content: 
-            application/json:
-              schema: 
-                $ref: '#/components/schemas/ErrorResponse'
-        "500":
-          description:  Error interno del servidor 
-          content: 
-            application/json:
-              schema: 
-                $ref: '#/components/schemas/ErrorResponse'
     put:
       tags:
         - Orders
@@ -116,14 +99,52 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OrderResponse'
-        "404":
-          description:  ID inválido
+        "400":
+          description:  ID con formato inválido / Estado inválido
           content: 
             application/json:
               schema: 
                 $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Pedido no encontrado (ORDER_NOT_FOUND)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description:  Error interno del servidor 
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/orders/{oid}:
+    parameters:
+      - name: oid
+        in: path
+        required: true
+        description: ID del pedido
+        schema:
+          type: string
+        example: 6ab4331ecc0e40d9547ef358
+    get:
+      tags: 
+        - Orders
+      summary: Obtener un pedido por ID
+      responses:
+        "200":
+          description: Pedido obtenido por ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
         "400":
-          description: Estado inválido
+          description:  ID con formato inválido
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Pedido no encontrado (ORDER_NOT_FOUND)
           content:
             application/json:
               schema:
@@ -145,11 +166,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OrderResponse'
-        "404":
-          description:  ID inválido
+        "400":
+          description:  ID con formato inválido
           content: 
             application/json:
               schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Pedido no encontrado (ORDER_NOT_FOUND)
+          content:
+            application/json:
+              schema:
                 $ref: '#/components/schemas/ErrorResponse'
         "500":
           description:  Error interno del servidor 
@@ -166,6 +193,12 @@ components:
         _id:
           type: string
           example: 6ab4331ecc0e40d9547ef359
+        customer:
+          type: string
+          example: 6ab430314443efb186ab6a6d
+        store:
+          type: string
+          example: 6abefe1ebd2ab9494564b59f
         items:
           type: array
           items:
@@ -182,6 +215,16 @@ components:
         priority: 
           type: string
           example: normal
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        proof:
+          type: object
+          nullable: true
+          example: null
     OrderResponse:
       type: object
       properties:
@@ -208,6 +251,11 @@ components:
             $ref: "#/components/schemas/Order"
     OrderInput:
       type: object
+      required:
+        - customer
+        - store
+        - items
+        - deliveryAddress
       properties:
         customer:
           type: string
@@ -218,7 +266,7 @@ components:
         items: 
           type: array
           items: 
-            $ref: '#/components/schemas/OrderItem'
+            $ref: '#/components/schemas/OrderItemInput'
         deliveryAddress:
           type: string
           example: Av. Brasil 202
@@ -230,14 +278,29 @@ components:
             - high
           example: normal 
     OrderItem:
-        type: object
-        properties:
-          name:
-            type: string
-            example: Paquete2
-          quantity:
-            type: number
-            example: 2
-          price:
-            type: number
-            example: 500
+      type: object
+      properties:
+        name:
+          type: string
+          example: Paquete2
+        quantity:
+          type: number
+          example: 2
+        price:
+          type: number
+          example: 500
+        product:
+          type: string
+          example: 6ab4331ecc0e40d9547ef341
+    OrderItemInput:       
+      type: object
+      required:
+        - product
+        - quantity
+      properties:
+        product:
+          type: string
+          example: 6ab4331ecc0e40d9547ef341
+        quantity:
+          type: integer
+          example: 2

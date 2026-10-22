@@ -8,10 +8,10 @@ components:
           example: error
         message:
           type: string
-          example: Recurso no encontrado
-        code:
+          example: Descripción del error
+        error:
           type: string
-          example: NOT_FOUND
+          example: ERROR_CODE
     SuccessResponse:
       type: object
       properties:

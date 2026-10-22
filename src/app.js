@@ -1,5 +1,6 @@
 import express from "express";
 import usersRouter from "./routes/users.router.js";
+import deliveryRouter from './routes/delivery.router.js';
 import storesRouter from "./routes/stores.router.js";
 import ordersRouter from "./routes/orders.router.js";
 import productsRouter from './routes/products.router.js';
@@ -24,6 +25,7 @@ app.get("/health", (_req, res) => {
 
 app.use('/', loggerRouter);
 app.use("/api/users", usersRouter);
+app.use("/api/deliveries", deliveryRouter);
 app.use("/api/stores", storesRouter);
 app.use("/api/orders", ordersRouter);
 app.use("/api/products", productsRouter);

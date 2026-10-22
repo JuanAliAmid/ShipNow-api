@@ -70,7 +70,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserResponse'
-        "404":
+        "400":
           description:  ID inválido
           content: 
             application/json:
@@ -100,7 +100,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserResponse'
-        "404":
+        "400":
           description:  ID inválido
           content: 
             application/json:
@@ -123,7 +123,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserResponse'
-        "404":
+        "400":
           description:  ID inválido
           content: 
             application/json:

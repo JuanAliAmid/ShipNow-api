@@ -1,0 +1,313 @@
+tags:
+  - name: Mocks
+    description: Gestión de Mocks
+
+paths:
+  /api/mocks/users:
+    get:
+      tags:
+        - Mocks
+      summary: Generar usuarios mock
+      parameters:
+        - $ref: '#/components/parameters/Qty'
+      responses: 
+        "200":
+          description: Lista de usuarios
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsersMockResponse'
+        "400":
+          description: Cantidad inválida 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/mocks/deliveries:
+    get:
+      tags:
+        - Mocks
+      summary: Generar deliverys mock
+      parameters:
+        - $ref: '#/components/parameters/Qty'
+      responses: 
+        "200":
+          description: Lista de deliverys
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeliveriesMockResponse'
+        "400":
+          description: Cantidad inválida 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/mocks/drivers:
+    get:
+      tags:
+        - Mocks
+      summary: Generar drivers mock
+      parameters:
+        - $ref: '#/components/parameters/Qty'
+      responses: 
+        "200":
+          description: Lista de drivers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriversMockResponse'
+        "400":
+          description: Cantidad inválida 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/mocks/orders:
+    get:
+      tags:
+        - Mocks
+      summary: Generar órdenes mock
+      parameters:
+        - $ref: '#/components/parameters/Qty'
+      responses: 
+        "200":
+          description: Lista de órdenes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdersMockResponse'
+        "400":
+          description: No hay productos cargados para generar órdenes o Cantidad inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/mocks/seed:
+    post:
+      tags:
+        - Mocks
+      summary: Guardado de datos
+      description: No lleva body, type y qty van por query
+      parameters:
+        - name: type
+          in: query
+          required: true
+          description: Tipo de dato a insertar
+          schema:
+            type: string
+            enum: 
+              - users 
+              - orders 
+              - drivers 
+              - deliveries
+              - stores
+              - storeOwner
+          example: users
+        - $ref: '#/components/parameters/Qty'
+      responses: 
+        "201":
+          description: Datos guardados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeedResponse'
+        "404":
+          description: Tipo no encontrado (TYPE_NOT_FOUND) / Tienda no encontrada (STORE_NOT_FOUND) / Usuario no encontrado (USER_NOT_FOUND) / Producto no encontrado (PRODUCT_NOT_FOUND) / Drivers no encontrados (DRIVERS_NOT_FOUND) / Orden no encontrada (ORDER_NOT_FOUND) / El formato de la cantidad es incorrecto (INVALID_QUANTITY)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "400":
+          description: No hay productos cargados para generar órdenes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  parameters:
+    Qty:
+      name: qty
+      in: query
+      required: true
+      description: Cantidad de elementos (entero entre 1 y 50)
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 50
+      example: 5
+  schemas:
+    MockUser: 
+      type: object
+      properties: 
+        firstName:
+          type: string
+          example: Sofia
+        lastName:
+          type: string
+          example: Ramirez
+        email:
+          type: string
+          example: sofia15@email.com
+        role: 
+          type: string
+          enum:
+            - admin
+            - customer
+            - store
+            - driver
+          example: customer
+    UsersMockResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        message: 
+          type: string
+          example: Usuarios generados 
+        payload:
+          type: array
+          items:
+            $ref: "#/components/schemas/MockUser"
+    DriversMockResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        message:
+          type: string
+          example: Drivers generados
+        payload:
+          type: array
+          items:
+            $ref: '#/components/schemas/MockUser'
+    MockOrder:
+      type: object
+      properties:
+        customer:
+          type: string
+          example: 6ab430314443efb186ab6a63
+        store:
+          type: string
+          example: 6ab4331ecc0e40d9547ef340
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        deliveryAddress:
+          type: string
+          example: Av. Brasil 202
+        total: 
+          type: number
+          example: 5000
+        status: 
+          type: string
+          example: created
+        priority: 
+          type: string
+          example: normal
+    OrdersMockResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        message: 
+          type: string
+          example: Órdenes generadas
+        payload:
+          type: array
+          items:
+            $ref: '#/components/schemas/MockOrder'
+    MockDelivery:
+      type: object
+      properties:
+        order:
+          type: string
+          example: 6ab4331ecc0e42d9547ef356
+        driver:
+          type: string
+          example: 6ab4331ecc0e40d9547ef350
+        status:
+          type: string
+          enum:
+            - assigned
+            - cancelled
+            - delivered
+            - in_transit
+          example: assigned
+        priority: 
+          type: string
+          enum:
+            - normal
+            - low
+            - high
+          example: normal
+        notes:
+          type: string
+          example: Dejar en recepción
+    DeliveriesMockResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        message: 
+          type: string
+          example: Deliverys generados
+        payload:
+          type: array
+          items:
+            $ref: '#/components/schemas/MockDelivery'
+    SeedResponse:
+      type: object
+      properties:
+        status: 
+          type: string
+          example: success
+        message:
+          type: string
+          example: Datos guardados
+        payload:
+          type: object
+          properties:
+            insertados:
+              type: integer
+              example: 5
+            coleccion:
+              type: string
+              example: users
+

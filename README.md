@@ -586,6 +586,24 @@ En ambos entornos la carpeta logs solo contendrá archivos que registran error y
 - En desarrollo se podrán ver en la terminal los 6 niveles (fatal, error, warning, info, http, debug).
 - En producción se podrán ver en la terminal los 4 niveles (fatal, error, warning, info).
 
+## Documentación (Swagger)
+
+La documentación interactiva está disponible en `http://localhost:8080/api/docs` con el servidor levantado.
+
+### Módulos documentados
+- **Users**: `/api/users`
+- **Orders**: `/api/orders`
+- **Deliveries**: `/api/deliveries`
+- **Stores**: `/api/stores`
+- **Mocks**: `/api/mocks`
+- **Logger**: `/loggerTest`
+
+### Aclaraciones para probar los endpoints
+- Los mocks reciben `type` y `qty` por **query**, no por body. `qty` es un entero entre 1 y 50.
+- `POST /api/mocks/seed` necesita datos previos según el tipo: pedidos requieren usuarios, tiendas y productos; deliveries requieren pedidos y drivers.
+- `/loggerTest` es una herramienta de validación de logs, no una funcionalidad de negocio.
+- Las respuestas de error tienen el formato `{ status: "error", error: "CODIGO", message: "..." }`.
+
 ## Estado actual del proyecto
 
 Esta versión de ShipNow ya cuenta con las 4 entidades principales y un sistema de mocking funcional para poblar la base con datos de prueba, aunque todavía no representa una API completamente profesional.
@@ -604,12 +622,12 @@ repositories
 config/db.js
 middleware global de errores
 config/logger.js (Winston)
+Swagger
 ```
 
 Todavía no incorpora:
 
 ```txt
-Swagger
 tests automatizados
 Multer
 Docker

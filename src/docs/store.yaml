@@ -1,0 +1,240 @@
+tags:
+  - name: Stores
+    description: Gestión de Stores
+
+paths:
+  /api/stores:
+    get:
+      tags:
+        - Stores
+      summary: Listar tiendas
+      responses: 
+        "200":
+          description: Lista de tiendas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoresResponse'
+        "500":
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        -   Stores
+      summary: Crear tienda
+      requestBody: 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoreInput'
+      responses:
+        "201":
+          description: Tienda creada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreResponse'
+        "400":
+          description: Faltan datos obligatorios (REQUIRED_FIELDS) / El formato de los datos ingresados es incorrecto (INVALID_DATA)
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description:  Error interno del servidor 
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/stores/{sid}:
+    parameters:
+      - name: sid
+        in: path
+        required: true
+        description: ID de la tienda
+        schema:
+          type: string
+        example: 6ab4331ecc0e40d9547ef353
+    get:
+      tags: 
+        - Stores
+      summary: Obtener una tienda por ID
+      responses:
+        "200":
+          description: Tienda obtenida por ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreResponse'
+        "400":
+          description:  ID inválido (INVALID_DATA)
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description:  Tienda no encontrada
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description:  Error interno del servidor 
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - Stores
+      summary: Actualizar tienda
+      requestBody: 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoreUpdateInput'
+      responses:
+        "200":
+          description: Tienda Actualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreResponse'
+        "400":
+          description:  El formato de los datos ingresados es incorrecto (INVALID_DATA)
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description:  Tienda no encontrada
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description:  Error interno del servidor 
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags: 
+        - Stores
+      summary: Eliminar una tienda
+      responses:
+        "200":
+          description: Elimina una tienda por ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreResponse'
+        "400":
+          description:  ID inválido
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description:  Tienda no encontrada
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description:  Error interno del servidor 
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'            
+
+components:
+  schemas:
+    Store: 
+      type: object
+      properties: 
+        _id:
+          type: string
+          example: 6ab4331ecc0e40d9547ef359
+        name:
+          type: string
+          example: Tienda viva
+        address:
+          type: string
+          example: Av. soles
+        owner:
+          type: string
+          example: 6ab4331ecc0e40d9547ef489
+        isActive: 
+          type: boolean
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    StoreResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        message: 
+          type: string
+          example: Tienda encontrada por _id
+        payload:
+          $ref: "#/components/schemas/Store"
+    StoresResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        message: 
+          type: string
+          example: Lista de tiendas 
+        payload:
+          type: array
+          items:
+            $ref: "#/components/schemas/Store"
+    StoreInput:
+      type: object
+      required:
+        - name
+        - address
+        - owner
+      properties:
+        name:
+          type: string
+          example: Luna Store
+        address:
+          type: string
+          example: Calle Las Rosas
+        owner:
+          type: string
+          example: 6ab4331ecc0e40d9547ef359
+        isActive: 
+          type: boolean
+          example: false
+    StoreUpdateInput:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Luna Store
+        address:
+          type: string
+          example: Calle Las Rosas
+        owner:
+          type: string
+          example: 6ab4331ecc0e40d9547ef359
+        isActive: 
+          type: boolean
+          example: false

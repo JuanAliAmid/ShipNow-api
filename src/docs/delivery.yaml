@@ -1,77 +1,55 @@
 tags:
-  - name: Users
-    description: Gestión de Usuarios
+  - name: Deliveries
+    description: Gestión de Deliveries
 
 paths:
-  /api/users:
+  /api/deliveries:
     get:
       tags:
-        - Users
-      summary: Listar usuarios
+        - Deliveries
+      summary: Listar Deliveries
       responses: 
         "200":
-          description: Lista de usuarios
+          description: Lista de Deliveries
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UsersResponse'
+                $ref: '#/components/schemas/DeliveriesResponse'
         "500":
           description: Error interno del servidor
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-    post:
-      tags:
-        -   Users
-      summary: Crear usuario
-      requestBody: 
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserInput'
-      responses:
-        "201":
-          description: Usuario creado
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserResponse'
-        "400":
-          description: Faltan datos obligatorios
-          content: 
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        "500":
-          description:  Error interno del servidor 
-          content: 
-            application/json:
-              schema: 
-                $ref: '#/components/schemas/ErrorResponse'
-  /api/users/{uid}:
+
+  /api/deliveries/{did}/status:
     parameters:
-      - name: uid
+      - name: did
         in: path
         required: true
-        description: ID del usuario
+        description: ID del delivery
         schema:
           type: string
         example: 6ab4331ecc0e40d9547ef358
     get:
       tags: 
-        - Users
-      summary: Obtener un usuario por ID
+        - Deliveries
+      summary: Obtener un delivery por ID
       responses:
         "200":
-          description: Usuario obtenido por ID
+          description: Delivery obtenido por ID
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserResponse'
-        "404":
+                $ref: '#/components/schemas/DeliveryResponse'
+        "400":
           description:  ID inválido
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description:  Delivery no encontrado
           content: 
             application/json:
               schema: 
@@ -84,47 +62,29 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
     put:
       tags:
-        - Users
-      summary: Actualizar usuario
+        - Deliveries
+      summary: Actualizar estado de delivery
       requestBody: 
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserInput'
-
+              $ref: '#/components/schemas/DeliveryStatusInput'
       responses:
         "200":
-          description: Usuario Actualizado
+          description: Estado Actualizado
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserResponse'
-        "404":
-          description:  ID inválido
+                $ref: '#/components/schemas/DeliveryResponse'
+        "400":
+          description:  El formato de los datos ingresados es incorrecto o Estado inválido
           content: 
             application/json:
               schema: 
                 $ref: '#/components/schemas/ErrorResponse'
-        "500":
-          description:  Error interno del servidor 
-          content: 
-            application/json:
-              schema: 
-                $ref: '#/components/schemas/ErrorResponse'
-    delete:
-      tags: 
-        - Users
-      summary: Eliminar un usuario
-      responses:
-        "200":
-          description: Elimina un usuario por ID
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserResponse'
         "404":
-          description:  ID inválido
+          description:  Delivery no encontrado
           content: 
             application/json:
               schema: 
@@ -138,30 +98,43 @@ paths:
 
 components:
   schemas:
-    User: 
+    Delivery: 
       type: object
       properties: 
         _id:
           type: string
           example: 6ab4331ecc0e40d9547ef359
-        firstName:
+        order:
           type: string
-          example: Sofia
-        lastName:
+          example: 6ab4331ecc0e42d9547ef356
+        driver:
           type: string
-          example: Ramirez
-        email:
-          type: string
-          example: sofia15@email.com
-        role: 
+          example: 6ab4331ecc0e40d9547ef350
+        status:
           type: string
           enum:
-            - admin
-            - customer
-            - store
-            - driver
-          default: customer
-    UserResponse:
+            - assigned
+            - cancelled
+            - delivered
+            - in_transit
+          default: assigned
+        priority: 
+          type: string
+          enum:
+            - normal
+            - low
+            - high
+          default: normal
+        notes:
+          type: string
+          example: Dejar en recepción
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    DeliveryResponse:
       type: object
       properties:
         status:
@@ -169,10 +142,10 @@ components:
           example: success
         message: 
           type: string
-          example: Usuario obtenido por _id
+          example: Delivery obtenido por id
         payload:
-          $ref: "#/components/schemas/User"
-    UsersResponse:
+          $ref: "#/components/schemas/Delivery"
+    DeliveriesResponse:
       type: object
       properties:
         status:
@@ -180,44 +153,21 @@ components:
           example: success
         message: 
           type: string
-          example: Usuarios obtenidos 
+          example: Lista de deliveries 
         payload:
           type: array
           items:
-            $ref: "#/components/schemas/User"
-    UserInput:
+            $ref: "#/components/schemas/Delivery"
+    DeliveryStatusInput:
       type: object
+      required: 
+        - status
       properties:
-        firstName:
+        status:
           type: string
-          example: Sofia
-        lastName:
-          type: string
-          example: Ramirez
-        email:
-          type: string
-          example: sofia15@email.com
-        password:
-          type: string
-          example: miClave123
-        role:
-          type: string
-          enum: 
-            - admin
-            - customer
-            - store
-            - driver
-          example: customer
-
-    ErrorResponse:
-      type: object
-      properties:
-        status: 
-          type: string
-          example: Error
-        message:
-          type: string
-          example: Usuario no encontrado
-        code:
-          type: string
-          example: NOT_FOUND
+          enum:
+            - assigned
+            - cancelled
+            - delivered
+            - in_transit
+          example: in_transit
