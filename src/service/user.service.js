@@ -21,9 +21,7 @@ export const userService = {
          throw createError(ERROR_CODES.REQUIRED_FIELDS);
       };
       const newUser = await userRepository.create(userData);
-      if (newUser.email === email) {
-         throw createError(ERROR_CODES.DUPLICATE_EMAIL_ADDRESS);
-      };
+
       return newUser;
    },
 

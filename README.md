@@ -595,6 +595,7 @@ La documentación interactiva está disponible en `http://localhost:8080/api/doc
 - **Orders**: `/api/orders`
 - **Deliveries**: `/api/deliveries`
 - **Stores**: `/api/stores`
+- **Products**: `/api/products`
 - **Mocks**: `/api/mocks`
 - **Logger**: `/loggerTest`
 
