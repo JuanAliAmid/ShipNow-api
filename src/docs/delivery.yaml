@@ -54,20 +54,20 @@ paths:
             application/json:
               schema: 
                 $ref: '#/components/schemas/ErrorResponse'
-                example: 
-                  status: error
-                  error: INVALID_DATA
-                  message: El formato de los datos ingresados es incorrecto
+              example: 
+                status: error
+                error: INVALID_DATA
+                message: El formato de los datos ingresados es incorrecto
         "404":
           description:  Delivery no encontrado
           content: 
             application/json:
               schema: 
                 $ref: '#/components/schemas/ErrorResponse'
-                example: 
-                  status: error
-                  error: DELIVERY_NOT_FOUND
-                  message: Delivery no encontrado
+              example: 
+                status: error
+                error: DELIVERY_NOT_FOUND
+                message: Delivery no encontrado
         "500":
           description:  Error interno del servidor 
           content: 
