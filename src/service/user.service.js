@@ -12,15 +12,16 @@ export const userService = {
    },
 
    getUsers: async () => {
-      return userRepository.getUsers()
+      return userRepository.getUsers();
    },
 
    create: async (userData) => {
-      const { firstName, lastName, email, password } = userData
+      const { firstName, lastName, email, password } = userData;
       if (!firstName || !lastName || !email || !password) {
          throw createError(ERROR_CODES.REQUIRED_FIELDS);
-      }
+      };
       const newUser = await userRepository.create(userData);
+
       return newUser;
    },
 
@@ -32,7 +33,7 @@ export const userService = {
       );
       if (!userUpdate) {
          throw createError(ERROR_CODES.USER_NOT_FOUND);
-      }
+      };
       return userUpdate;
    },
 
@@ -40,7 +41,7 @@ export const userService = {
       const userDelete = await userRepository.delete(id);
       if (!userDelete) {
          throw createError(ERROR_CODES.USER_NOT_FOUND);
-      }
+      };
       return userDelete;
    }
 };

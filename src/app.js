@@ -1,5 +1,6 @@
 import express from "express";
 import usersRouter from "./routes/users.router.js";
+import deliveryRouter from './routes/delivery.router.js';
 import storesRouter from "./routes/stores.router.js";
 import ordersRouter from "./routes/orders.router.js";
 import productsRouter from './routes/products.router.js';
@@ -7,6 +8,8 @@ import mocksRouter from './routes/mocks.router.js';
 import errorHandler from "./middlewares/errorHandler.js";
 import ERROR_CODES from "./errors/error.codes.js";
 import loggerRouter from './routes/logger.router.js';
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpecs from './config/swagger.config.js';
 import { createError } from "./utils/apiResponse.js";
 
 const app = express();
@@ -22,10 +25,13 @@ app.get("/health", (_req, res) => {
 
 app.use('/', loggerRouter);
 app.use("/api/users", usersRouter);
+app.use("/api/deliveries", deliveryRouter);
 app.use("/api/stores", storesRouter);
 app.use("/api/orders", ordersRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/mocks", mocksRouter);
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
+
 
 app.use((_req, _res, next) => {
   next(createError(ERROR_CODES.ROUTE_NOT_FOUND));

@@ -1,0 +1,19 @@
+tags:
+  - name: Logger
+    description: Herramienta de validación de logs
+
+paths:
+  /loggerTest:
+    get:
+      summary: Probar niveles del logger
+      description: Herramienta de validación del sistema de logs, no es una funcionalidad de negocio. Genera un log de cada nivel (fatal, error, warning, info, http, debug) y no recibe parámetros ni body.
+      tags:
+        - Logger
+      responses:
+        "200":
+          description: logs generados correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+

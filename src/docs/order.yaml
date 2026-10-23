@@ -1,0 +1,445 @@
+tags:
+  - name: Orders
+    description: Gestión de Orders
+
+paths:
+  /api/orders:
+    get:
+      tags:
+        - Orders
+      summary: Listar Ordens
+      description: Obtiene una lista de Ordens
+      responses: 
+        "200":
+          description: Lista de Ordens
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdersResponse'
+        "500":
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: error
+                error: INTERNAL_SERVER_ERROR
+                message: Error interno del servidor
+    post:
+      tags:
+        -   Orders
+      summary: Crear Orden
+      description: Crea una nueva Orden
+      requestBody: 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderInput'
+      responses:
+        "201":
+          description: Orden generada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        "400":
+          description: El formato de la cantidad es incorrecto / Faltan datos obligatorios / El formato de los datos ingresados es incorrecto 
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalidQuantity:
+                  value:
+                    status: error
+                    error: INVALID_QUANTITY
+                    message: El formato de la cantidad es incorrecto
+                requiredFields:
+                  value:
+                    status: error
+                    error: REQUIRED_FIELDS
+                    message: Faltan datos obligatorios
+                invalidData:
+                  value:
+                    status: error
+                    error: INVALID_DATA
+                    message: El formato de los datos ingresados es incorrecto
+        "404":
+          description: Usuario no encontrado / Tienda no encontrada / Producto no encontrado 
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                userNotFound:
+                  value:
+                    status: error
+                    error: USER_NOT_FOUND
+                    message: Usuario no encontrado
+                storeNotFound:
+                  value:
+                    status: error
+                    error: STORE_NOT_FOUND
+                    message: Tienda no encontrada 
+                productNotFound:
+                  value:
+                    status: error
+                    error: PRODUCT_NOT_FOUND
+                    message: Producto no encontrado 
+        "409":
+          description: Producto no disponible
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: error
+                error: PRODUCT_NOT_AVAILABLE
+                message: Producto no disponible
+        "500":
+          description:  Error interno del servidor 
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: error
+                error: INTERNAL_SERVER_ERROR
+                message: Error interno del servidor
+  /api/orders/{oid}/status:
+    parameters:
+      - name: oid
+        in: path
+        required: true
+        description: ID de la Orden
+        schema:
+          type: string
+        example: 6ab4331ecc0e40d9547ef358
+    put:
+      tags:
+        - Orders
+      summary: Actualizar el estado de la Orden
+      description: Actualiza la Orden con el nuevo estado ingresado
+      requestBody: 
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status: 
+                  type: string
+                  enum:
+                    - created
+                    - picked_up
+                    - assigned
+                    - in_transit
+                    - delivered
+                    - cancelled
+                  example: assigned
+      responses:
+        "200":
+          description: Orden Actualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        "400":
+          description:  ID con formato inválido / Estado inválido
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalidOrderStatus:
+                  value:
+                    status: error
+                    error: INVALID_ORDER_STATUS
+                    message: El estado ingresado no es válido para un pedido
+                invalidData:
+                  value:
+                    status: error
+                    error: INVALID_DATA
+                    message: El formato de los datos ingresados es incorrecto
+        "404":
+          description: Orden no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: error
+                error: ORDER_NOT_FOUND
+                message: Orden no encontrada
+        "500":
+          description:  Error interno del servidor 
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: error
+                error: INTERNAL_SERVER_ERROR
+                message: Error interno del servidor
+  /api/orders/{oid}:
+    parameters:
+      - name: oid
+        in: path
+        required: true
+        description: ID de la Orden
+        schema:
+          type: string
+        example: 6ab4331ecc0e40d9547ef358
+    get:
+      tags: 
+        - Orders
+      summary: Obtener una Orden por ID
+      description: Obtiene una Orden a través de su ID
+      responses:
+        "200":
+          description: Orden obtenida por ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderPopulatedResponse'
+        "400":
+          description:  ID con formato inválido
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: error
+                error: INVALID_DATA
+                message: El formato de los datos ingresados es incorrecto
+        "404":
+          description: Orden no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: error
+                error: ORDER_NOT_FOUND
+                message: Orden no encontrada
+        "500":
+          description:  Error interno del servidor 
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: error
+                error: INTERNAL_SERVER_ERROR
+                message: Error interno del servidor
+    delete:
+      tags: 
+        - Orders
+      summary: Eliminar una Orden
+      description: Elimina una Orden a través de su ID
+      responses:
+        "200":
+          description: Elimina una Orden por ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        "400":
+          description:  ID con formato inválido
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: error
+                error: INVALID_DATA
+                message: El formato de los datos ingresados es incorrecto
+        "404":
+          description: Orden no encontrada 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: error
+                error: ORDER_NOT_FOUND
+                message: Orden no encontrada
+        "500":
+          description:  Error interno del servidor 
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: error
+                error: INTERNAL_SERVER_ERROR
+                message: Error interno del servidor
+
+components:
+  schemas:
+    Order: 
+      type: object
+      properties: 
+        _id:
+          type: string
+          example: 6ab4331ecc0e40d9547ef359
+        customer:
+          type: string
+          example: 6ab430314443efb186ab6a6d
+        store:
+          type: string
+          example: 6abefe1ebd2ab9494564b59f
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        deliveryAddress:
+          type: string
+          example: Av. Brasil 202
+        total: 
+          type: number
+          example: 5000
+        status: 
+          type: string
+          example: created
+        priority: 
+          type: string
+          example: normal
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        proof:
+          type: object
+          nullable: true
+          example: null
+    OrderResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        message: 
+          type: string
+          example: Orden generada
+        payload:
+          $ref: "#/components/schemas/Order"
+    OrdersResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        message: 
+          type: string
+          example: Ordenes obtenidas 
+        payload:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderPopulated"
+    OrderInput:
+      type: object
+      required:
+        - customer
+        - store
+        - items
+        - deliveryAddress
+      properties:
+        customer:
+          type: string
+          example: 6ab430314443efb186ab6a63
+        store:
+          type: string
+          example: 6ab4331ecc0e40d9547ef340
+        items: 
+          type: array
+          items: 
+            $ref: '#/components/schemas/OrderItemInput'
+        deliveryAddress:
+          type: string
+          example: Av. Brasil 202
+        priority:
+          type: string
+          enum: 
+            - low
+            - normal
+            - high
+          example: normal 
+    OrderItem:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Paquete2
+        quantity:
+          type: number
+          example: 2
+        price:
+          type: number
+          example: 500
+        product:
+          type: string
+          example: 6ab4331ecc0e40d9547ef341
+    OrderItemInput:       
+      type: object
+      required:
+        - product
+        - quantity
+      properties:
+        product:
+          type: string
+          example: 6ab4331ecc0e40d9547ef341
+        quantity:
+          type: integer
+          example: 2
+    OrderPopulated:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 6ab4331ecc0e40d9547ef359
+        customer:
+          $ref: '#/components/schemas/User'
+        store:
+          $ref: '#/components/schemas/Store'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        deliveryAddress:
+          type: string
+          example: Av. Brasil 202
+        total:
+          type: number
+          example: 5000
+        status:
+          type: string
+          example: created
+        priority:
+          type: string
+          example: normal
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        proof:
+          type: object
+          nullable: true
+          example: null
+    OrderPopulatedResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        message:
+          type: string
+          example: Orden encontrada por id
+        payload:
+          $ref: '#/components/schemas/OrderPopulated'

@@ -1,0 +1,395 @@
+tags:
+  - name: Mocks
+    description: Gestión de Mocks
+
+paths:
+  /api/mocks/users:
+    get:
+      tags:
+        - Mocks
+      summary: Generar usuarios mock
+      description: Genera usuarios mock de prueba (no los guarda en la base)
+      parameters:
+        - $ref: '#/components/parameters/Qty'
+      responses: 
+        "200":
+          description: Lista de usuarios
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsersMockResponse'
+        "400":
+          description: Cantidad inválida 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: error
+                error: INVALID_QUANTITY
+                message: El formato de la cantidad es incorrecto
+        "500":
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: error
+                error: INTERNAL_SERVER_ERROR
+                message: Error interno del servidor
+  /api/mocks/deliveries:
+    get:
+      tags:
+        - Mocks
+      summary: Generar deliverys mock
+      description: Genera deliverys mock de prueba (no los guarda en la base)
+      parameters:
+        - $ref: '#/components/parameters/Qty'
+      responses: 
+        "200":
+          description: Lista de deliverys
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeliveriesMockResponse'
+        "400":
+          description: Cantidad inválida 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: error
+                error: INVALID_QUANTITY
+                message: El formato de la cantidad es incorrecto
+        "500":
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: error
+                error: INTERNAL_SERVER_ERROR
+                message: Error interno del servidor
+  /api/mocks/drivers:
+    get:
+      tags:
+        - Mocks
+      summary: Generar drivers mock
+      description: Genera drivers mock de prueba (no los guarda en la base)
+      parameters:
+        - $ref: '#/components/parameters/Qty'
+      responses: 
+        "200":
+          description: Lista de drivers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriversMockResponse'
+        "400":
+          description: Cantidad inválida 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: error
+                error: INVALID_QUANTITY
+                message: El formato de la cantidad es incorrecto
+        "500":
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: error
+                error: INTERNAL_SERVER_ERROR
+                message: Error interno del servidor
+  /api/mocks/orders:
+    get:
+      tags:
+        - Mocks
+      summary: Generar órdenes mock
+      description: Genera órdenes mock de prueba (no los guarda en la base). Requiere productos cargados en la base.
+      parameters: 
+        - $ref: '#/components/parameters/Qty'
+      responses: 
+        "200":
+          description: Lista de órdenes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdersMockResponse'
+        "400":
+          description: No hay productos cargados para generar órdenes o Cantidad inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalidQuantity:
+                  value:
+                    status: error
+                    error: INVALID_QUANTITY
+                    message: El formato de la cantidad es incorrecto
+                noSavedProducts:
+                  value:
+                    status: error
+                    error: NO_SAVED_PRODUCTS
+                    message: No hay productos cargados para generar órdenes
+        "500":
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: error
+                error: INTERNAL_SERVER_ERROR
+                message: Error interno del servidor
+  /api/mocks/seed:
+    post:
+      tags:
+        - Mocks
+      summary: Guardado de datos
+      description:  Genera e inserta datos de prueba en la base según type. No lleva body; type y qty van por query. Orders requiere usuarios, tiendas y productos cargados; deliveries requiere pedidos y drivers. 
+      parameters:
+        - name: type
+          in: query
+          required: true
+          description: Tipo de dato a insertar
+          schema:
+            type: string
+            enum: 
+              - users 
+              - orders 
+              - drivers 
+              - deliveries
+              - stores
+              - storeOwner
+          example: users
+        - $ref: '#/components/parameters/Qty'
+      responses: 
+        "201":
+          description: Datos guardados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeedResponse'
+        "404":
+          description: Tipo no encontrado / Tienda no encontrada / Usuario no encontrado / Producto no encontrado / Drivers no encontrados / Orden no encontrada 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                typeNotFound:
+                  value:
+                    status: error
+                    error: TYPE_NOT_FOUND
+                    message: Tipo no encontrado
+                storeNotFound:
+                  value:
+                    status: error
+                    error: STORE_NOT_FOUND
+                    message: Tienda no encontrada
+                userNotFound:
+                  value:
+                    status: error
+                    error: USER_NOT_FOUND
+                    message: Usuario no encontrado
+                productNotFound:
+                  value:
+                    status: error
+                    error: PRODUCT_NOT_FOUND
+                    message: Producto no encontrado
+                driverNotFound:
+                  value:
+                    status: error
+                    error: DRIVERS_NOT_FOUND
+                    message: Drivers no encontrados
+                orderNotFound:
+                  value:
+                    status: error
+                    error: ORDER_NOT_FOUND
+                    message: Orden no encontrada 
+        "400":
+          description: El formato de la cantidad es incorrecto 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: error
+                error: INVALID_QUANTITY
+                message: El formato de la cantidad es incorrecto
+        "500":
+          description: Error de guardado en base de datos (SAVE_MOCKS_FAILED)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: error
+                error: SAVE_MOCKS_FAILED
+                message: Error de guardado en base de datos
+
+components:
+  parameters:
+    Qty:
+      name: qty
+      in: query
+      required: true
+      description: Cantidad de elementos (entero entre 1 y 50)
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 50
+      example: 5
+  schemas:
+    MockUser: 
+      type: object
+      properties: 
+        firstName:
+          type: string
+          example: Sofia
+        lastName:
+          type: string
+          example: Ramirez
+        email:
+          type: string
+          example: sofia15@email.com
+        role: 
+          type: string
+          enum:
+            - admin
+            - customer
+            - store
+            - driver
+          example: customer
+    UsersMockResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        message: 
+          type: string
+          example: Usuarios generados 
+        payload:
+          type: array
+          items:
+            $ref: "#/components/schemas/MockUser"
+    DriversMockResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        message:
+          type: string
+          example: Drivers generados
+        payload:
+          type: array
+          items:
+            $ref: '#/components/schemas/MockUser'
+    MockOrder:
+      type: object
+      properties:
+        customer:
+          type: string
+          example: 6ab430314443efb186ab6a63
+        store:
+          type: string
+          example: 6ab4331ecc0e40d9547ef340
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        deliveryAddress:
+          type: string
+          example: Av. Brasil 202
+        total: 
+          type: number
+          example: 5000
+        status: 
+          type: string
+          example: created
+        priority: 
+          type: string
+          example: normal
+    OrdersMockResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        message: 
+          type: string
+          example: Órdenes generadas
+        payload:
+          type: array
+          items:
+            $ref: '#/components/schemas/MockOrder'
+    MockDelivery:
+      type: object
+      properties:
+        order:
+          type: string
+          example: 6ab4331ecc0e42d9547ef356
+        driver:
+          type: string
+          example: 6ab4331ecc0e40d9547ef350
+        status:
+          type: string
+          enum:
+            - assigned
+            - cancelled
+            - delivered
+            - in_transit
+          example: assigned
+        priority: 
+          type: string
+          enum:
+            - normal
+            - low
+            - high
+          example: normal
+        notes:
+          type: string
+          example: Dejar en recepción
+    DeliveriesMockResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        message: 
+          type: string
+          example: Deliverys generados
+        payload:
+          type: array
+          items:
+            $ref: '#/components/schemas/MockDelivery'
+    SeedResponse:
+      type: object
+      properties:
+        status: 
+          type: string
+          example: success
+        message:
+          type: string
+          example: Datos guardados
+        payload:
+          type: object
+          properties:
+            insertados:
+              type: integer
+              example: 5
+            coleccion:
+              type: string
+              example: users
+

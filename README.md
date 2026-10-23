@@ -574,7 +574,7 @@ Se ignoran `logs/*.log` (los registros de errores y fatales) y `logs/*.json` (co
 
 ### Cómo probar el logger
 
-- URL → http://localhost:3000/loggerTest/
+- URL → http://localhost:<PORT>/loggerTest/
 
 Cambiar el entorno con `NODE_ENV` (production = producción y development = desarrollo), reiniciar el servidor y hacer el GET nuevamente.
 En ambos entornos la carpeta logs solo contendrá archivos que registran error y fatal del día.
@@ -585,6 +585,26 @@ En ambos entornos la carpeta logs solo contendrá archivos que registran error y
 
 - En desarrollo se podrán ver en la terminal los 6 niveles (fatal, error, warning, info, http, debug).
 - En producción se podrán ver en la terminal los 4 niveles (fatal, error, warning, info).
+
+## Documentación (Swagger)
+
+La documentación interactiva está disponible en `http://localhost:<PORT>/api/docs` con el servidor levantado.
+
+### Módulos documentados
+- **Users**: `/api/users`
+- **Orders**: `/api/orders`
+- **Deliveries**: `/api/deliveries`
+- **Stores**: `/api/stores`
+- **Products**: `/api/products` (solo `GET` y `POST`, lo necesario para obtener ids de productos al crear pedidos)
+- **Mocks**: `/api/mocks`
+- **Logger**: `/loggerTest`
+
+### Aclaraciones para probar los endpoints
+
+- Los mocks reciben `type` y `qty` por **query**, no por body. `qty` es un entero entre 1 y 50.
+- `POST /api/mocks/seed` necesita datos previos según el tipo: pedidos requieren usuarios, tiendas y productos; deliveries requieren pedidos y drivers.
+- `/loggerTest` es una herramienta de validación de logs, no una funcionalidad de negocio.
+- Las respuestas de error tienen el formato `{ status: "error", error: "CODIGO", message: "..." }`.
 
 ## Estado actual del proyecto
 
@@ -604,12 +624,12 @@ repositories
 config/db.js
 middleware global de errores
 config/logger.js (Winston)
+Swagger
 ```
 
 Todavía no incorpora:
 
 ```txt
-Swagger
 tests automatizados
 Multer
 Docker
