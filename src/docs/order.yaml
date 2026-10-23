@@ -325,7 +325,7 @@ components:
           example: success
         message: 
           type: string
-          example: Orden obtenida por _id
+          example: Orden generada
         payload:
           $ref: "#/components/schemas/Order"
     OrdersResponse:
