@@ -142,7 +142,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserInput'
+              $ref: '#/components/schemas/UserUpdateInput'
       responses:
         "200":
           description: Usuario Actualizado
@@ -165,7 +165,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UsersResponse'
+                $ref: '#/components/schemas/ErrorResponse'
               example:
                 status: error
                 error: USER_NOT_FOUND
@@ -217,7 +217,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UsersResponse'
+                $ref: '#/components/schemas/ErrorResponse'
               example:
                 status: error
                 error: USER_NOT_FOUND
@@ -289,6 +289,29 @@ components:
         - lastName
         - email
         - password
+      properties:
+        firstName:
+          type: string
+          example: Sofia
+        lastName:
+          type: string
+          example: Ramirez
+        email:
+          type: string
+          example: sofia15@email.com
+        password:
+          type: string
+          example: miClave123
+        role:
+          type: string
+          enum: 
+            - admin
+            - customer
+            - store
+            - driver
+          example: customer
+    UserUpdateInput:
+      type: object
       properties:
         firstName:
           type: string
