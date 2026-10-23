@@ -117,7 +117,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UsersResponse'
+                $ref: '#/components/schemas/ErrorResponse'
               example:
                 status: error
                 error: USER_NOT_FOUND
@@ -170,6 +170,16 @@ paths:
                 status: error
                 error: USER_NOT_FOUND
                 message: Usuario no encontrado 
+        "409":
+          description: El email ingresado ya se encuentra registrado
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: error
+                error: DUPLICATE_EMAIL_ADDRESS
+                message: El email ingresado ya se encuentra registrado
         "500":
           description:  Error interno del servidor 
           content: 
@@ -274,6 +284,11 @@ components:
             $ref: "#/components/schemas/User"
     UserInput:
       type: object
+      required:
+        - firstName
+        - lastName
+        - email
+        - password
       properties:
         firstName:
           type: string

@@ -1,17 +1,17 @@
 tags:
   - name: Orders
-    description: Gestión de pedidos
+    description: Gestión de Orders
 
 paths:
   /api/orders:
     get:
       tags:
         - Orders
-      summary: Listar pedidos
-      description: Obtiene una lista de pedidos
+      summary: Listar Ordens
+      description: Obtiene una lista de Ordens
       responses: 
         "200":
-          description: Lista de pedidos
+          description: Lista de Ordens
           content:
             application/json:
               schema:
@@ -29,8 +29,8 @@ paths:
     post:
       tags:
         -   Orders
-      summary: Crear pedido
-      description: Crea un nuevo pedido
+      summary: Crear Orden
+      description: Crea una nueva Orden
       requestBody: 
         required: true
         content:
@@ -113,15 +113,15 @@ paths:
       - name: oid
         in: path
         required: true
-        description: ID del pedido
+        description: ID de la Orden
         schema:
           type: string
         example: 6ab4331ecc0e40d9547ef358
     put:
       tags:
         - Orders
-      summary: Actualizar el estado del pedido
-      description: Actualiza el pedido con el nuevo estado ingresado
+      summary: Actualizar el estado de la Orden
+      description: Actualiza la Orden con el nuevo estado ingresado
       requestBody: 
         required: true
         content:
@@ -141,7 +141,7 @@ paths:
                   example: assigned
       responses:
         "200":
-          description: Pedido Actualizado
+          description: Orden Actualizada
           content:
             application/json:
               schema:
@@ -164,7 +164,7 @@ paths:
                     error: INVALID_DATA
                     message: El formato de los datos ingresados es incorrecto
         "404":
-          description: Pedido no encontrado
+          description: Orden no encontrada
           content:
             application/json:
               schema:
@@ -172,7 +172,7 @@ paths:
               example:
                 status: error
                 error: ORDER_NOT_FOUND
-                message: Pedido no encontrado
+                message: Orden no encontrada
         "500":
           description:  Error interno del servidor 
           content: 
@@ -188,22 +188,22 @@ paths:
       - name: oid
         in: path
         required: true
-        description: ID del pedido
+        description: ID de la Orden
         schema:
           type: string
         example: 6ab4331ecc0e40d9547ef358
     get:
       tags: 
         - Orders
-      summary: Obtener un pedido por ID
-      description: Obtiene un pedido a través de su ID
+      summary: Obtener una Orden por ID
+      description: Obtiene una Orden a través de su ID
       responses:
         "200":
-          description: Pedido obtenido por ID
+          description: Orden obtenida por ID
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrderResponse'
+                $ref: '#/components/schemas/OrderPopulatedResponse'
         "400":
           description:  ID con formato inválido
           content: 
@@ -215,7 +215,7 @@ paths:
                 error: INVALID_DATA
                 message: El formato de los datos ingresados es incorrecto
         "404":
-          description: Pedido no encontrado 
+          description: Orden no encontrada
           content:
             application/json:
               schema:
@@ -223,7 +223,7 @@ paths:
               example:
                 status: error
                 error: ORDER_NOT_FOUND
-                message: Pedido no encontrado
+                message: Orden no encontrada
         "500":
           description:  Error interno del servidor 
           content: 
@@ -237,11 +237,11 @@ paths:
     delete:
       tags: 
         - Orders
-      summary: Eliminar un pedido
-      description: Elimina un pedido a través de su ID
+      summary: Eliminar una Orden
+      description: Elimina una Orden a través de su ID
       responses:
         "200":
-          description: Elimina un pedido por ID
+          description: Elimina una Orden por ID
           content:
             application/json:
               schema:
@@ -257,7 +257,7 @@ paths:
                 error: INVALID_DATA
                 message: El formato de los datos ingresados es incorrecto
         "404":
-          description: Pedido no encontrado 
+          description: Orden no encontrada 
           content:
             application/json:
               schema:
@@ -265,7 +265,7 @@ paths:
               example:
                 status: error
                 error: ORDER_NOT_FOUND
-                message: Pedido no encontrado
+                message: Orden no encontrada
         "500":
           description:  Error interno del servidor 
           content: 
@@ -340,7 +340,7 @@ components:
         payload:
           type: array
           items:
-            $ref: "#/components/schemas/Order"
+            $ref: "#/components/schemas/OrderPopulated"
     OrderInput:
       type: object
       required:
@@ -396,3 +396,50 @@ components:
         quantity:
           type: integer
           example: 2
+    OrderPopulated:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 6ab4331ecc0e40d9547ef359
+        customer:
+          $ref: '#/components/schemas/User'
+        store:
+          $ref: '#/components/schemas/Store'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        deliveryAddress:
+          type: string
+          example: Av. Brasil 202
+        total:
+          type: number
+          example: 5000
+        status:
+          type: string
+          example: created
+        priority:
+          type: string
+          example: normal
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        proof:
+          type: object
+          nullable: true
+          example: null
+    OrderPopulatedResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        message:
+          type: string
+          example: Orden encontrada por id
+        payload:
+          $ref: '#/components/schemas/OrderPopulated'

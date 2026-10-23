@@ -595,11 +595,12 @@ La documentación interactiva está disponible en `http://localhost:<PORT>/api/d
 - **Orders**: `/api/orders`
 - **Deliveries**: `/api/deliveries`
 - **Stores**: `/api/stores`
-- **Products**: `/api/products`
+- **Products**: `/api/products` (solo `GET` y `POST`, lo necesario para obtener ids de productos al crear pedidos)
 - **Mocks**: `/api/mocks`
 - **Logger**: `/loggerTest`
 
 ### Aclaraciones para probar los endpoints
+
 - Los mocks reciben `type` y `qty` por **query**, no por body. `qty` es un entero entre 1 y 50.
 - `POST /api/mocks/seed` necesita datos previos según el tipo: pedidos requieren usuarios, tiendas y productos; deliveries requieren pedidos y drivers.
 - `/loggerTest` es una herramienta de validación de logs, no una funcionalidad de negocio.
