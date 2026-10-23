@@ -113,7 +113,7 @@ components:
           example: success
         message: 
           type: string
-          example: lista de productos  
+          example: Lista de productos  
         payload:
           type: array
           items:
