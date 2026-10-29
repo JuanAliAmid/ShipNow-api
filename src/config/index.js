@@ -9,9 +9,11 @@ for (const key of required) {
     };
 };
 
+const nodeEnv = process.env.NODE_ENV || 'development';
+
 export const env = {
     port: Number(process.env.PORT) || 3000,
-    node_env: process.env.NODE_ENV || 'development',
-    isProd: process.env.NODE_ENV === 'production',
-    mongodb_uri: process.env.MONGODB_URI
+    nodeEnv,
+    isProd: nodeEnv === 'production',
+    mongodb_uri: nodeEnv === 'test' ? process.env.MONGODB_URI_TEST : process.env.MONGODB_URI
 };

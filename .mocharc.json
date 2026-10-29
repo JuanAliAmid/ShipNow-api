@@ -1,0 +1,5 @@
+{
+    "spec": ["src/tests/**/*.test.js"],
+    "require": ["src/tests/setup.js"],
+    "parallel": false
+}

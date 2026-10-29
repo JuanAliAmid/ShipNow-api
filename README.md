@@ -606,6 +606,37 @@ La documentación interactiva está disponible en `http://localhost:<PORT>/api/d
 - `/loggerTest` es una herramienta de validación de logs, no una funcionalidad de negocio.
 - Las respuestas de error tienen el formato `{ status: "error", error: "CODIGO", message: "..." }`.
 
+## Testing
+
+### Herramientas
+- **Mocha**: organiza y ejecuta los tests.
+- **Chai**: aserciones (`expect`).
+- **Supertest**: peticiones HTTP a la app de Express sin levantar un puerto.
+
+### Cómo ejecutar los tests
+```bash
+npm test
+```
+La app (`app.js`) está separada del arranque del servidor, así que los tests la importan directamente.
+
+### Módulos cubiertos
+- **Health**: estado de la API.
+- **Users**: crear, listar, obtener por id, actualizar y eliminar, con errores (campos faltantes, usuario inexistente).
+- **Orders**: crear, listar, obtener por id, actualizar estado y eliminar, con errores (datos incompletos, items vacíos, recurso inexistente, estado inválido, stock insuficiente).
+- **Mocks**: GET de usuarios mock y POST `/seed` (comprueba que se guardó en la base), con error por cantidad inválida (`INVALID_QUANTITY`).
+- **Logger**: `GET /loggerTest`.
+- **Swagger**: `GET /api/docs/`.
+- **Rutas inexistentes**: 404 con el formato de error definido.
+
+Cada test valida el status HTTP y la estructura del body (en los errores, `status`, `error` y `message`).
+
+### Base de datos de testing
+Sí, se requiere una base separada (`ShipNow-api-test`). Antes de cada test, los hooks (`src/tests/setup.js`) limpian las colecciones, y antes de hacerlo verifican que `NODE_ENV` sea `test` y que la base conectada sea la de testing, para no borrar datos de desarrollo.
+
+### Variables de entorno
+- `NODE_ENV=test`
+- `MONGODB_URI_TEST`: URI de la base de testing (por ejemplo `mongodb://localhost:27017/ShipNow-api-test`).
+
 ## Estado actual del proyecto
 
 Esta versión de ShipNow ya cuenta con las 4 entidades principales y un sistema de mocking funcional para poblar la base con datos de prueba, aunque todavía no representa una API completamente profesional.
@@ -625,12 +656,12 @@ config/db.js
 middleware global de errores
 config/logger.js (Winston)
 Swagger
+tests automatizados
 ```
 
 Todavía no incorpora:
 
 ```txt
-tests automatizados
 Multer
 Docker
 ```

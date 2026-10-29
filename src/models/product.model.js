@@ -27,5 +27,5 @@ const productSchema = mongoose.Schema(
         versionKey: false
     }
 );
-
-export default mongoose.model('Product', productSchema);
+const ProductModel = mongoose.model('Product', productSchema)
+export default ProductModel;
