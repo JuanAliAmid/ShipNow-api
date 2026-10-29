@@ -623,10 +623,10 @@ La app (`app.js`) está separada del arranque del servidor, así que los tests l
 
 ### Módulos cubiertos
 - **Health**: estado de la API.
-- **Users**: crear, listar, obtener por id, actualizar y eliminar, con errores (campos faltantes, usuario inexistente).
-- **Deliveries**: Listar, obtener por id y actualizar estado por id, con erroes (delivery inexistente, valor de status inválido).
+- **Users**: crear, listar, obtener por id, actualizar y eliminar, con errores (campos faltantes, usuario inexistente, id con frmato inálido y email duplicado).
+- **Deliveries**: Listar, obtener por id y actualizar estado por id, con errores (delivery inexistente, valor de status inválido).
 - **Orders**: crear, listar, obtener por id, actualizar estado y eliminar, con errores (datos incompletos, items vacíos, recurso inexistente, estado inválido, stock insuficiente).
-- **Mocks**: GET de usuarios mock y POST `/seed` (comprueba que se guardó en la base), con error por cantidad inválida (`INVALID_QUANTITY`).
+- **Mocks**: GET de usuarios, orders, deliveries y drivers mock y POST `/seed` (comprueba que se guardó en la base), con error por cantidad inválida(`INVALID_QUANTITY`), error de tipo(`TYPE_NOT_FOUND`), falta de usuarios(`USER_NOT_FOUND`) y error al no habver ordenes guardadas(`NO_SAVED_PRODUCTS`).
 - **Logger**: `GET /loggerTest`.
 - **Swagger**: `GET /api/docs/`.
 - **Rutas inexistentes**: 404 con el formato de error definido.

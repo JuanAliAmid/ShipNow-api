@@ -9,13 +9,14 @@ describe('Deliveries API', () => {
     //Get all
     describe('Delivery list', () => {
         it('debería responder con una lista de deliveries', async () => {
+            const delivery = await deliveriesFixture();
             const response = await request(app).get('/api/deliveries');
 
             expect(response.status).to.equal(200);
-            expect(response.body).to.have.property('status');
             expect(response.body.status).to.equal('success');
-            expect(response.body).to.have.property('payload');
-            expect(response.body.payload).to.be.an('array');
+            expect(response.body.payload).to.have.lengthOf(1);
+            expect(response.body.payload[0]._id).to.equal(delivery._id.toString());
+            expect(response.body.payload[0].status).to.equal('assigned');
         });
     });
 
@@ -64,6 +65,18 @@ describe('Deliveries API errors', () => {
 
 
         const response = await request(app).get(`/api/deliveries/${id}`);
+
+        expect(response.status).to.equal(404);
+        expect(response.body.status).to.equal('error');
+        expect(response.body.error).to.equal('DELIVERY_NOT_FOUND');
+        expect(response.body.message).to.equal('Delivery no encontrado');
+    }); 
+
+    //Delivery no encontrado de update
+    it("responde 404 si el delivery a actualizar no existe", async () => {
+
+        const id = new mongoose.Types.ObjectId().toString();
+        const response = await request(app).put(`/api/deliveries/${id}/status`).send({ status: 'delivered' });
 
         expect(response.status).to.equal(404);
         expect(response.body.status).to.equal('error');

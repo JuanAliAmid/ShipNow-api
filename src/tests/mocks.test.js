@@ -64,6 +64,8 @@ describe('Mocks API', () => {
     expect(response.status).to.equal(201);
     expect(response.body.status).to.equal('success');
     expect(response.body.payload).to.be.an('object');
+    expect(response.body.payload.insertados).to.equal(5);
+    expect(response.body.payload.coleccion).to.equal('users');
 
     const saved = await UserModel.countDocuments();
 
@@ -98,5 +100,13 @@ describe('Mocks API errors', () => {
     expect(response.status).to.equal(404);
     expect(response.body.error).to.equal('USER_NOT_FOUND');
     expect(response.body.message).to.equal('Usuario no encontrado');
+  });
+
+  it('deberia responder error 400 si no hay órdenes guardadas', async () => {
+    const response = await request(app).get('/api/mocks/orders?qty=2');
+
+    expect(response.status).to.equal(400);
+    expect(response.body.error).to.equal('NO_SAVED_PRODUCTS');
+    expect(response.body.message).to.equal('No hay productos cargados para generar órdenes');
   });
 });
