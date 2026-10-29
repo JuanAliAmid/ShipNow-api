@@ -40,6 +40,7 @@ export async function orderFixture() {
         deliveryAddress: "Av. seguido 12",
         items: [{
             product: product._id.toString(),
+            name: product.name,
             quantity: 3,
             price: product.price,
         }],

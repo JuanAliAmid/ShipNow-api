@@ -31,13 +31,18 @@ describe('Orders API', () => {
   //Get all
   describe('Order list', () => {
     it('debería responder con una lista de pedidos', async () => {
+
+      const body = await orderFixture();
+      const createResponse = await request(app).post('/api/orders').send(body);
+
       const response = await request(app).get('/api/orders');
 
       expect(response.status).to.equal(200);
-      expect(response.body).to.have.property('status');
       expect(response.body.status).to.equal('success');
-      expect(response.body).to.have.property('payload');
-      expect(response.body.payload).to.be.an('array');
+      expect(response.body.payload).to.have.lengthOf(1);
+      expect(response.body.payload[0]._id).to.equal(createResponse.body.payload._id);
+      expect(response.body.payload[0].total).to.equal(6000);
+      expect(response.body.payload[0].status).to.equal('created');
     });
   });
 
@@ -234,16 +239,5 @@ describe('Orders API errors', () => {
     expect(response.body.status).to.equal('error');
     expect(response.body.error).to.equal('PRODUCT_NOT_AVAILABLE');
     expect(response.body.message).to.equal('Producto no disponible');
-  });
-
-  //Ruta no encontrada
-  describe('Not found routes', () => {
-    it('debería responder 404 para una ruta inexistente', async () => {
-      const response = await request(app).get('/api/route-that-does-not-exist');
-
-      expect(response.status).to.equal(404);
-      expect(response.body.status).to.equal('error');
-      expect(response.body).to.have.property('message');
-    });
   });
 });

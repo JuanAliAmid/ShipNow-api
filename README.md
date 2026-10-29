@@ -41,6 +41,7 @@ Al crear un pedido, la API busca cada producto solicitado, descuenta su stock (`
    cp .env.example .env
 ```
    Variables requeridas: `PORT`, `MONGODB_URI`, `NODE_ENV`.
+   Para los test es necesaria la variable: `MONGODB_URI_TEST`.
 4. Iniciá el servidor:
 ```bash
    npm start
@@ -612,6 +613,7 @@ La documentación interactiva está disponible en `http://localhost:<PORT>/api/d
 - **Mocha**: organiza y ejecuta los tests.
 - **Chai**: aserciones (`expect`).
 - **Supertest**: peticiones HTTP a la app de Express sin levantar un puerto.
+- **cross-env**: define `NODE_ENV=test` al ejecutar `npm test`.
 
 ### Cómo ejecutar los tests
 ```bash
@@ -622,6 +624,7 @@ La app (`app.js`) está separada del arranque del servidor, así que los tests l
 ### Módulos cubiertos
 - **Health**: estado de la API.
 - **Users**: crear, listar, obtener por id, actualizar y eliminar, con errores (campos faltantes, usuario inexistente).
+- **Deliveries**: Listar, obtener por id y actualizar estado por id, con erroes (delivery inexistente, valor de status inválido).
 - **Orders**: crear, listar, obtener por id, actualizar estado y eliminar, con errores (datos incompletos, items vacíos, recurso inexistente, estado inválido, stock insuficiente).
 - **Mocks**: GET de usuarios mock y POST `/seed` (comprueba que se guardó en la base), con error por cantidad inválida (`INVALID_QUANTITY`).
 - **Logger**: `GET /loggerTest`.
@@ -634,8 +637,9 @@ Cada test valida el status HTTP y la estructura del body (en los errores, `statu
 Sí, se requiere una base separada (`ShipNow-api-test`). Antes de cada test, los hooks (`src/tests/setup.js`) limpian las colecciones, y antes de hacerlo verifican que `NODE_ENV` sea `test` y que la base conectada sea la de testing, para no borrar datos de desarrollo.
 
 ### Variables de entorno
-- `NODE_ENV=test`
-- `MONGODB_URI_TEST`: URI de la base de testing (por ejemplo `mongodb://localhost:27017/ShipNow-api-test`).
+- `MONGODB_URI_TEST`: URI de la base de testing. Tiene que terminar en `ShipNow-api-test` (por ejemplo `mongodb://localhost:27017/ShipNow-api-test`), si no, los tests se cortan antes de borrar nada.
+- `PORT` y `MONGODB_URI`: la app los exige siempre al cargar la configuración, aunque en test no se use `MONGODB_URI`.
+- `NODE_ENV`: no hace falta definirla para testear, porque `npm test` la fuerza a `test` con `cross-env`.
 
 ## Estado actual del proyecto
 

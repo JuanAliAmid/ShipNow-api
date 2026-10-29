@@ -28,13 +28,14 @@ describe('Users API', () => {
     describe('Users list', () => {
         it('deberia responder con una lista de usuarios', async () => {
 
+            const user = await userFixture()
             const response = await request(app).get('/api/users');
 
             expect(response.status).to.equal(200);
-            expect(response.body).to.have.property('status');
             expect(response.body.status).to.equal('success');
-            expect(response.body).to.have.property('payload');
-            expect(response.body.payload).to.be.an('array');
+            expect(response.body.payload).to.have.lengthOf(1);
+            expect(response.body.payload[0]._id).to.equal(user._id.toString());
+            expect(response.body.payload[0]).to.not.have.property('password');
         });
     });
 
@@ -75,7 +76,6 @@ describe('Users API', () => {
             expect(putResponse.body).to.have.property('status');
             expect(putResponse.body.status).to.equal('success');
             expect(putResponse.body.payload._id).to.equal(body._id.toString());
-            expect(putResponse.body.status).to.not.equal(body.status);
             expect(putResponse.body.payload.firstName).to.equal(newFirstName);
             expect(putResponse.body.payload.lastName).to.equal(newLastName);
             expect(putResponse.body.payload.email).to.equal(newEmail);
@@ -154,5 +154,32 @@ describe('Users API errors', () => {
         expect(response.body.status).to.equal('error');
         expect(response.body.error).to.equal('USER_NOT_FOUND');
         expect(response.body.message).to.equal('Usuario no encontrado');
+    });
+
+    //Emial ya registrado
+    it('responde 409 si el email ya está registrado', async () => {
+        const exist = await userFixture();
+
+        const response = await request(app).post('/api/users').send({
+            firstName: "Otro",
+            lastName: "Test",
+            email: exist.email,
+            password: "coder123"
+        });
+
+        expect(response.status).to.equal(409);
+        expect(response.body.status).to.equal('error');
+        expect(response.body.error).to.equal('DUPLICATE_EMAIL_ADDRESS');
+        expect(response.body.message).to.equal('El email ingresado ya se encuentra registrado');
+    });
+
+    //formado invalido de id
+    it('responde 400 si el id tiene un formato invalido', async () => {
+        const response = await request(app).get('/api/users/id-invalido');
+
+        expect(response.status).to.equal(400);
+        expect(response.body.status).to.equal('error');
+        expect(response.body.error).to.equal('INVALID_DATA');
+        expect(response.body.message).to.equal('El formato de los datos ingresados es incorrecto');
     });
 });

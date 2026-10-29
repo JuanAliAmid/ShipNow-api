@@ -1,6 +1,6 @@
-import { expect } from 'chai'
-import request from 'supertest'
-import app from '../app.js'
+import { expect } from 'chai';
+import request from 'supertest';
+import app from '../app.js';
 
 describe('Loggers', () => {
     it('deberia de responder con status 200', async () => {
