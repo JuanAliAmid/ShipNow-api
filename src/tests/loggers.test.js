@@ -14,7 +14,7 @@ describe('Loggers', () => {
 
 describe('Loggers errors', () => {
     it('debería responder 404 por ruta no encontrada', async () => {
-        const response = await request(app).post('/rutaInvalida');
+        const response = await request(app).post('/loggerTest');
 
         expect(response.status).to.equal(404)
         expect(response.body.status).to.equal('error')

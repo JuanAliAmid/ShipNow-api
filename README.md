@@ -32,6 +32,7 @@ Al crear un pedido, la API busca cada producto solicitado, descuenta su stock (`
 ## Instalación y ejecución local
 
 1. Cloná el repositorio y entrá a la carpeta del proyecto.
+
 2. Instalá las dependencias:
 ```bash
    npm install
@@ -40,8 +41,8 @@ Al crear un pedido, la API busca cada producto solicitado, descuenta su stock (`
 ```bash
    cp .env.example .env
 ```
-   Variables requeridas: `PORT`, `MONGODB_URI`, `NODE_ENV`.
-   Para los test es necesaria la variable: `MONGODB_URI_TEST`.
+   Variables requeridas: `PORT` y `MONGODB_URI`: solo se exigen fuera de test. Para correr `npm test` alcanza con `MONGODB_URI_TEST`.
+
 4. Iniciá el servidor:
 ```bash
    npm start
@@ -625,12 +626,12 @@ La app (`app.js`) está separada del arranque del servidor, así que los tests l
 - **Health**: Estado de la API.
 - **Users**: Crear, listar, obtener por id, actualizar y eliminar, con errores (campos faltantes, usuario inexistente, id con formato inválido y email duplicado en post y put).
 - **Deliveries**: Listar, obtener por id y actualizar estado por id, con errores (delivery inexistente, valor de status inválido).
-- **Orders**: Crear, listar, obtener por id, actualizar estado y eliminar, con errores (datos incompletos, items vacíos, recurso inexistente, estado inválido, stock insuficiente, formado de id inválido en get y delete).
-- **Mocks**: GET de usuarios, orders, deliveries y drivers mock y POST `/seed` (comprueba que se guardó en la base), con error por cantidad inválida en el seed (`INVALID_QUANTITY`), error de tipo (`TYPE_NOT_FOUND`), falta de usuarios (`USER_NOT_FOUND`), error al no haber órdenes guardadas (`NO_SAVED_PRODUCTS`) y error por cantidad inválida del get de users (`INVALID_QUANTITY`).
+- **Orders**: Crear, listar, obtener por id, actualizar estado y eliminar, con errores (datos incompletos, items vacíos, cantidad inválida en un item, recurso inexistente, estado inválido, stock insuficiente, formato de id inválido en get, put de estado y delete).
+- **Mocks**: GET de usuarios, orders, deliveries y drivers mock y POST `/seed` (comprueba que se guardó en la base), con errores por cantidad inválida en el GET de users, orders, deliveries y drivers y en el seed (`INVALID_QUANTITY`), tipo inexistente (`TYPE_NOT_FOUND`) y datos previos faltantes en el seed (`USER_NOT_FOUND`, `STORE_NOT_FOUND`, `PRODUCT_NOT_FOUND`, `ORDER_NOT_FOUND`, `DRIVERS_NOT_FOUND`), más el GET de orders sin productos cargados (`NO_SAVED_PRODUCTS`).
+- **Logger**: `GET /loggerTest`, con error 404 (`ROUTE_NOT_FOUND`) al usar un método no soportado.
+- **Swagger**: `GET /api/docs/`. No tiene caso de error porque es documentación estática, sin errores de negocio.
 - **Stores**: Crear, listar, actualizar, obtener por id, eliminar por id, con errores 400 por id con formato inválido, 400 por falta de datos obligatorios y 404 por tienda inexistente.
 - **Products**: Crear, listar, obtener por id, actualizar, eliminar por id, con errores 400 por falta de campos obligatorios, 400 por valor de precio inválido y 404 por producto no encontrado.
-- **Logger**: `GET /loggerTest`.
-- **Swagger**: `GET /api/docs/`.
 - **Rutas inexistentes**: 404 con el formato de error definido.
 
 Cada test valida el status HTTP y la estructura del body (en los errores, `status`, `error` y `message`).
