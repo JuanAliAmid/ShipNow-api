@@ -160,10 +160,11 @@ describe('Mocks API errors', () => {
     });
   })
 
-  it('deberia responder error 400 si no hay órdenes guardadas', async () => {
+  it('deberia responder error 400 si no hay productos guardados', async () => {
     const response = await request(app).get('/api/mocks/orders?qty=2');
 
     expect(response.status).to.equal(400);
+    expect(response.body.status).to.equal('error')
     expect(response.body.error).to.equal('NO_SAVED_PRODUCTS');
     expect(response.body.message).to.equal('No hay productos cargados para generar órdenes');
   });
