@@ -3,7 +3,9 @@ import request from 'supertest';
 import app from '../app.js';
 import UserModel from '../models/user.model.js';
 import ProductModel from '../models/product.model.js';
-
+import { orderFixture } from './helpers/orderFixture.js';
+import { userFixture } from './helpers/userFixture.js';
+import { storeFixture } from './helpers/storeFixture.js';
 
 describe('Mocks API', () => {
   //users
@@ -59,7 +61,7 @@ describe('Mocks API', () => {
   });
 
   it('deberia de devolver los datos guardados', async () => {
-    const response = await request(app).post('/api/mocks/seed?type=users&qty=5');
+    const response = await request(app).post(`/api/mocks/seed?type=users&qty=5`);
 
     expect(response.status).to.equal(201);
     expect(response.body.status).to.equal('success');
@@ -102,14 +104,61 @@ describe('Mocks API errors', () => {
     expect(response.body.message).to.equal('Usuario no encontrado');
   });
 
-  it('deberia responder error 400 si la cantidad pedida es inválida', async () => {
-    const response = await request(app).get('/api/mocks/users?qty=-1');
+  it('deberia responder error 404 si no hay tiendas para generar ordenes', async () => {
+    await userFixture();
 
-    expect(response.status).to.equal(400);
-    expect(response.body.status).to.equal('error')
-    expect(response.body.error).to.equal('INVALID_QUANTITY');
-    expect(response.body.message).to.equal('El formato de la cantidad es incorrecto');
+    const response = await request(app).post('/api/mocks/seed?type=orders&qty=2');
+
+    expect(response.status).to.equal(404);
+    expect(response.body.status).to.equal('error');
+    expect(response.body.error).to.equal('STORE_NOT_FOUND');
+    expect(response.body.message).to.equal('Tienda no encontrada');
   });
+
+  it('deberia responder error 404 si no hay productos para generar ordenes', async () => {
+    await userFixture();
+    await storeFixture();
+
+    const response = await request(app).post('/api/mocks/seed?type=orders&qty=2');
+
+    expect(response.status).to.equal(404);
+    expect(response.body.status).to.equal('error');
+    expect(response.body.error).to.equal('PRODUCT_NOT_FOUND');
+    expect(response.body.message).to.equal('Producto no encontrado');
+  });
+
+  it('deberia responder error 404 si no hay ordenes para generar deliveries', async () => {
+    const response = await request(app).post('/api/mocks/seed?type=deliveries&qty=2');
+
+    expect(response.status).to.equal(404);
+    expect(response.body.status).to.equal('error');
+    expect(response.body.error).to.equal('ORDER_NOT_FOUND');
+    expect(response.body.message).to.equal('Orden no encontrada');
+  });
+
+  it('deberia responder error 404 si no hay drivers para generar deliveries', async () => {
+    const body = await orderFixture();
+    await request(app).post('/api/orders').send(body);
+
+    const response = await request(app).post('/api/mocks/seed?type=deliveries&qty=2');
+
+    expect(response.status).to.equal(404);
+    expect(response.body.status).to.equal('error');
+    expect(response.body.error).to.equal('DRIVERS_NOT_FOUND');
+    expect(response.body.message).to.equal('Drivers no encontrados');
+  });
+
+  ['users', 'deliveries', 'orders', 'drivers'].forEach(camp => {
+
+    it(`deberia responder error 400 si la cantidad de ${camp} es inválida`, async () => {
+      const response = await request(app).get(`/api/mocks/${camp}?qty=-1`);
+
+      expect(response.status).to.equal(400);
+      expect(response.body.status).to.equal('error')
+      expect(response.body.error).to.equal('INVALID_QUANTITY');
+      expect(response.body.message).to.equal('El formato de la cantidad es incorrecto');
+    });
+  })
 
   it('deberia responder error 400 si no hay órdenes guardadas', async () => {
     const response = await request(app).get('/api/mocks/orders?qty=2');

@@ -173,6 +173,18 @@ describe('Orders API errors', () => {
     expect(response.body.message).to.equal('Orden no encontrada');
   });
 
+  // ID inválido put
+  it("responde 400 si el formato del id ingresado es inválido", async () => {
+
+    const id = 'invalido'
+    const response = await request(app).put(`/api/orders/${id}/status`).send({ status: 'assigned' });
+
+    expect(response.status).to.equal(400);
+    expect(response.body.status).to.equal('error');
+    expect(response.body.error).to.equal('INVALID_DATA');
+    expect(response.body.message).to.equal('El formato de los datos ingresados es incorrecto');
+  });
+
   // Order not found delete
   it("responde 404 si la orden eliminada no se encuentra", async () => {
 
@@ -241,17 +253,7 @@ describe('Orders API errors', () => {
     expect(response.body.message).to.equal('Producto no disponible');
   });
 
-  //formato invalido de id
-  it('responde 400 si el id tiene un formato invalido', async () => {
-    const response = await request(app).get('/api/orders/id-invalido');
-
-    expect(response.status).to.equal(400);
-    expect(response.body.status).to.equal('error');
-    expect(response.body.error).to.equal('INVALID_DATA');
-    expect(response.body.message).to.equal('El formato de los datos ingresados es incorrecto');
-  });
-
-  //formato invalido de id delete
+  //formato invalido de id delete o get
   ['get', 'delete'].forEach(method => {
     it('responde 400 si el id tiene un formato invalido', async () => {
       const response = await request(app)[method]('/api/orders/id-invalido');
@@ -261,5 +263,19 @@ describe('Orders API errors', () => {
       expect(response.body.error).to.equal('INVALID_DATA');
       expect(response.body.message).to.equal('El formato de los datos ingresados es incorrecto');
     });
+  });
+
+  //Cantidad inválida
+  it('debería responder error 400 si la cantidad es inválida', async () => {
+
+    const body = await orderFixture()
+    body.items[0].quantity = -5;
+
+    const response = await request(app).post('/api/orders').send(body);
+
+    expect(response.status).to.equal(400);
+    expect(response.body.status).to.equal('error');
+    expect(response.body.error).to.equal('INVALID_QUANTITY');
+    expect(response.body.message).to.equal('El formato de la cantidad es incorrecto');
   });
 });

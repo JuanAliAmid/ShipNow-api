@@ -11,3 +11,14 @@ describe('Loggers', () => {
         expect(response.body.message).to.equal('logs generados correctamente');
     });
 });
+
+describe('Loggers errors', () => {
+    it('debería responder 404 por ruta no encontrada', async () => {
+        const response = await request(app).post('/rutaInvalida');
+
+        expect(response.status).to.equal(404)
+        expect(response.body.status).to.equal('error')
+        expect(response.body.error).to.equal('ROUTE_NOT_FOUND');
+        expect(response.body.message).to.equal('Ruta no encontrada');
+    });
+});

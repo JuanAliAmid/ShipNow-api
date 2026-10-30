@@ -22,6 +22,8 @@ describe('Users API', () => {
             expect(response.status).to.equal(201);
             expect(response.body.status).to.equal('success');
             expect(response.body.payload._id).to.be.a('string');
+            expect(response.body.payload.email).to.equal(newUser.email);
+            expect(response.body.payload).to.not.have.property('password');
         });
     });
 
@@ -52,7 +54,6 @@ describe('Users API', () => {
             expect(getResponse.body.status).to.equal('success');
             expect(getResponse.body).to.have.property('payload');
             expect(getResponse.body.payload._id).to.equal(body._id.toString());
-            expect(getResponse.body).to.be.an('object');
         });
     });
 
