@@ -41,10 +41,7 @@ Al crear un pedido, la API busca cada producto solicitado, descuenta su stock (`
 ```bash
    cp .env.example .env
 ```
-### Variables de entorno
-- `MONGODB_URI_TEST`: URI de la base de testing. Tiene que terminar en `ShipNow-api-test` (por ejemplo `mongodb://localhost:27017/ShipNow-api-test`); si no, los tests se cortan antes de borrar datos reales. Es la única variable obligatoria para correr `npm test`.
-- `NODE_ENV`: no hace falta definirla, porque `npm test` la fuerza a `test` con `cross-env`.
-- `PORT` y `MONGODB_URI`: no se usan en test. Solo se exigen para levantar el servidor con `npm start` o `npm run dev`.
+   Variables requeridas: `PORT` y `MONGODB_URI` solo se exigen fuera de test. Para correr `npm test` alcanza con `MONGODB_URI_TEST`.
 
 4. Iniciá el servidor:
 ```bash
@@ -643,9 +640,9 @@ Cada test valida el status HTTP y la estructura del body (en los errores, `statu
 Sí, se requiere una base separada (`ShipNow-api-test`). Antes de cada test, los hooks (`src/tests/setup.js`) limpian las colecciones, y antes de hacerlo verifican que `NODE_ENV` sea `test` y que la base conectada sea la de testing, para no borrar datos de desarrollo.
 
 ### Variables de entorno
-- `MONGODB_URI_TEST`: URI de la base de testing. Tiene que terminar en `ShipNow-api-test` (por ejemplo `mongodb://localhost:27017/ShipNow-api-test`), si no, los tests se cortan antes de borrar nada.
-- `PORT` y `MONGODB_URI`: la app los exige siempre al cargar la configuración, aunque en test no se use `MONGODB_URI`.
-- `NODE_ENV`: no hace falta definirla para testear, porque `npm test` la fuerza a `test` con `cross-env`.
+- `MONGODB_URI_TEST`: URI de la base de testing. Tiene que terminar en `ShipNow-api-test` (por ejemplo `mongodb://localhost:27017/ShipNow-api-test`); si no, los tests se cortan antes de borrar datos reales. Es la única variable obligatoria para correr `npm test`.
+- `NODE_ENV`: no hace falta definirla, porque `npm test` la fuerza a `test` con `cross-env`.
+- `PORT` y `MONGODB_URI`: no se usan en test. Solo se exigen para levantar el servidor con `npm start` o `npm run dev`.
 
 ## Estado actual del proyecto
 

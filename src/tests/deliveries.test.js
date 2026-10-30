@@ -70,7 +70,7 @@ describe('Deliveries API errors', () => {
         expect(response.body.status).to.equal('error');
         expect(response.body.error).to.equal('DELIVERY_NOT_FOUND');
         expect(response.body.message).to.equal('Delivery no encontrado');
-    }); 
+    });
 
     //Delivery no encontrado de update
     it("responde 404 si el delivery a actualizar no existe", async () => {

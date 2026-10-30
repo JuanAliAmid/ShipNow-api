@@ -19,5 +19,5 @@ export async function storeFixture() {
         owner: owner._id,
         isActive: true
     });
-    return store ;
+    return store;
 };
