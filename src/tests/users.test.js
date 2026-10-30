@@ -158,7 +158,7 @@ describe('Users API errors', () => {
     });
 
     //Email ya registrado post
-    it('responde 409 si el email ya está registrado', async () => {
+    it('responde 409 si el email ya está registrado en post', async () => {
         const exist = await userFixture();
 
         const response = await request(app).post('/api/users').send({
@@ -175,7 +175,7 @@ describe('Users API errors', () => {
     });
 
     //Email ya registrado put
-    it('responde 409 si el email ya está registrado', async () => {
+    it('responde 409 si el email ya está registrado en put', async () => {
         const user = await userFixture();
         await UserModel.create({
             firstName: "Otro",
@@ -191,7 +191,7 @@ describe('Users API errors', () => {
         expect(response.body.message).to.equal('El email ingresado ya se encuentra registrado');
     });
 
-    //formado invalido de id
+    //formato invalido de id
     ['get', 'put', 'delete'].forEach(method => {
         it('responde 400 si el id tiene un formato invalido', async () => {
             const response = await request(app)[method]('/api/users/id-invalido').send({ firstName: 'Nuevo' });

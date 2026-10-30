@@ -626,9 +626,9 @@ La app (`app.js`) está separada del arranque del servidor, así que los tests l
 - **Users**: Crear, listar, obtener por id, actualizar y eliminar, con errores (campos faltantes, usuario inexistente, id con formato inválido y email duplicado en post y put).
 - **Deliveries**: Listar, obtener por id y actualizar estado por id, con errores (delivery inexistente, valor de status inválido).
 - **Orders**: Crear, listar, obtener por id, actualizar estado y eliminar, con errores (datos incompletos, items vacíos, recurso inexistente, estado inválido, stock insuficiente, formado de id inválido en get y delete).
-- **Mocks**: GET de usuarios, orders, deliveries y drivers mock y POST `/seed` (comprueba que se guardó en la base), con error por cantidad inválida  en el seed (`INVALID_QUANTITY`), error de tipo (`TYPE_NOT_FOUND`), falta de usuarios (`USER_NOT_FOUND`), error al no haber órdenes guardadas (`NO_SAVED_PRODUCTS`) y error por cantidad inválida del get de users (`INVALID_QUANTITY`).
+- **Mocks**: GET de usuarios, orders, deliveries y drivers mock y POST `/seed` (comprueba que se guardó en la base), con error por cantidad inválida en el seed (`INVALID_QUANTITY`), error de tipo (`TYPE_NOT_FOUND`), falta de usuarios (`USER_NOT_FOUND`), error al no haber órdenes guardadas (`NO_SAVED_PRODUCTS`) y error por cantidad inválida del get de users (`INVALID_QUANTITY`).
 - **Stores**: Crear, listar, actualizar, obtener por id, eliminar por id, con errores 400 por id con formato inválido, 400 por falta de datos obligatorios y 404 por tienda inexistente.
-- **Products**: Crear, listar, obtener por id, actualizar, eliminar por id, con errores 400 por falta de campos obligatorios, 400 por valor de precio inváldo y 404 por producto no encontrado.
+- **Products**: Crear, listar, obtener por id, actualizar, eliminar por id, con errores 400 por falta de campos obligatorios, 400 por valor de precio inválido y 404 por producto no encontrado.
 - **Logger**: `GET /loggerTest`.
 - **Swagger**: `GET /api/docs/`.
 - **Rutas inexistentes**: 404 con el formato de error definido.

@@ -241,7 +241,7 @@ describe('Orders API errors', () => {
     expect(response.body.message).to.equal('Producto no disponible');
   });
 
-  //formado invalido de id
+  //formato invalido de id
   it('responde 400 si el id tiene un formato invalido', async () => {
     const response = await request(app).get('/api/orders/id-invalido');
 
@@ -251,7 +251,7 @@ describe('Orders API errors', () => {
     expect(response.body.message).to.equal('El formato de los datos ingresados es incorrecto');
   });
 
-  //formado invalido de id delete
+  //formato invalido de id delete
   ['get', 'delete'].forEach(method => {
     it('responde 400 si el id tiene un formato invalido', async () => {
       const response = await request(app)[method]('/api/orders/id-invalido');
