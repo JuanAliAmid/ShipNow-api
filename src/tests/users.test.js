@@ -3,6 +3,7 @@ import request from 'supertest';
 import app from '../app.js';
 import { userFixture } from './helpers/userFixture.js';
 import mongoose from 'mongoose';
+import UserModel from '../models/user.model.js';
 
 describe('Users API', () => {
     //Created
@@ -156,7 +157,7 @@ describe('Users API errors', () => {
         expect(response.body.message).to.equal('Usuario no encontrado');
     });
 
-    //Emial ya registrado
+    //Email ya registrado post
     it('responde 409 si el email ya está registrado', async () => {
         const exist = await userFixture();
 
@@ -173,13 +174,32 @@ describe('Users API errors', () => {
         expect(response.body.message).to.equal('El email ingresado ya se encuentra registrado');
     });
 
-    //formado invalido de id
-    it('responde 400 si el id tiene un formato invalido', async () => {
-        const response = await request(app).get('/api/users/id-invalido');
+    //Email ya registrado put
+    it('responde 409 si el email ya está registrado', async () => {
+        const user = await userFixture();
+        await UserModel.create({
+            firstName: "Otro",
+            lastName: "Test",
+            email: 'otro@test.com',
+            password: "coder123"
+        });
+        const response = await request(app).put(`/api/users/${user._id.toString()}`).send({ email: 'otro@test.com' });
 
-        expect(response.status).to.equal(400);
+        expect(response.status).to.equal(409);
         expect(response.body.status).to.equal('error');
-        expect(response.body.error).to.equal('INVALID_DATA');
-        expect(response.body.message).to.equal('El formato de los datos ingresados es incorrecto');
+        expect(response.body.error).to.equal('DUPLICATE_EMAIL_ADDRESS');
+        expect(response.body.message).to.equal('El email ingresado ya se encuentra registrado');
+    });
+
+    //formado invalido de id
+    ['get', 'put', 'delete'].forEach(method => {
+        it('responde 400 si el id tiene un formato invalido', async () => {
+            const response = await request(app)[method]('/api/users/id-invalido').send({ firstName: 'Nuevo' });
+
+            expect(response.status).to.equal(400);
+            expect(response.body.status).to.equal('error');
+            expect(response.body.error).to.equal('INVALID_DATA');
+            expect(response.body.message).to.equal('El formato de los datos ingresados es incorrecto');
+        });
     });
 });

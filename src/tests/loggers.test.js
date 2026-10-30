@@ -8,6 +8,6 @@ describe('Loggers', () => {
 
         expect(response.status).to.equal(200);
         expect(response.body.status).to.equal('success');
-        expect(response.body).to.have.property('message');
+        expect(response.body.message).to.equal('logs generados correctamente');
     });
 });

@@ -102,6 +102,15 @@ describe('Mocks API errors', () => {
     expect(response.body.message).to.equal('Usuario no encontrado');
   });
 
+  it('deberia responder error 400 si la cantidad pedida es inválida', async () => {
+    const response = await request(app).get('/api/mocks/users?qty=-1');
+
+    expect(response.status).to.equal(400);
+    expect(response.body.status).to.equal('error')
+    expect(response.body.error).to.equal('INVALID_QUANTITY');
+    expect(response.body.message).to.equal('El formato de la cantidad es incorrecto');
+  });
+
   it('deberia responder error 400 si no hay órdenes guardadas', async () => {
     const response = await request(app).get('/api/mocks/orders?qty=2');
 
