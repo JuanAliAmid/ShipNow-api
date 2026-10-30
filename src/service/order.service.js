@@ -41,7 +41,7 @@ export const orderService = {
 
       const ordersItems = [];
 
-      if (items.length <= 0 || !Array.isArray(items)) {
+      if (!Array.isArray(items) || items.length <= 0) {
          throw createError(ERROR_CODES.INVALID_DATA);
       }
 

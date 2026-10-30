@@ -32,6 +32,7 @@ Al crear un pedido, la API busca cada producto solicitado, descuenta su stock (`
 ## Instalación y ejecución local
 
 1. Cloná el repositorio y entrá a la carpeta del proyecto.
+
 2. Instalá las dependencias:
 ```bash
    npm install
@@ -40,7 +41,8 @@ Al crear un pedido, la API busca cada producto solicitado, descuenta su stock (`
 ```bash
    cp .env.example .env
 ```
-   Variables requeridas: `PORT`, `MONGODB_URI`, `NODE_ENV`.
+   Variables requeridas: `PORT` y `MONGODB_URI` solo se exigen fuera de test. Para correr `npm test` alcanza con `MONGODB_URI_TEST`.
+
 4. Iniciá el servidor:
 ```bash
    npm start
@@ -606,6 +608,42 @@ La documentación interactiva está disponible en `http://localhost:<PORT>/api/d
 - `/loggerTest` es una herramienta de validación de logs, no una funcionalidad de negocio.
 - Las respuestas de error tienen el formato `{ status: "error", error: "CODIGO", message: "..." }`.
 
+## Testing
+
+### Herramientas
+- **Mocha**: organiza y ejecuta los tests.
+- **Chai**: aserciones (`expect`).
+- **Supertest**: peticiones HTTP a la app de Express sin levantar un puerto.
+- **cross-env**: define `NODE_ENV=test` al ejecutar `npm test`.
+
+### Cómo ejecutar los tests
+```bash
+npm test
+```
+La app (`app.js`) está separada del arranque del servidor, así que los tests la importan directamente.
+
+### Módulos cubiertos
+- **Health**: Estado de la API.
+- **Users**: Crear, listar, obtener por id, actualizar y eliminar, con errores (campos faltantes, usuario inexistente, id con formato inválido y email duplicado en post y put).
+- **Deliveries**: Listar, obtener por id y actualizar estado por id, con errores (delivery inexistente, valor de status inválido).
+- **Orders**: Crear, listar, obtener por id, actualizar estado y eliminar, con errores (datos incompletos, items vacíos, cantidad inválida en un item, recurso inexistente, estado inválido, stock insuficiente, formato de id inválido en get, put de estado y delete).
+- **Mocks**: GET de usuarios, orders, deliveries y drivers mock y POST `/seed` (comprueba que se guardó en la base), con errores por cantidad inválida en el GET de users, orders, deliveries y drivers y en el seed (`INVALID_QUANTITY`), tipo inexistente (`TYPE_NOT_FOUND`) y datos previos faltantes en el seed (`USER_NOT_FOUND`, `STORE_NOT_FOUND`, `PRODUCT_NOT_FOUND`, `ORDER_NOT_FOUND`, `DRIVERS_NOT_FOUND`), más el GET de orders sin productos cargados (`NO_SAVED_PRODUCTS`).
+- **Logger**: `GET /loggerTest`, con error 404 (`ROUTE_NOT_FOUND`) al usar un método no soportado.
+- **Swagger**: `GET /api/docs/`. No tiene caso de error porque es documentación estática, sin errores de negocio.
+- **Stores**: Crear, listar, actualizar, obtener por id, eliminar por id, con errores 400 por id con formato inválido, 400 por falta de datos obligatorios y 404 por tienda inexistente.
+- **Products**: Crear, listar, obtener por id, actualizar, eliminar por id, con errores 400 por falta de campos obligatorios, 400 por valor de precio inválido y 404 por producto no encontrado.
+- **Rutas inexistentes**: 404 con el formato de error definido.
+
+Cada test valida el status HTTP y la estructura del body (en los errores, `status`, `error` y `message`).
+
+### Base de datos de testing
+Sí, se requiere una base separada (`ShipNow-api-test`). Antes de cada test, los hooks (`src/tests/setup.js`) limpian las colecciones, y antes de hacerlo verifican que `NODE_ENV` sea `test` y que la base conectada sea la de testing, para no borrar datos de desarrollo.
+
+### Variables de entorno
+- `MONGODB_URI_TEST`: URI de la base de testing. Tiene que terminar en `ShipNow-api-test` (por ejemplo `mongodb://localhost:27017/ShipNow-api-test`); si no, los tests se cortan antes de borrar datos reales. Es la única variable obligatoria para correr `npm test`.
+- `NODE_ENV`: no hace falta definirla, porque `npm test` la fuerza a `test` con `cross-env`.
+- `PORT` y `MONGODB_URI`: no se usan en test. Solo se exigen para levantar el servidor con `npm start` o `npm run dev`.
+
 ## Estado actual del proyecto
 
 Esta versión de ShipNow ya cuenta con las 4 entidades principales y un sistema de mocking funcional para poblar la base con datos de prueba, aunque todavía no representa una API completamente profesional.
@@ -625,12 +663,12 @@ config/db.js
 middleware global de errores
 config/logger.js (Winston)
 Swagger
+tests automatizados
 ```
 
 Todavía no incorpora:
 
 ```txt
-tests automatizados
 Multer
 Docker
 ```
