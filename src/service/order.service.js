@@ -7,6 +7,10 @@ import { productRepository } from '../repository/product.repository.js';
 import { createError } from '../utils/apiResponse.js';
 import ERROR_CODES from '../errors/error.codes.js';
 import logger from '../config/logger.js';
+import { fileTypeFromFile } from 'file-type';
+import deleteUploadFile from '../utils/deleteUploadFile.js';
+import { allowedMimeTypes } from '../constants/constants.js';
+
 
 export const orderService = {
    getOrders: async () => {
@@ -105,4 +109,54 @@ export const orderService = {
 
       return order;
    },
+
+   uploadedReceipt: async (orderId, file) => {
+      try {
+         if (!file) {
+            throw createError(ERROR_CODES.NOT_RECIVED_FILE);
+         };
+
+         const order = await orderRepository.findById(orderId);
+
+         if (!order) {
+            throw createError(ERROR_CODES.ORDER_NOT_FOUND);
+         };
+
+         const fileType = await fileTypeFromFile(file.path);
+
+         if (!fileType || !allowedMimeTypes.includes(fileType.mime)) {
+            throw createError(ERROR_CODES.INVALID_FILE_TYPE);
+         };
+
+         const ordenAnterior = order.receipt;
+
+         const receipt = {
+            originalName: file.originalname,
+            fileName: file.filename,
+            path: file.path,
+            mimeType: fileType.mime,
+            size: file.size,
+            uploadedAt: new Date()
+         };
+
+         const uploadOrder = await orderRepository.addReceipt(orderId, receipt);
+
+         if (ordenAnterior?.path) {
+            await deleteUploadFile(orderId, ordenAnterior);
+         };
+
+         logger.info({
+            message: "Orden cargada correctamente",
+            orderId,
+            fileName: file.filename,
+            originalName: file.originalname,
+            size: file.size
+         });
+
+         return uploadOrder;
+      } catch (error) {
+         await deleteUploadFile(orderId, file);
+         throw error;
+      }
+   }
 };

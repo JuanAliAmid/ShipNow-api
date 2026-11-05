@@ -27,5 +27,13 @@ export const orderRepository = {
 
    createMany: async (orderData) => {
       return OrderModel.insertMany(orderData);
+   },
+
+   addReceipt: async (id, metadata) => {
+      return OrderModel.findByIdAndUpdate(
+         id,
+         { $set: { receipt: metadata } },
+         { new: true, runValidators: true },
+      );
    }
 };

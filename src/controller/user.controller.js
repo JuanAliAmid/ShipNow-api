@@ -1,5 +1,5 @@
 import { userService } from "../service/user.service.js";
-import {successResponse} from '../utils/apiResponse.js'
+import { successResponse } from '../utils/apiResponse.js'
 
 export const userController = {
     findById: async (req, res, next) => {
@@ -34,6 +34,17 @@ export const userController = {
         try {
             const userUpdate = await userService.updateUser(req.params.uid, req.body,);
             successResponse(res, { message: 'Usuario actualizado', payload: userUpdate });
+        } catch (error) {
+            next(error);
+        };
+    },
+
+    uploadedDocument: async (req, res, next) => {
+        try {
+            console.log("BODY RECIBIDO:", req.body);
+            console.log("ARCHIVO RECIBIDO:", req.file);
+            const user = await userService.uploadedDocument(req.params.uid, req.file, req.body.documentType);
+            successResponse(res, { message: 'Documento cargado', payload: user });
         } catch (error) {
             next(error);
         };
