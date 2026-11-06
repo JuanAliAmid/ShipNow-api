@@ -147,7 +147,7 @@ export const orderService = {
             };
 
             logger.info({
-               message: "Orden cargada correctamente",
+               message: "Comprobante cargado",
                orderId,
                fileName: file.filename,
                originalName: file.originalname,

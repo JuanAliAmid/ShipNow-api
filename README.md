@@ -234,6 +234,20 @@ Body de ejemplo:
 }
 ```
 
+### Cargar documento de usuario
+
+```http
+POST /api/users/:uid/documents
+Content-Type: multipart/form-data
+```
+
+Campos del form-data:
+
+- `document` (file): el archivo.
+- `documentType` (text): `document` o `license`.
+
+Cada carga **agrega** un documento al array `documents` del usuario; los anteriores se conservan. Ver [Carga de archivos](#carga-de-archivos-multer).
+
 ### Actualizar usuario
 
 ```http
@@ -425,6 +439,15 @@ Respuesta esperada:
 }
 ```
 
+### Cargar comprobante del pedido
+
+```http
+POST /api/orders/:oid/receipt
+Content-Type: multipart/form-data
+```
+
+Campo del form-data: `receipt` (file). Cada pedido tiene **un solo comprobante**: si ya tenía uno, se reemplaza y se borra el archivo anterior. Ver [Carga de archivos](#carga-de-archivos-multer).
+
 ### Actualizar estado del pedido
 
 ```http
@@ -550,6 +573,53 @@ Caso válido de referencia: `POST /api/mocks/seed?type=users&qty=3` responde `20
 
 Si Mongo no está disponible al iniciar el servidor, la API no levanta y se cierra con un mensaje en consola.
 
+## Carga de archivos (Multer)
+
+La API permite subir documentos de usuario y comprobantes de pedido con [Multer](https://github.com/expressjs/multer) (`middlewares/upload.middleware.js`).
+
+### Endpoints
+
+| Endpoint | Campo del archivo | Otros campos | Comportamiento |
+|---|---|---|---|
+| `POST /api/users/:uid/documents` | `document` | `documentType` (`document` o `license`) | Agrega el documento al array `documents` del usuario |
+| `POST /api/orders/:oid/receipt` | `receipt` | — | Guarda el comprobante; si había uno, lo reemplaza y borra el anterior |
+
+### Reglas
+
+- Formatos permitidos: PDF, JPEG, PNG y WEBP.
+- Tamaño máximo: 5 MB por archivo.
+- Se valida el tipo dos veces: por el `mimetype` que declara el cliente (`fileFilter` de Multer) y por el contenido real del archivo (`file-type`), para que no se pueda subir otro formato cambiando la extensión.
+
+### Dónde se guardan
+
+- Los archivos se guardan en disco, en `uploads/documents`, `uploads/receipts` y `uploads/licenses`. Las carpetas se crean solas al primer uso.
+- El nombre en disco es único (`<timestamp>-<número aleatorio><extensión>`), para que dos archivos con el mismo nombre no se pisen.
+- En la base solo se guardan los metadatos: `originalName`, `fileName`, `path`, `mimeType`, `size`, `uploadedAt` (y `documentType` en los documentos de usuario).
+- `uploads/` está en `.gitignore`.
+
+### Errores
+
+| Código | Status | Cuándo |
+|---|---|---|
+| `INVALID_FILE_TYPE` | 400 | El archivo no es PDF, JPEG, PNG o WEBP |
+| `INVALID_DOCUMENT_TYPE` | 400 | `documentType` falta o no es `document` / `license` |
+| `LIMIT_FILE_SIZE` | 400 | El archivo supera los 5 MB |
+| `LIMIT_UNEXPECTED_FILE` | 400 | El campo del archivo tiene otro nombre (no es `document` / `receipt`) |
+| `NOT_RECIVED_FILE` | 400 | No se envió ningún archivo |
+| `USER_NOT_FOUND` / `ORDER_NOT_FOUND` | 404 | El id no existe |
+| `SAVE_FILE_FAILED` | 500 | Falló el guardado de los metadatos en la base |
+
+Si la operación falla después de que Multer guardó el archivo, el archivo se borra del disco para no dejar basura. Los errores de Multer se traducen en `errorHandler.js` al mismo formato de error del resto de la API.
+
+### Cómo probarlo
+
+Con Postman o Swagger (`/api/docs`), enviar el body como `form-data` (no JSON):
+
+- Usuario: `document` (tipo File) + `documentType` (tipo Text).
+- Pedido: `receipt` (tipo File).
+
+Casos inválidos para probar: un `.txt` (`INVALID_FILE_TYPE`), un archivo de más de 5 MB (`LIMIT_FILE_SIZE`), otro nombre de campo (`LIMIT_UNEXPECTED_FILE`), sin archivo (`NOT_RECIVED_FILE`) y `documentType` inválido.
+
 ## Logger
 
 ### Herramientas
@@ -593,8 +663,9 @@ En ambos entornos la carpeta logs solo contendrá archivos que registran error y
 La documentación interactiva está disponible en `http://localhost:<PORT>/api/docs` con el servidor levantado.
 
 ### Módulos documentados
-- **Users**: `/api/users`
-- **Orders**: `/api/orders`
+
+- **Users**: `/api/users` (incluye `POST /{uid}/documents`, `multipart/form-data`)
+- **Orders**: `/api/orders` (incluye `POST /{oid}/receipt`, `multipart/form-data`)
 - **Deliveries**: `/api/deliveries`
 - **Stores**: `/api/stores`
 - **Products**: `/api/products` (solo `GET` y `POST`, lo necesario para obtener ids de productos al crear pedidos)
@@ -611,23 +682,27 @@ La documentación interactiva está disponible en `http://localhost:<PORT>/api/d
 ## Testing
 
 ### Herramientas
+
 - **Mocha**: organiza y ejecuta los tests.
 - **Chai**: aserciones (`expect`).
 - **Supertest**: peticiones HTTP a la app de Express sin levantar un puerto.
 - **cross-env**: define `NODE_ENV=test` al ejecutar `npm test`.
 
 ### Cómo ejecutar los tests
+
 ```bash
 npm test
 ```
 La app (`app.js`) está separada del arranque del servidor, así que los tests la importan directamente.
 
 ### Módulos cubiertos
+
 - **Health**: Estado de la API.
 - **Users**: Crear, listar, obtener por id, actualizar y eliminar, con errores (campos faltantes, usuario inexistente, id con formato inválido y email duplicado en post y put).
 - **Deliveries**: Listar, obtener por id y actualizar estado por id, con errores (delivery inexistente, valor de status inválido).
 - **Orders**: Crear, listar, obtener por id, actualizar estado y eliminar, con errores (datos incompletos, items vacíos, cantidad inválida en un item, recurso inexistente, estado inválido, stock insuficiente, formato de id inválido en get, put de estado y delete).
 - **Mocks**: GET de usuarios, orders, deliveries y drivers mock y POST `/seed` (comprueba que se guardó en la base), con errores por cantidad inválida en el GET de users, orders, deliveries y drivers y en el seed (`INVALID_QUANTITY`), tipo inexistente (`TYPE_NOT_FOUND`) y datos previos faltantes en el seed (`USER_NOT_FOUND`, `STORE_NOT_FOUND`, `PRODUCT_NOT_FOUND`, `ORDER_NOT_FOUND`, `DRIVERS_NOT_FOUND`), más el GET de orders sin productos cargados (`NO_SAVED_PRODUCTS`).
+- **Carga de archivos**: documentos de usuario y comprobantes de pedido. Cada test arma un PNG de 1x1 píxel en memoria (`Buffer` desde base64), así que no hacen falta archivos en el repo, y un `afterEach` borra el archivo subido. Cubren la carga exitosa y los errores (sin archivo, `documentType` inválido o vacío).
 - **Logger**: `GET /loggerTest`, con error 404 (`ROUTE_NOT_FOUND`) al usar un método no soportado.
 - **Swagger**: `GET /api/docs/`. No tiene caso de error porque es documentación estática, sin errores de negocio.
 - **Stores**: Crear, listar, actualizar, obtener por id, eliminar por id, con errores 400 por id con formato inválido, 400 por falta de datos obligatorios y 404 por tienda inexistente.
@@ -637,9 +712,11 @@ La app (`app.js`) está separada del arranque del servidor, así que los tests l
 Cada test valida el status HTTP y la estructura del body (en los errores, `status`, `error` y `message`).
 
 ### Base de datos de testing
+
 Sí, se requiere una base separada (`ShipNow-api-test`). Antes de cada test, los hooks (`src/tests/setup.js`) limpian las colecciones, y antes de hacerlo verifican que `NODE_ENV` sea `test` y que la base conectada sea la de testing, para no borrar datos de desarrollo.
 
 ### Variables de entorno
+
 - `MONGODB_URI_TEST`: URI de la base de testing. Tiene que terminar en `ShipNow-api-test` (por ejemplo `mongodb://localhost:27017/ShipNow-api-test`); si no, los tests se cortan antes de borrar datos reales. Es la única variable obligatoria para correr `npm test`.
 - `NODE_ENV`: no hace falta definirla, porque `npm test` la fuerza a `test` con `cross-env`.
 - `PORT` y `MONGODB_URI`: no se usan en test. Solo se exigen para levantar el servidor con `npm start` o `npm run dev`.
@@ -664,12 +741,12 @@ middleware global de errores
 config/logger.js (Winston)
 Swagger
 tests automatizados
+carga de archivos con Multer
 ```
 
 Todavía no incorpora:
 
 ```txt
-Multer
 Docker
 ```
 

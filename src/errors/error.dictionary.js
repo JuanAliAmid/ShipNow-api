@@ -91,7 +91,7 @@ const errorsDictionary = {
     },
     [ERROR_CODES.LIMIT_FILE_SIZE]: {
         statusCode: 400,
-        message: 'Se exedió el limite de tamaño permitido'
+        message: 'Se excedió el limite de tamaño permitido'
     },
     [ERROR_CODES.LIMIT_UNEXPECTED_FILE]: {
         statusCode: 400,

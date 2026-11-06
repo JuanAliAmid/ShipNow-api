@@ -310,7 +310,7 @@ paths:
                 schema:
                   $ref: '#/components/schemas/OrderResponse'
           "400":
-            description: No se recibió ningún archivo / Tipo de archivo inválido / ID con formato inválido / Se exedió el limite de tamaño permitido / Campo de archivo con nombre incorrecto
+            description: No se recibió ningún archivo / Tipo de archivo inválido / ID con formato inválido / Se excedió el limite de tamaño permitido / Campo de archivo con nombre incorrecto
             content:
               application/json:
                 schema:

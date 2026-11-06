@@ -87,7 +87,7 @@ export const userService = {
          try {
             const uploadUser = await userRepository.addDocument(userId, document);
             logger.info({
-               message: "Usuario cargado correctamente",
+               message: "Documento cargado",
                userId,
                fileName: file.filename,
                originalName: file.originalname,
