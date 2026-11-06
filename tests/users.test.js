@@ -265,7 +265,7 @@ describe('Users API errors', () => {
     });
 
     //Tipo de archivo inválido
-    it("responde 400 si el tipo de documento es inválido está vacio", async () => {
+    it("responde 400 si el tipo de documento es inválido o está vacio", async () => {
 
         const body = await userFixture();
         const img = ''

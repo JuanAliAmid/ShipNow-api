@@ -592,7 +592,7 @@ La API permite subir documentos de usuario y comprobantes de pedido con [Multer]
 
 ### Dónde se guardan
 
-- Los archivos se guardan en disco, en `uploads/documents`, `uploads/receipts` y `uploads/licenses`. Las carpetas se crean solas al primer uso.
+- Los archivos se guardan en disco, en `uploads/documents` y `uploads/receipts`. Las carpetas se crean solas al primer uso.
 - El nombre en disco es único (`<timestamp>-<número aleatorio><extensión>`), para que dos archivos con el mismo nombre no se pisen.
 - En la base solo se guardan los metadatos: `originalName`, `fileName`, `path`, `mimeType`, `size`, `uploadedAt` (y `documentType` en los documentos de usuario).
 - `uploads/` está en `.gitignore`.
@@ -713,7 +713,7 @@ Cada test valida el status HTTP y la estructura del body (en los errores, `statu
 
 ### Base de datos de testing
 
-Sí, se requiere una base separada (`ShipNow-api-test`). Antes de cada test, los hooks (`src/tests/setup.js`) limpian las colecciones, y antes de hacerlo verifican que `NODE_ENV` sea `test` y que la base conectada sea la de testing, para no borrar datos de desarrollo.
+Sí, se requiere una base separada (`ShipNow-api-test`). Antes de cada test, los hooks (`tests/setup.js`) limpian las colecciones, y antes de hacerlo verifican que `NODE_ENV` sea `test` y que la base conectada sea la de testing, para no borrar datos de desarrollo.
 
 ### Variables de entorno
 
