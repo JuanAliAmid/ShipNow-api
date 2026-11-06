@@ -125,6 +125,7 @@ export const orderService = {
          const fileType = await fileTypeFromFile(file.path);
 
          if (!fileType || !allowedMimeTypes.includes(fileType.mime)) {
+            logger.warning(`Archivo rechazado por contenido: ${file.originalname}, detectado: ${fileType?.mime ?? 'desconocido'}`);
             throw createError(ERROR_CODES.INVALID_FILE_TYPE);
          };
 
