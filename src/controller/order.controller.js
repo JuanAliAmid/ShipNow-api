@@ -41,7 +41,7 @@ export const updateOrderStatus = async (req, res, next) => {
 export const uploadedReceipt = async (req, res, next) => {
   try {
     const order = await orderService.uploadedReceipt(req.params.oid, req.file);
-    successResponse(res, { message: 'Pedido cargado', payload: order });
+    successResponse(res, { message: 'Comprobante cargado', payload: order });
   } catch (error) {
     next(error);
   };

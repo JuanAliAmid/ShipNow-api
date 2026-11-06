@@ -280,6 +280,22 @@ describe('Users API errors', () => {
         expect(response.body.message).to.equal('Tipo de archivo inválido');
     });
 
+    //Tamaño excedido
+    it('responde 400 si el archivo supera el tamaño máximo', async () => {
+        const id = '6ab430314443efb186ab6a65';
+        const bigFile = Buffer.alloc(5 * 1024 * 1024 + 1);
+
+        const response = await request(app)
+            .post(`/api/users/${id}/documents`)
+            .field('documentType', 'document')
+            .attach('document', bigFile, 'big.png');
+
+        expect(response.status).to.equal(400);
+        expect(response.body.status).to.equal('error');
+        expect(response.body.error).to.equal('LIMIT_FILE_SIZE');
+        expect(response.body.message).to.equal('Se excedió el limite de tamaño permitido');
+    });
+
     //User de document no existe
     it("responde 404 si el usuario no existe", async () => {
 

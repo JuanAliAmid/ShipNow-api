@@ -335,7 +335,7 @@ paths:
                     value:
                       status: error
                       error: LIMIT_FILE_SIZE
-                      message: El formato de los datos ingresados es incorrecto
+                      message: Se excedió el limite de tamaño permitido
                   limitUnexpectedFile:
                     value:
                       status: error
