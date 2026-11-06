@@ -4,13 +4,15 @@ import fs from 'fs';
 import ERROR_CODES from '../errors/error.codes.js';
 import { createError } from '../utils/apiResponse.js';
 import { allowedMimeTypes } from '../constants/constants.js';
+import logger from '../config/logger.js';
 
 
-const fileFilter = (_req, file, cb) => {
+const fileFilter = (req, file, cb) => {
     if (allowedMimeTypes.includes(file.mimetype)) {
         cb(null, true);
     } else {
-        cb(createError(ERROR_CODES.INVALID_QUANTITY));
+        logger.warning(`Archivo rechazado por tipo: ${file.originalname}, ${file.mimetype}, ${req.originalUrl}`)
+        cb(createError(ERROR_CODES.INVALID_FILE_TYPE));
     };
 };
 

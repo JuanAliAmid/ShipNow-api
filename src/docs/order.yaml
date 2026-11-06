@@ -289,7 +289,7 @@ paths:
         tags:
           - Orders
         summary: Subir el comprobante de una Orden
-        description: Guarda el comprobante de la Orden. Si ya tenía uno, lo reemplaza y borra el archivo anterior.
+        description: Guarda el comprobante de la Orden. Si ya tenía uno, lo reemplaza y borra el archivo anterior. Formatos permitidos PDF, JPEG, PNG y WEBP, con un tamaño máximo de 5 MB.        
         requestBody:
           required: true
           content:
@@ -310,7 +310,7 @@ paths:
                 schema:
                   $ref: '#/components/schemas/OrderResponse'
           "400":
-            description: No se recibió ningún archivo / Tipo de archivo inválido / ID con formato inválido
+            description: No se recibió ningún archivo / Tipo de archivo inválido / ID con formato inválido / Se exedió el limite de tamaño permitido / Campo de archivo con nombre incorrecto
             content:
               application/json:
                 schema:
@@ -331,6 +331,16 @@ paths:
                       status: error
                       error: INVALID_DATA
                       message: El formato de los datos ingresados es incorrecto
+                  limitFileSize:
+                    value:
+                      status: error
+                      error: LIMIT_FILE_SIZE
+                      message: El formato de los datos ingresados es incorrecto
+                  limitUnexpectedFile:
+                    value:
+                      status: error
+                      error: LIMIT_UNEXPECTED_FILE
+                      message: Campo de archivo con nombre incorrecto
           "404":
             description: Orden no encontrada
             content:
@@ -342,15 +352,22 @@ paths:
                   error: ORDER_NOT_FOUND
                   message: Orden no encontrada
           "500":
-            description: Error interno del servidor
+            description: Error interno del servidor o Error al guardar
             content:
               application/json:
                 schema:
                   $ref: '#/components/schemas/ErrorResponse'
-                example:
-                  status: error
-                  error: INTERNAL_SERVER_ERROR
-                  message: Error interno del servidor
+                examples:
+                  internalServerError:
+                    value:
+                      status: error
+                      error: INTERNAL_SERVER_ERROR
+                      message: Error interno del servidor
+                  saveFileFailed:
+                    value:
+                      status: error
+                      error: SAVE_FILE_FAILED
+                      message: Error al guardar
 
 components:
   schemas:
@@ -388,10 +405,31 @@ components:
         updatedAt:
           type: string
           format: date-time
-        proof:
-          type: object
-          nullable: true
-          example: null
+        receipt:
+          $ref: '#/components/schemas/FileReceipt'
+    FileReceipt:
+      type: object
+      nullable: true
+      properties:
+        originalName:
+          type: string
+          example: comprobante.png
+        size:
+          type: integer
+          example: 20480
+        uploadedAt:
+          type: string
+          format: date-time
+          example: 2026-11-05T21:16:42.000Z
+        fileName:
+          type: string
+          example: 1762378882123-483920174.png
+        mimeType:
+          type: string
+          example: image/png
+        path:
+          type: string
+          example: uploads/receipts/1762378882123-483920174.png
     OrderResponse:
       type: object
       properties:
@@ -503,10 +541,8 @@ components:
         updatedAt:
           type: string
           format: date-time
-        proof:
-          type: object
-          nullable: true
-          example: null
+        receipt:
+          $ref: '#/components/schemas/FileReceipt'
     OrderPopulatedResponse:
       type: object
       properties:

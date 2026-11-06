@@ -100,6 +100,10 @@ const errorsDictionary = {
     [ERROR_CODES.NOT_RECIVED_FILE]: {
         statusCode: 400,
         message: 'No se recibió ningún archivo'
+    },
+    [ERROR_CODES.SAVE_FILE_FAILED]: {
+        statusCode: 500,
+        message: 'Error al guardar'
     }
 };
 

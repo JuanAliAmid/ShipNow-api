@@ -41,8 +41,6 @@ export const userController = {
 
     uploadedDocument: async (req, res, next) => {
         try {
-            console.log("BODY RECIBIDO:", req.body);
-            console.log("ARCHIVO RECIBIDO:", req.file);
             const user = await userService.uploadedDocument(req.params.uid, req.file, req.body.documentType);
             successResponse(res, { message: 'Documento cargado', payload: user });
         } catch (error) {

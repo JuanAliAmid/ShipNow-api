@@ -139,21 +139,28 @@ export const orderService = {
             uploadedAt: new Date()
          };
 
-         const uploadOrder = await orderRepository.addReceipt(orderId, receipt);
+         try {
+            const uploadOrder = await orderRepository.addReceipt(orderId, receipt);
 
-         if (ordenAnterior?.path) {
-            await deleteUploadFile(orderId, ordenAnterior);
-         };
+            if (ordenAnterior?.path) {
+               await deleteUploadFile(orderId, ordenAnterior);
+            };
 
-         logger.info({
-            message: "Orden cargada correctamente",
-            orderId,
-            fileName: file.filename,
-            originalName: file.originalname,
-            size: file.size
-         });
+            logger.info({
+               message: "Orden cargada correctamente",
+               orderId,
+               fileName: file.filename,
+               originalName: file.originalname,
+               size: file.size
+            });
 
-         return uploadOrder;
+            return uploadOrder;
+
+         } catch (error) {
+            logger.error({ message: `Error al guardar metadatos: ${error.message}`, orderId, fileName: file.filename });
+            throw createError(ERROR_CODES.SAVE_FILE_FAILED);
+         }
+
       } catch (error) {
          await deleteUploadFile(orderId, file);
          throw error;

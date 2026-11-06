@@ -55,7 +55,6 @@ export const userService = {
       try {
 
          if (!Object.values(DOCUMENTS_TYPES).includes(documentType)) {
-            console.log(file.path)
             throw createError(ERROR_CODES.INVALID_DOCUMENT_TYPE);
          };
 
@@ -77,7 +76,7 @@ export const userService = {
 
          const document = {
             originalName: file.originalname,
-            filaName: file.filaname,
+            fileName: file.filename,
             path: file.path,
             mimeType: fileType.mime,
             size: file.size,
@@ -85,20 +84,24 @@ export const userService = {
             uploadedAt: new Date()
          };
 
-         const uploadUser = await userRepository.addDocument(userId, document);
+         try {
+            const uploadUser = await userRepository.addDocument(userId, document);
+            logger.info({
+               message: "Usuario cargado correctamente",
+               userId,
+               fileName: file.filename,
+               originalName: file.originalname,
+               mimeType: fileType.mime,
+               size: file.size
+            });
+            return uploadUser;
+         } catch (error) {
+            logger.error({ message: `Error al guardar metadatos: ${error.message}`, userId, fileName: file.filename });
+            throw createError(ERROR_CODES.SAVE_FILE_FAILED);
+         };
 
-         logger.info({
-            message: "Usuario cargado correctamente",
-            userId,
-            fileName: file.filename,
-            originalName: file.originalname,
-            mimeType: fileType.mime,
-            size: file.size
-         });
-
-         return uploadUser;
       } catch (error) {
-         await deleteUploadFile(file);
+         await deleteUploadFile(userId, file);
          throw error;
       }
    }

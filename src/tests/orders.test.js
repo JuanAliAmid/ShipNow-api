@@ -4,6 +4,7 @@ import app from '../app.js';
 import OrderModel from '../models/order.model.js';
 import { orderFixture } from './helpers/orderFixture.js';
 import mongoose from 'mongoose';
+import deleteUploadFile from '../utils/deleteUploadFile.js';
 
 describe('Orders API', () => {
   //created
@@ -101,6 +102,34 @@ describe('Orders API', () => {
       expect(getResponse.status).to.equal(404);
       expect(getResponse.body.status).to.equal('error');
       expect(getResponse.body.error).to.equal('ORDER_NOT_FOUND');
+    });
+  });
+
+  describe('POST /api/orders/:oid/receipt', () => {
+    let uploaded;
+    afterEach(async () => {
+      if (uploaded) await deleteUploadFile('test', uploaded);
+      uploaded = null;
+    });
+    it('debería responder con un orden cargada', async () => {
+
+      const PNG_BASE64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
+      const fixtureData = await orderFixture();
+
+      const createResponse = await request(app).post(`/api/orders`).send(fixtureData);
+      const orderId = createResponse.body.payload._id;
+
+      const response = await request(app)
+        .post(`/api/orders/${orderId}/receipt`)
+        .attach('receipt', Buffer.from(PNG_BASE64, 'base64'), 'dni.png');
+
+      uploaded = response.body.payload.receipt;
+
+      expect(response.status).to.equal(200);
+      expect(response.body.status).to.equal('success');
+      expect(response.body.payload.receipt).to.have.property('fileName');
+      expect(response.body.payload.receipt).to.have.property('path');
+
     });
   });
 });
@@ -277,5 +306,55 @@ describe('Orders API errors', () => {
     expect(response.body.status).to.equal('error');
     expect(response.body.error).to.equal('INVALID_QUANTITY');
     expect(response.body.message).to.equal('El formato de la cantidad es incorrecto');
+  });
+
+  //Falta el archivo
+  it('debería responder error 400 si el archivo no existe', async () => {
+
+    const fixtureData = await orderFixture();
+
+    const createResponse = await request(app).post(`/api/orders`).send(fixtureData);
+    const orderId = createResponse.body.payload._id;
+
+    const response = await request(app)
+      .post(`/api/orders/${orderId}/receipt`);
+
+    expect(response.status).to.equal(400);
+    expect(response.body.status).to.equal('error');
+    expect(response.body.error).to.equal('NOT_RECIVED_FILE');
+    expect(response.body.message).to.equal('No se recibió ningún archivo');
+  });
+
+  it('responde 400 si el tipo de documento es inválidoo está vacio', async () => {
+
+    const PNG_BASE64 = '';
+    const fixtureData = await orderFixture();
+
+    const createResponse = await request(app).post(`/api/orders`).send(fixtureData);
+    const orderId = createResponse.body.payload._id;
+
+    const response = await request(app)
+      .post(`/api/orders/${orderId}/receipt`)
+      .attach('receipt', Buffer.from(PNG_BASE64, 'base64'), 'dni.png');
+
+    expect(response.status).to.equal(400);
+    expect(response.body.status).to.equal('error');
+    expect(response.body.error).to.equal('INVALID_FILE_TYPE');
+    expect(response.body.message).to.equal('Tipo de archivo inválido');
+  });
+
+  //User de document no existe
+  it("responde 404 si la orden no existe", async () => {
+
+    const id = new mongoose.Types.ObjectId().toString();
+    const img = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='
+    const response = await request(app)
+      .post(`/api/orders/${id}/receipt`)
+      .attach('receipt', Buffer.from(img, 'base64'), 'dni.png');
+
+    expect(response.status).to.equal(404);
+    expect(response.body.status).to.equal('error');
+    expect(response.body.error).to.equal('ORDER_NOT_FOUND');
+    expect(response.body.message).to.equal('Orden no encontrada');
   });
 });

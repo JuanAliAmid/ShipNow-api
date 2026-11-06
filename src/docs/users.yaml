@@ -245,7 +245,7 @@ paths:
       tags:
         - Users
       summary: Subir un documento del Usuario
-      description: Agrega un documento al array de documentos del Usuario. Los anteriores se conservan.
+      description: Agrega un documento al array de documentos del Usuario. Los anteriores se conservan. Formatos permitidos PDF, JPEG, PNG y WEBP, con un tamaño máximo de 5 MB.      
       requestBody:
         required: true
         content:
@@ -254,12 +254,16 @@ paths:
               type: object
               required:
                 - document
+                - documentType
               properties:
                 document:
                   type: string
                   format: binary
                 documentType:
                   type: string
+                  enum:
+                    - document
+                    - license
                   example: document
       responses:
         "200":
@@ -269,7 +273,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/UserResponse'
         "400":
-          description: No se recibió el archivo / Tipo de archivo inválido / Archivo demasiado grande / Campo inesperado / ID con formato inválido
+          description: No se recibió el archivo / Tipo de archivo inválido / Archivo demasiado grande / Campo inesperado / ID con formato inválido / Tipo de documento inválido
           content:
             application/json:
               schema:
@@ -300,6 +304,11 @@ paths:
                     status: error
                     error: INVALID_DATA
                     message: El formato de los datos ingresados es incorrecto
+                invalidDocumentType:
+                  value:
+                    status: error
+                    error: INVALID_DOCUMENT_TYPE
+                    message: Tipo de documento inválido
         "404":
           description: Usuario no encontrado
           content:
@@ -311,15 +320,22 @@ paths:
                 error: USER_NOT_FOUND
                 message: Usuario no encontrado
         "500":
-          description: Error interno del servidor
+          description: Error interno del servidor o Error al guardar
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                status: error
-                error: INTERNAL_SERVER_ERROR
-                message: Error interno del servidor
+              examples:
+                internalServerError:
+                  value:
+                    status: error
+                    error: INTERNAL_SERVER_ERROR
+                    message: Error interno del servidor
+                saveFileFailed:
+                  value:
+                    status: error
+                    error: SAVE_FILE_FAILED
+                    message: Error al guardar
 
 components:
   schemas:
@@ -346,6 +362,10 @@ components:
             - store
             - driver
           default: customer
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserDocument'
     UserResponse:
       type: object
       properties:
@@ -421,3 +441,14 @@ components:
             - store
             - driver
           example: customer
+    UserDocument:
+      allOf:
+        - $ref: '#/components/schemas/FileReceipt'
+        - type: object
+          properties:
+            documentType:
+              type: string
+              enum:
+                - document
+                - license
+              example: license

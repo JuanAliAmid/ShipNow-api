@@ -33,7 +33,7 @@ export async function orderFixture() {
         status: "available"
     });
 
-
+    
     return {
         customer: customer._id.toString(),
         store: store._id.toString(),

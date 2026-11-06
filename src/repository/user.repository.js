@@ -41,6 +41,6 @@ export const userRepository = {
          id,
          { $push: { documents: metadata } },
          { new: true, runValidators: true },
-      );
+      ).select('-password');
    }
 }
