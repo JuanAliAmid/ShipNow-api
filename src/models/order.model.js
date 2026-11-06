@@ -3,73 +3,77 @@ import { ORDER_PRORITY, ORDER_STATUS } from '../constants/constants.js';
 
 
 const orderItemSchema = new mongoose.Schema(
-  {
-    name: {
-      type: String,
-      required: true
-    },
-    quantity: {
-      type: Number,
-      required: true
-    },
-    price: {
-      type: Number,
-      required: true
-    },
-    product: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Product",
-      required: true
-    }
-  },
-  {
-    _id: false
-  }
+   {
+      name: {
+         type: String,
+         required: true
+      },
+      quantity: {
+         type: Number,
+         required: true
+      },
+      price: {
+         type: Number,
+         required: true
+      },
+      product: {
+         type: mongoose.Schema.Types.ObjectId,
+         ref: "Product",
+         required: true
+      }
+   },
+   {
+      _id: false
+   }
 );
 
 const orderSchema = new mongoose.Schema(
-  {
-    customer: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true
-    },
-    store: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Store",
-      required: true
-    },
-    items: {
-      type: [orderItemSchema],
-      required: true
-    },
-    deliveryAddress: {
-      type: String,
-      required: true
-    },
-    total: {
-      type: Number,
-      required: true
-    },
-    status: {
-      type: String,
-      enum: [ORDER_STATUS.CREATED, ORDER_STATUS.ASSIGNED, ORDER_STATUS.PICKED_UP, ORDER_STATUS.IN_TRANSIT, ORDER_STATUS.DELIVERED, ORDER_STATUS.CANCELLED],
-      default: ORDER_STATUS.CREATED
-    },
-    priority: {
-      type: String,
-      enum: [ORDER_PRORITY.LOW, ORDER_PRORITY.NORMAL, ORDER_PRORITY.HIGH],
-      default: ORDER_PRORITY.NORMAL
-    },
-    proof: {
-      type: Object,
-      default: null
-    }
-  },
-  {
-    timestamps: true,
-    versionKey: false
-  }
+   {
+      customer: {
+         type: mongoose.Schema.Types.ObjectId,
+         ref: "User",
+         required: true
+      },
+      store: {
+         type: mongoose.Schema.Types.ObjectId,
+         ref: "Store",
+         required: true
+      },
+      items: {
+         type: [orderItemSchema],
+         required: true
+      },
+      deliveryAddress: {
+         type: String,
+         required: true
+      },
+      total: {
+         type: Number,
+         required: true
+      },
+      status: {
+         type: String,
+         enum: [ORDER_STATUS.CREATED, ORDER_STATUS.ASSIGNED, ORDER_STATUS.PICKED_UP, ORDER_STATUS.IN_TRANSIT, ORDER_STATUS.DELIVERED, ORDER_STATUS.CANCELLED],
+         default: ORDER_STATUS.CREATED
+      },
+      priority: {
+         type: String,
+         enum: [ORDER_PRORITY.LOW, ORDER_PRORITY.NORMAL, ORDER_PRORITY.HIGH],
+         default: ORDER_PRORITY.NORMAL
+      },
+      receipt: {
+         originalName: String,
+         fileName: String,
+         path: String,
+         mimeType: String,
+         size: Number,
+         uploadedAt: Date
+      }
+   },
+   {
+      timestamps: true,
+      versionKey: false
+   }
 );
 
 const OrderModel = mongoose.model("Order", orderSchema);

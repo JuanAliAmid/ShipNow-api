@@ -37,6 +37,16 @@ export const updateOrderStatus = async (req, res, next) => {
   }
 };
 
+
+export const uploadedReceipt = async (req, res, next) => {
+  try {
+    const order = await orderService.uploadedReceipt(req.params.oid, req.file);
+    successResponse(res, { message: 'Comprobante cargado', payload: order });
+  } catch (error) {
+    next(error);
+  };
+};
+
 export const deleteOrder = async (req, res, next) => {
   try {
     const order = await orderService.deleteOrder(req.params.oid);

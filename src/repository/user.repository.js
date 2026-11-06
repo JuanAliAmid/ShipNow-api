@@ -34,5 +34,13 @@ export const userRepository = {
          const { password, ...resto } = a.toObject();
          return resto;
       });
+   },
+
+   addDocument: async (id, metadata) => {
+      return UserModel.findByIdAndUpdate(
+         id,
+         { $push: { documents: metadata } },
+         { new: true, runValidators: true },
+      ).select('-password');
    }
 }

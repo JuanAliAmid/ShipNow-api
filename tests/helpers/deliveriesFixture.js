@@ -1,8 +1,8 @@
-import DeliveryModel from "../../models/delivery.model.js";
-import UserModel from "../../models/user.model.js";
-import OrderModel from "../../models/order.model.js";
-import ProductModel from "../../models/product.model.js";
-import StoreModel from "../../models/store.model.js";
+import DeliveryModel from "../../src/models/delivery.model.js";
+import UserModel from "../../src/models/user.model.js";
+import OrderModel from "../../src/models/order.model.js";
+import ProductModel from "../../src/models/product.model.js";
+import StoreModel from "../../src/models/store.model.js"
 
 
 export async function deliveriesFixture() {

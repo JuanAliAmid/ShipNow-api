@@ -31,3 +31,15 @@ export const PRODUCT_STATUS = Object.freeze({
     AVAILABLE: 'available',
     OUT_OF_STOCK: 'out of stock'
 });
+
+export const DOCUMENTS_TYPES = Object.freeze({
+    DOCUMENT: 'document',
+    LICENSE: 'license',
+});
+
+export const allowedMimeTypes = [
+    'application/pdf',
+    'image/jpeg',
+    'image/png',
+    'image/webp'
+];

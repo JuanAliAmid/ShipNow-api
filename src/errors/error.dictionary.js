@@ -80,6 +80,30 @@ const errorsDictionary = {
     [ERROR_CODES.SAVE_MOCKS_FAILED]: {
         statusCode: 500,
         message: 'Error de guardado en base de datos'
+    },
+    [ERROR_CODES.INVALID_FILE_TYPE]: {
+        statusCode: 400,
+        message: 'Tipo de archivo inválido'
+    },
+    [ERROR_CODES.INVALID_DOCUMENT_TYPE]: {
+        statusCode: 400,
+        message: 'Tipo de documento inválido'
+    },
+    [ERROR_CODES.LIMIT_FILE_SIZE]: {
+        statusCode: 400,
+        message: 'Se excedió el limite de tamaño permitido'
+    },
+    [ERROR_CODES.LIMIT_UNEXPECTED_FILE]: {
+        statusCode: 400,
+        message: 'Campo de archivo con nombre incorrecto'
+    },
+    [ERROR_CODES.NOT_RECIVED_FILE]: {
+        statusCode: 400,
+        message: 'No se recibió ningún archivo'
+    },
+    [ERROR_CODES.SAVE_FILE_FAILED]: {
+        statusCode: 500,
+        message: 'Error al guardar'
     }
 };
 

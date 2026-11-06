@@ -1,5 +1,5 @@
 {
-    "spec": ["src/tests/**/*.test.js"],
-    "require": ["src/tests/setup.js"],
+    "spec": ["tests/**/*.test.js"],
+    "require": ["tests/setup.js"],
     "parallel": false
 }

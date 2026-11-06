@@ -1,9 +1,10 @@
 import { expect } from 'chai';
 import request from 'supertest';
-import app from '../app.js';
+import app from '../src/app.js';
 import { userFixture } from './helpers/userFixture.js';
 import mongoose from 'mongoose';
-import UserModel from '../models/user.model.js';
+import UserModel from '../src/models/user.model.js';
+import deleteUploadFile from '../src/utils/deleteUploadFile.js';
 
 describe('Users API', () => {
     //Created
@@ -100,8 +101,36 @@ describe('Users API', () => {
             expect(getResponse.status).to.equal(404);
             expect(getResponse.body.status).to.equal('error');
             expect(getResponse.body.error).to.equal('USER_NOT_FOUND');
-        })
-    })
+        });
+    });
+
+    describe('POST /api/users/:uid/documents', () => {
+        let uploaded;
+
+        afterEach(async () => {
+            if (uploaded) await deleteUploadFile('test', uploaded);
+            uploaded = null;
+        });
+        it('debería responder con un archivo cargado', async () => {
+            const PNG_BASE64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
+            const body = await userFixture();
+
+
+            const response = await request(app)
+                .post(`/api/users/${body._id}/documents`)
+                .field('documentType', 'document')
+                .attach('document', Buffer.from(PNG_BASE64, 'base64'), 'dni.png');
+
+            uploaded = response.body.payload.documents[0];
+
+            expect(response.status).to.equal(200);
+            expect(response.body.status).to.equal('success');
+            expect(response.body.payload).to.not.have.property('password');
+            expect(response.body.payload.documents[0]).to.have.property('fileName');
+            expect(response.body.payload.documents[0].documentType).to.equal('document');
+            expect(response.body.payload.documents).to.have.lengthOf(1);
+        });
+    });
 });
 
 
@@ -202,5 +231,84 @@ describe('Users API errors', () => {
             expect(response.body.error).to.equal('INVALID_DATA');
             expect(response.body.message).to.equal('El formato de los datos ingresados es incorrecto');
         });
+    });
+
+    //Archivo inexistente
+    it("responde 400 si el no se recibió un archivo", async () => {
+
+        const body = await userFixture();
+        const nada = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg'
+        const response = await request(app)
+            .post(`/api/users/${body._id}/documents`)
+            .field('documentType', 'document');
+
+        expect(response.status).to.equal(400);
+        expect(response.body.status).to.equal('error');
+        expect(response.body.error).to.equal('NOT_RECIVED_FILE');
+        expect(response.body.message).to.equal('No se recibió ningún archivo');
+    });
+
+    //Tipo de documento inválido
+    it("responde 400 si el tipo de documento es inválido", async () => {
+
+        const body = await userFixture();
+        const img = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='
+        const response = await request(app)
+            .post(`/api/users/${body._id}/documents`)
+            .field('documentType', 'nose')
+            .attach('document', Buffer.from(img, 'base64'), 'dni.png');
+
+        expect(response.status).to.equal(400);
+        expect(response.body.status).to.equal('error');
+        expect(response.body.error).to.equal('INVALID_DOCUMENT_TYPE');
+        expect(response.body.message).to.equal('Tipo de documento inválido');
+    });
+
+    //Tipo de archivo inválido
+    it("responde 400 si el tipo de documento es inválido o está vacio", async () => {
+
+        const body = await userFixture();
+        const img = ''
+        const response = await request(app)
+            .post(`/api/users/${body._id}/documents`)
+            .field('documentType', 'document')
+            .attach('document', Buffer.from(img, 'base64'), 'dni.png');
+
+        expect(response.status).to.equal(400);
+        expect(response.body.status).to.equal('error');
+        expect(response.body.error).to.equal('INVALID_FILE_TYPE');
+        expect(response.body.message).to.equal('Tipo de archivo inválido');
+    });
+
+    //Tamaño excedido
+    it('responde 400 si el archivo supera el tamaño máximo', async () => {
+        const id = '6ab430314443efb186ab6a65';
+        const bigFile = Buffer.alloc(5 * 1024 * 1024 + 1);
+
+        const response = await request(app)
+            .post(`/api/users/${id}/documents`)
+            .field('documentType', 'document')
+            .attach('document', bigFile, 'big.png');
+
+        expect(response.status).to.equal(400);
+        expect(response.body.status).to.equal('error');
+        expect(response.body.error).to.equal('LIMIT_FILE_SIZE');
+        expect(response.body.message).to.equal('Se excedió el limite de tamaño permitido');
+    });
+
+    //User de document no existe
+    it("responde 404 si el usuario no existe", async () => {
+
+        const id = new mongoose.Types.ObjectId().toString();
+        const img = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='
+        const response = await request(app)
+            .post(`/api/users/${id}/documents`)
+            .field('documentType', 'document')
+            .attach('document', Buffer.from(img, 'base64'), 'dni.png');
+
+        expect(response.status).to.equal(404);
+        expect(response.body.status).to.equal('error');
+        expect(response.body.error).to.equal('USER_NOT_FOUND');
+        expect(response.body.message).to.equal('Usuario no encontrado');
     });
 });
