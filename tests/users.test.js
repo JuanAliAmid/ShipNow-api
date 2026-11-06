@@ -1,10 +1,10 @@
 import { expect } from 'chai';
 import request from 'supertest';
-import app from '../app.js';
+import app from '../src/app.js';
 import { userFixture } from './helpers/userFixture.js';
 import mongoose from 'mongoose';
-import UserModel from '../models/user.model.js';
-import deleteUploadFile from '../utils/deleteUploadFile.js';
+import UserModel from '../src/models/user.model.js';
+import deleteUploadFile from '../src/utils/deleteUploadFile.js';
 
 describe('Users API', () => {
     //Created
@@ -265,7 +265,7 @@ describe('Users API errors', () => {
     });
 
     //Tipo de archivo inválido
-    it("responde 400 si el tipo de documento es inválidoo está vacio", async () => {
+    it("responde 400 si el tipo de documento es inválido está vacio", async () => {
 
         const body = await userFixture();
         const img = ''

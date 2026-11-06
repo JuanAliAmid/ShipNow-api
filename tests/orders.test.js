@@ -1,10 +1,10 @@
 import { expect } from 'chai';
 import request from 'supertest';
-import app from '../app.js';
-import OrderModel from '../models/order.model.js';
+import app from '../src/app.js';
+import OrderModel from '../src/models/order.model.js';
 import { orderFixture } from './helpers/orderFixture.js';
 import mongoose from 'mongoose';
-import deleteUploadFile from '../utils/deleteUploadFile.js';
+import deleteUploadFile from '../src/utils/deleteUploadFile.js';
 
 describe('Orders API', () => {
   //created
@@ -325,7 +325,7 @@ describe('Orders API errors', () => {
     expect(response.body.message).to.equal('No se recibió ningún archivo');
   });
 
-  it('responde 400 si el tipo de documento es inválidoo está vacio', async () => {
+  it('responde 400 si el archivo está vacío', async () => {
 
     const PNG_BASE64 = '';
     const fixtureData = await orderFixture();

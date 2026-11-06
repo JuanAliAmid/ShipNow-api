@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import request from 'supertest';
-import app from '../app.js';
+import app from '../src/app.js';
 import { deliveriesFixture } from './helpers/deliveriesFixture.js';
 import mongoose from "mongoose";
 

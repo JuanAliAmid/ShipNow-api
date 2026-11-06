@@ -1,5 +1,5 @@
-import UserModel from "../../models/user.model.js";
-import StoreModel from "../../models/store.model.js";
+import UserModel from "../../src/models/user.model.js";
+import StoreModel from "../../src/models/store.model.js";
 
 export async function storeFixture() {
 

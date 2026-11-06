@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 import request from 'supertest';
-import app from '../app.js';
-import StoreModel from '../models/store.model.js';
-import UserModel from '../models/user.model.js';
+import app from '../src/app.js';
+import StoreModel from '../src/models/store.model.js';
+import UserModel from '../src/models/user.model.js';
 import mongoose from 'mongoose';
 import { storeFixture } from './helpers/storeFixture.js';
 

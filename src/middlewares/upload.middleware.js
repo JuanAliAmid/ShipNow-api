@@ -40,6 +40,5 @@ const createFolder = (folder) => {
 
 export const uploaders = {
     documents: createFolder('documents'),
-    receipts: createFolder('receipts'),
-    licenses: createFolder('licenses')
+    receipts: createFolder('receipts')
 };

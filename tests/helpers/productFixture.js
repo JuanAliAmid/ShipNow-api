@@ -1,4 +1,4 @@
-import ProductModel from "../../models/product.model.js";
+import ProductModel from "../../src/models/product.model.js";
 
 export async function productFixture() {
     const product = await ProductModel.create({

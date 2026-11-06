@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import request from 'supertest';
-import app from "../app.js";
+import app from "../src/app.js";
 
 //Ruta no encontrada
 describe('Not found routes', () => {
