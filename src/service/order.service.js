@@ -113,7 +113,7 @@ export const orderService = {
    uploadedReceipt: async (orderId, file) => {
       try {
          if (!file) {
-            throw createError(ERROR_CODES.NOT_RECIVED_FILE);
+            throw createError(ERROR_CODES.NOT_RECEIVED_FILE);
          };
 
          const order = await orderRepository.findById(orderId);

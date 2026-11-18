@@ -605,7 +605,7 @@ La API permite subir documentos de usuario y comprobantes de pedido con [Multer]
 | `INVALID_DOCUMENT_TYPE` | 400 | `documentType` falta o no es `document` / `license` |
 | `LIMIT_FILE_SIZE` | 400 | El archivo supera los 5 MB |
 | `LIMIT_UNEXPECTED_FILE` | 400 | El campo del archivo tiene otro nombre (no es `document` / `receipt`) |
-| `NOT_RECIVED_FILE` | 400 | No se envió ningún archivo |
+| `NOT_RECEIVED_FILE` | 400 | No se envió ningún archivo |
 | `USER_NOT_FOUND` / `ORDER_NOT_FOUND` | 404 | El id no existe |
 | `SAVE_FILE_FAILED` | 500 | Falló el guardado de los metadatos en la base |
 
@@ -618,7 +618,7 @@ Con Postman o Swagger (`/api/docs`), enviar el body como `form-data` (no JSON):
 - Usuario: `document` (tipo File) + `documentType` (tipo Text).
 - Pedido: `receipt` (tipo File).
 
-Casos inválidos para probar: un `.txt` (`INVALID_FILE_TYPE`), un archivo de más de 5 MB (`LIMIT_FILE_SIZE`), otro nombre de campo (`LIMIT_UNEXPECTED_FILE`), sin archivo (`NOT_RECIVED_FILE`) y `documentType` inválido.
+Casos inválidos para probar: un `.txt` (`INVALID_FILE_TYPE`), un archivo de más de 5 MB (`LIMIT_FILE_SIZE`), otro nombre de campo (`LIMIT_UNEXPECTED_FILE`), sin archivo (`NOT_RECEIVED_FILE`) y `documentType` inválido.
 
 ## Logger
 

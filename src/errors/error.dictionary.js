@@ -97,7 +97,7 @@ const errorsDictionary = {
         statusCode: 400,
         message: 'Campo de archivo con nombre incorrecto'
     },
-    [ERROR_CODES.NOT_RECIVED_FILE]: {
+    [ERROR_CODES.NOT_RECEIVED_FILE]: {
         statusCode: 400,
         message: 'No se recibió ningún archivo'
     },

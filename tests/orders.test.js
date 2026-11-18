@@ -321,7 +321,7 @@ describe('Orders API errors', () => {
 
     expect(response.status).to.equal(400);
     expect(response.body.status).to.equal('error');
-    expect(response.body.error).to.equal('NOT_RECIVED_FILE');
+    expect(response.body.error).to.equal('NOT_RECEIVED_FILE');
     expect(response.body.message).to.equal('No se recibió ningún archivo');
   });
 

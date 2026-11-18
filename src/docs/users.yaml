@@ -282,7 +282,7 @@ paths:
                 notReceivedFile:
                   value:
                     status: error
-                    error: NOT_RECIVED_FILE
+                    error: NOT_RECEIVED_FILE
                     message: No se recibió ningún archivo
                 invalidFileType:
                   value:
