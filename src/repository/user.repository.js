@@ -1,13 +1,13 @@
 import UserModel from "../models/user.model.js";
 
 export const userRepository = {
-   findById: async (id, page, limit) => {
-      const skip = (page - 1) * limit;
-      return UserModel.findById(id).select('-password').skip(skip).limit(limit);
+   findById: async (id) => {
+      return UserModel.findById(id).select('-password');
    },
 
-   getUsers: async () => {
-      return UserModel.find().select('-password')
+   getUsers: async (page, limit) => {
+      const skip = (page - 1) * limit;
+      return UserModel.find().select('-password').skip(skip).limit(limit);
    },
 
    create: async (userData) => {

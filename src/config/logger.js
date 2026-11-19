@@ -6,7 +6,7 @@ const levelCustom = { levels: { fatal: 0, error: 1, warning: 2, info: 3, http: 4
 
 const logger = winston.createLogger({
     levels: levelCustom.levels,
-    level: env.isProd ? 'info' : 'debug',
+    level: env.log_level,
 
     format: winston.format.combine(
         winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),

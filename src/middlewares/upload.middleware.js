@@ -23,10 +23,7 @@ const createFolder = (folder) => {
     const storage = multer.diskStorage({
 
         destination: (_req, _file, cb) => {
-            if (!fs.existsSync(route)) {
-                fs.promises.mkdir(route, { recursive: true });
-            }
-            cb(null, route);
+            fs.promises.mkdir(route, { recursive: true }).then(() => cb(null, route)).catch((cb));
         },
         filename: (_req, file, cb) => {
             const extension = path.extname(file.originalname);

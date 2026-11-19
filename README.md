@@ -191,16 +191,21 @@ Permite verificar que la API está funcionando.
 GET /health
 ```
 
-Respuesta esperada:
-
 ```json
 {
   "status": "success",
-  "message": "API funcionando"
+  "message": "API funcionando",
+  "environment": "production",
+  "uptime": 125,
+  "timestamp": "2026-11-19T16:33:38.000Z"
 }
 ```
 
----
+- `environment`: valor de `NODE_ENV` con el que corre la API.
+- `uptime`: segundos desde que arrancó el proceso.
+- `timestamp`: fecha y hora de la respuesta (ISO 8601).
+
+No expone variables de entorno, URIs ni datos de la base.
 
 ## Users
 
@@ -721,6 +726,79 @@ Sí, se requiere una base separada (`ShipNow-api-test`). Antes de cada test, los
 - `NODE_ENV`: no hace falta definirla, porque `npm test` la fuerza a `test` con `cross-env`.
 - `PORT` y `MONGODB_URI`: no se usan en test. Solo se exigen para levantar el servidor con `npm start` o `npm run dev`.
 
+## Producción y Docker (Módulo 8)
+
+### Paginación
+
+Los listados `GET /api/users`, `/api/orders`, `/api/deliveries`, `/api/products` y `/api/stores` no devuelven la colección completa. Aceptan:
+
+- `page`: número de página. Si es inválido, se usa `1`.
+- `limit`: resultados por página. Si es inválido o mayor a `50`, se usa `10`.
+
+Ejemplo: `GET /api/orders?page=2&limit=20`
+
+### Variables de entorno
+
+| Variable | Obligatoria | Descripción |
+|---|---|---|
+| `PORT` | Sí (fuera de test) | Puerto de la API. En Docker se usa `8080`. |
+| `MONGODB_URI` | Sí (fuera de test) | URI de la base de datos. |
+| `NODE_ENV` | Sí (fuera de test) | `development`, `test` o `production`. |
+| `MONGODB_URI_TEST` | Solo en test | URI de la base de testing. |
+| `LOG_LEVEL` | No | Nivel mínimo de logs. Por defecto: `info` en producción y `debug` en el resto. |
+| `BASE_URL` | No | URL base que usa Swagger. Por defecto: `http://localhost:<PORT>`. |
+
+La API valida las variables obligatorias al iniciar: si falta alguna, no arranca y muestra un error indicando cuál. No se usa JWT ni servicios externos, por eso no hay variables para eso. `.env.example` tiene los nombres de todas las variables, sin valores.
+
+### Cómo correr la API y los tests
+
+- Local: ver [Instalación y ejecución local](#instalación-y-ejecución-local) (`npm start`).
+- Tests: `npm test` (ver sección Testing).
+- Swagger: `http://localhost:<PORT>/api/docs` (solo fuera de producción).
+
+### Endpoints internos en producción
+
+Con `NODE_ENV=production` quedan **restringidos** (responden con el error `ENDPOINT_NOT_AVAILABLE`):
+
+- `/loggerTest`
+- `/api/mocks/*` (incluido `POST /api/mocks/seed`)
+- `/api/docs` (Swagger)
+
+Criterio: son herramientas de desarrollo. Los mocks escriben datos falsos en la base, el logger de prueba genera errores artificiales y Swagger expone la estructura completa de la API. `GET /health` queda abierto y solo devuelve estado, entorno, uptime y timestamp.
+
+### Docker
+
+Construir la imagen:
+
+```bash
+docker build -t shipnow-api .
+```
+
+Ejecutar el contenedor pasando las variables desde un archivo `.env`:
+
+```bash
+docker run --env-file .env -p 8080:8080 shipnow-api
+```
+
+- La API usa el puerto **8080** (`PORT=8080` en el `.env`; el Dockerfile lo expone con `EXPOSE 8080`).
+- Dentro del contenedor, `localhost` es el propio contenedor. Si MongoDB corre en tu máquina, usá `host.docker.internal` en `MONGODB_URI` (por ejemplo `mongodb://host.docker.internal:27017/ShipNow-api`), o una URI de MongoDB Atlas.
+- Con `NODE_ENV=production`, Swagger queda bloqueado. Para probarlo en el contenedor, ejecutalo con `-e NODE_ENV=development`.
+
+Para probar que funciona:
+
+- Health check: `http://localhost:8080/health`
+- Swagger (con `NODE_ENV=development`): `http://localhost:8080/api/docs`
+- Endpoint principal: `http://localhost:8080/api/products`
+
+### Archivos que no deben subirse al repositorio ni a la imagen
+
+`node_modules`, `.env` (y `.env.*`), `.git`, `logs`, `uploads`, `coverage` y `tests`. Están en `.gitignore` y en `.dockerignore` (la imagen no incluye `.env`: las variables se pasan al ejecutar el contenedor).
+
+### Logs y uploads
+
+- Logs: se guardan en `logs/` (solo `error` y `fatal`, 14 días). En el contenedor ese archivo se pierde al borrarlo; el resto de los niveles se ven con `docker logs <contenedor>`.
+- Uploads: los archivos van a `uploads/` con límite de 5 MB y solo tipos permitidos. No son almacenamiento permanente: al borrar el contenedor se pierden, salvo que montes un volumen (`-v shipnow-uploads:/app/uploads`).
+
 ## Estado actual del proyecto
 
 Esta versión de ShipNow ya cuenta con las 4 entidades principales y un sistema de mocking funcional para poblar la base con datos de prueba, aunque todavía no representa una API completamente profesional.
@@ -742,11 +820,6 @@ config/logger.js (Winston)
 Swagger
 tests automatizados
 carga de archivos con Multer
-```
-
-Todavía no incorpora:
-
-```txt
 Docker
 ```
 
