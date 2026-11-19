@@ -1,9 +1,10 @@
 import { orderService } from '../service/order.service.js';
 import { successResponse } from '../utils/apiResponse.js';
 
-export const getOrders = async (_req, res, next) => {
+export const getOrders = async (req, res, next) => {
   try {
-    const orders = await orderService.getOrders();
+    const {page, limit} = req.query;
+    const orders = await orderService.getOrders(page, limit);
     successResponse(res, { message: 'Lista de ordenes', payload: orders });
   } catch (error) {
     next(error);

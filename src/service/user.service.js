@@ -17,8 +17,12 @@ export const userService = {
       return user;
    },
 
-   getUsers: async () => {
-      return userRepository.getUsers();
+   getUsers: async (page, limit) => {
+      page = Number(page);
+      limit = Number(limit);
+      page = !Number.isInteger(page) || page <= 0 ? 1 : page;
+      limit = !Number.isInteger(limit) || limit <= 0 || limit > 50 ? 10 : limit;
+      return userRepository.getUsers(page, limit);
    },
 
    create: async (userData) => {

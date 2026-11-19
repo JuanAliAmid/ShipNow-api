@@ -1,8 +1,9 @@
 import deliveryModel from "../models/delivery.model.js";
 
 export const deliveryRepository = {
-    findAll: async () => {
-        return deliveryModel.find();
+    findAll: async (page, limit) => {
+        const skip = (page - 1) * limit;
+        return deliveryModel.find().skip(skip).limit(limit);
     },
 
     findById: async (id) => {

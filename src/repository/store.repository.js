@@ -2,8 +2,9 @@ import StoreModel from '../models/store.model.js';
 
 export const storeRepository = {
 
-   getStores: async () => {
-      return StoreModel.find({ isActive: true });
+   getStores: async (page, limit) => {
+      const skip = (page - 1) * limit;
+      return StoreModel.find({ isActive: true }).skip(skip).limit(limit);
    },
 
    findById: async (id) => {

@@ -24,7 +24,7 @@ const createFolder = (folder) => {
 
         destination: (_req, _file, cb) => {
             if (!fs.existsSync(route)) {
-                fs.mkdirSync(route, { recursive: true });
+                fs.promises.mkdir(route, { recursive: true });
             }
             cb(null, route);
         },

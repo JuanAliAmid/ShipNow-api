@@ -5,8 +5,12 @@ import { createError } from '../utils/apiResponse.js';
 import { DELIVERY_STATUS } from '../constants/constants.js';
 
 export const deliveryService = {
-    getAll: async () => {
-        const deliveries = await deliveryRepository.findAll();
+    getAll: async (page, limit) => {
+        page = Number(page);
+        limit = Number(limit);
+        page = !Number.isInteger(page) || page <= 0 ? 1 : page;
+        limit = !Number.isInteger(limit) || limit <= 0 || limit > 50 ? 10 : limit;
+        const deliveries = await deliveryRepository.findAll(page, limit);
         return deliveries;
     },
     getById: async (id) => {

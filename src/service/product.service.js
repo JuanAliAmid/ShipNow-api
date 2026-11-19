@@ -4,8 +4,12 @@ import { createError } from "../utils/apiResponse.js";
 import ERROR_CODES from "../errors/error.codes.js";
 
 export const productService = {
-   findAll: async () => {
-      const products = await productRepository.findAll({ status: PRODUCT_STATUS.AVAILABLE });
+   findAll: async (page, limit) => {
+      page = Number(page);
+      limit = Number(limit);
+      page = !Number.isInteger(page) || page <= 0 ? 1 : page;
+      limit = !Number.isInteger(limit) || limit <= 0 || limit > 50 ? 10 : limit;
+      const products = await productRepository.findAll({ status: PRODUCT_STATUS.AVAILABLE }, page, limit);
       return products;
    },
 
@@ -32,7 +36,7 @@ export const productService = {
       if (!producto) {
          throw createError(ERROR_CODES.PRODUCT_NOT_FOUND);
       };
-      
+
       return producto;
    },
 

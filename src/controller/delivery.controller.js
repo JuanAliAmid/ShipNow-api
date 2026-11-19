@@ -2,9 +2,10 @@ import { deliveryService } from "../service/delivery.service.js";
 import { successResponse } from "../utils/apiResponse.js";
 
 export const deliveryController = {
-    getAll: async (_req, res, next) => {
+    getAll: async (req, res, next) => {
         try {
-            const deliveries = await deliveryService.getAll();
+            const { page, limit } = req.query;
+            const deliveries = await deliveryService.getAll(page, limit);
             successResponse(res, { message: 'Lista de deliveries', payload: deliveries });
         } catch (error) {
             next(error);

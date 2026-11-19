@@ -104,6 +104,10 @@ const errorsDictionary = {
     [ERROR_CODES.SAVE_FILE_FAILED]: {
         statusCode: 500,
         message: 'Error al guardar'
+    },
+    [ERROR_CODES.ENDPOINT_NOT_AVAILABLE]: {
+        statusCode: 403,
+        message: 'Endpoint no disponible'
     }
 };
 

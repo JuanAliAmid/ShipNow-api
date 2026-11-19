@@ -6,5 +6,5 @@ logs
 src/logs
 uploads
 coverage
-test
+tests
 *.pdf

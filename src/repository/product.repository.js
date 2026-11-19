@@ -2,8 +2,9 @@ import { PRODUCT_STATUS } from "../constants/constants.js";
 import productModel from "../models/product.model.js";
 
 export const productRepository = {
-    findAll: async () => {
-        return productModel.find({ status: PRODUCT_STATUS.AVAILABLE });
+    findAll: async (page, limit) => {
+        const skip = (page - 1) * limit;
+        return productModel.find({ status: PRODUCT_STATUS.AVAILABLE }).skip(skip).limit(limit);
     },
 
     findById: async (id) => {

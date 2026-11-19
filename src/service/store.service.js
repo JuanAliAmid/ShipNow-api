@@ -3,8 +3,12 @@ import { createError } from "../utils/apiResponse.js";
 import ERROR_CODES from "../errors/error.codes.js";
 
 export const storeService = {
-   getStores: async () => {
-      const stores = await storeRepository.getStores();
+   getStores: async (page, limit) => {
+      page = Number(page);
+      limit = Number(limit);
+      page = !Number.isInteger(page) || page <= 0 ? 1 : page;
+      limit = !Number.isInteger(limit) || limit <= 0 || limit > 50 ? 10 : limit;
+      const stores = await storeRepository.getStores(page, limit);
       return stores;
    },
 

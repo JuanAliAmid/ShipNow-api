@@ -2,9 +2,10 @@ import { storeService } from "../service/store.service.js";
 import { successResponse } from "../utils/apiResponse.js";
 
 export const storeController = {
-    getStores: async (_req, res, next) => {
+    getStores: async (req, res, next) => {
         try {
-            const stores = await storeService.getStores();
+            const { page, limit } = req.query;
+            const stores = await storeService.getStores(page, limit);
             successResponse(res, { message: 'Lista de tiendas', payload: stores });
         } catch (error) {
             next(error);

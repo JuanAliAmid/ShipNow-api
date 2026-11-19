@@ -12,9 +12,10 @@ export const userController = {
         };
     },
 
-    getUsers: async (_req, res, next) => {
+    getUsers: async (req, res, next) => {
         try {
-            const users = await userService.getUsers()
+            const { page, limit } = req.query;
+            const users = await userService.getUsers(page, limit)
             successResponse(res, { message: 'Lista de usuarios', payload: users });
         } catch (error) {
             next(error);

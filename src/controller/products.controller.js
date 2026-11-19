@@ -2,9 +2,10 @@ import { productService } from "../service/product.service.js";
 import { successResponse } from "../utils/apiResponse.js";
 
 export const productController = {
-    findAll: async (_req, res, next) => {
+    findAll: async (req, res, next) => {
         try {
-            const products = await productService.findAll();
+            const { page, limit } = req.query;
+            const products = await productService.findAll(page, limit);
             successResponse(res, { message: 'Lista de productos', payload: products });
         } catch (error) {
             next(error);

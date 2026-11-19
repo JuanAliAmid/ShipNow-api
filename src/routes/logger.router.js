@@ -1,9 +1,10 @@
 import { Router } from "express";
 import logger from "../config/logger.js";
+import { block } from "../middlewares/endpointsBloqueds.js";
 
 const router = Router();
 
-router.get('/loggerTest', (_req, res) => {
+router.get('/loggerTest', block, (_req, res) => {
     logger.debug('prueba debug');
     logger.http('prueba http');
     logger.info('prueba info');

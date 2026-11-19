@@ -1,8 +1,11 @@
 import OrderModel from '../models/order.model.js';
 
 export const orderRepository = {
-   findAll: async () => {
-      return OrderModel.find().populate('customer', '-password').populate('store');
+   findAll: async (page, limit) => {
+
+      const skip = (page - 1) * limit;
+
+      return OrderModel.find().populate('customer', '-password').populate('store').skip(skip).limit(limit);
    },
 
    findById: async (id) => {
