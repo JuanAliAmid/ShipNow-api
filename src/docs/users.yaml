@@ -9,6 +9,19 @@ paths:
         - Users
       summary: Listar usuarios
       description: Obtiene un lista de usuarios
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Número de página
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: Resultados por página (por defecto 10; si es inválido o mayor a 50, se usa 10)
       responses: 
         "200":
           description: Lista de usuarios

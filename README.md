@@ -824,3 +824,5 @@ Docker
 ```
 
 Durante el curso, la API será mejorada progresivamente para separar responsabilidades, mejorar la mantenibilidad y acercarse a una estructura más profesional.
+
+

@@ -7,11 +7,24 @@ paths:
     get:
       tags:
         - Orders
-      summary: Listar Ordens
-      description: Obtiene una lista de Ordens
+      summary: Listar Ordenes
+      description: Obtiene una lista de Ordenes
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Número de página
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: Resultados por página (por defecto 10; si es inválido o mayor a 50, se usa 10)
       responses: 
         "200":
-          description: Lista de Ordens
+          description: Lista de Ordenes
           content:
             application/json:
               schema:
