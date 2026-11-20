@@ -9,7 +9,7 @@ export const productService = {
       limit = Number(limit);
       page = !Number.isInteger(page) || page <= 0 ? 1 : page;
       limit = !Number.isInteger(limit) || limit <= 0 || limit > 50 ? 10 : limit;
-      const products = await productRepository.findAll({ status: PRODUCT_STATUS.AVAILABLE }, page, limit);
+      const products = await productRepository.findAll(page, limit);
       return products;
    },
 

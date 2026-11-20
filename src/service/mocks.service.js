@@ -47,7 +47,7 @@ const orders = async (quantity) => {
 
    const userIds = Array.from({ length: quantity }, () => { return new mongoose.Types.ObjectId() });
    const storeIds = Array.from({ length: quantity }, () => { return new mongoose.Types.ObjectId() });
-   const products = await productRepository.findAll();
+   const products = await productRepository.findAll(1, 50);
 
    if (products.length === 0) {
       throw createError(ERROR_CODES.NO_SAVED_PRODUCTS);
@@ -89,6 +89,7 @@ const deliveries = async (quantity) => {
 
 const saveMocks = async (type, qty) => {
    qty = qtyConditional(qty);
+
    try {
       switch (type) {
          case 'users':
@@ -103,9 +104,9 @@ const saveMocks = async (type, qty) => {
 
          case 'orders':
 
-            const ids = (await userRepository.getUsers()).filter((a) => a.role === USER_ROLES.USER);
-            const idsStore = await storeRepository.getStores();
-            const idsProduct = await productRepository.findAll();
+            const ids = await userRepository.getUsers(1, 50, { role: USER_ROLES.USER });
+            const idsStore = await storeRepository.getStores(1, 50);
+            const idsProduct = await productRepository.findAll(1, 50);
 
             if (ids.length === 0) {
                throw createError(ERROR_CODES.USER_NOT_FOUND);
@@ -137,8 +138,8 @@ const saveMocks = async (type, qty) => {
 
          case 'deliveries':
 
-            const orderId = (await orderRepository.findAll()).map((a) => a._id);
-            const driverId = (await userRepository.getUsers()).filter((a) => a.role === USER_ROLES.DRIVER).map((a) => a._id);
+            const orderId = (await orderRepository.findAll(1, 50)).map((a) => a._id);
+            const driverId = (await userRepository.getUsers(1, 50, { role: USER_ROLES.DRIVER })).map((a) => a._id);
 
             if (orderId.length === 0) {
                throw createError(ERROR_CODES.ORDER_NOT_FOUND);
@@ -159,7 +160,7 @@ const saveMocks = async (type, qty) => {
 
          case 'stores':
 
-            const userId = (await userRepository.getUsers()).filter((a) => a.role === USER_ROLES.STORE);
+            const userId = (await userRepository.getUsers(1, 50, { role: USER_ROLES.STORE }));
 
             if (userId.length === 0) {
                throw createError(ERROR_CODES.USER_NOT_FOUND);

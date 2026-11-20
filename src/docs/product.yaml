@@ -54,6 +54,19 @@ paths:
         - Products
       summary: Obtener productos con status available
       description: Devuelve la lista de productos con status available.
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Número de página
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: Resultados por página (por defecto 10; si es inválido o mayor a 50, se usa 10)
       responses:
         "200":
           description: Productos obtenidos

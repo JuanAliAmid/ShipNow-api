@@ -5,9 +5,9 @@ export const userRepository = {
       return UserModel.findById(id).select('-password');
    },
 
-   getUsers: async (page, limit) => {
+   getUsers: async (page, limit, filter = {}) => {
       const skip = (page - 1) * limit;
-      return UserModel.find().select('-password').skip(skip).limit(limit);
+      return UserModel.find(filter).select('-password').skip(skip).limit(limit);
    },
 
    create: async (userData) => {
