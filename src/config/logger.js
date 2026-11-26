@@ -16,7 +16,9 @@ const logger = winston.createLogger({
     )
 });
 
-logger.add(new winston.transports.Console());
+if(env.nodeEnv === 'development') {
+    logger.add(new winston.transports.Console());
+};
 
 const errorRotateTransport = new DailyRotateFile({
     filename: "logs/error-%DATE%.log",
@@ -25,7 +27,14 @@ const errorRotateTransport = new DailyRotateFile({
     maxFiles: "14d"
 });
 
+const combinedRotateTransport = new DailyRotateFile({
+    filename: "logs/combined-%DATE%.log",
+    datePattern: "YYYY-MM-DD",
+    maxFiles: "14d"
+});
+
 logger.add(errorRotateTransport);
+logger.add(combinedRotateTransport);
 
 export { errorRotateTransport };
 export default logger;

@@ -185,23 +185,38 @@ cancelled
 
 ### Health check
 
-Permite verificar que la API está funcionando.
+Verifica que la API está funcionando y que la conexión a la base de datos está activa.
 
 ```http
 GET /health
 ```
 
+Con la base conectada (`200`):
+
 ```json
 {
   "status": "success",
   "message": "API funcionando",
-  "environment": "production",
-  "uptime": 125,
-  "timestamp": "2026-11-19T16:33:38.000Z"
+  "payload": {
+    "environment": "production",
+    "uptime": 125,
+    "timestamp": "2026-11-19T16:33:38.000Z",
+    "database": "connected"
+  }
 }
 ```
 
-- `environment`: valor de `NODE_ENV` con el que corre la API.
+Si la base no está disponible responde `503` con el error `DATABASE_UNAVAILABLE`:
+
+```json
+{
+  "status": "error",
+  "error": "DATABASE_UNAVAILABLE",
+  "message": "Base de datos no disponible"
+}
+```
+
+- `environment`: valor de `NODE_ENV`.
 - `uptime`: segundos desde que arrancó el proceso.
 - `timestamp`: fecha y hora de la respuesta (ISO 8601).
 
@@ -643,7 +658,12 @@ Casos inválidos para probar: un `.txt` (`INVALID_FILE_TYPE`), un archivo de má
 
 ### Dónde se guardan los logs
 
-Solo se registran los niveles error y fatal en una carpeta llamada logs en la raíz del proyecto, con el nombre de 'error-YYYY-MM-DD.log'. Se crea un archivo por día reúniendo todos los errores y fatales de ese día, cada archivo de registro creado tiene una duración de 14 días, pasado ese lapso de tiempo se borran solos.
+Se guardan en la carpeta `logs/` de la raíz, con rotación diaria y 14 días de retención:
+
+- `error-YYYY-MM-DD.log`: solo los niveles `error` y `fatal`.
+- `combined-YYYY-MM-DD.log`: toda la actividad desde el nivel mínimo del entorno (`debug` en desarrollo, `info` en producción).
+
+Cada día se crea un archivo nuevo y pasados 14 días se borran solos.
 
 ### Archivos ignorados en Git
 
@@ -660,8 +680,8 @@ En ambos entornos la carpeta logs solo contendrá archivos que registran error y
 
 `NODE_ENV` decide el nivel mínimo: `debug` en desarrollo, `info` en producción.
 
-- En desarrollo se podrán ver en la terminal los 6 niveles (fatal, error, warning, info, http, debug).
-- En producción se podrán ver en la terminal los 4 niveles (fatal, error, warning, info).
+- En desarrollo, los logs se muestran en la terminal (los 6 niveles) y también se guardan en archivos.
+- En producción y en test, no hay salida por consola: los logs se guardan solo en archivos.
 
 ## Documentación (Swagger)
 
@@ -676,6 +696,7 @@ La documentación interactiva está disponible en `http://localhost:<PORT>/api/d
 - **Products**: `/api/products` (solo `GET` y `POST`, lo necesario para obtener ids de productos al crear pedidos)
 - **Mocks**: `/api/mocks`
 - **Logger**: `/loggerTest`
+- **Health**: `/health` (respuestas 200 y 503)
 
 ### Aclaraciones para probar los endpoints
 
@@ -711,14 +732,23 @@ La app (`app.js`) está separada del arranque del servidor, así que los tests l
 - **Logger**: `GET /loggerTest`, con error 404 (`ROUTE_NOT_FOUND`) al usar un método no soportado.
 - **Swagger**: `GET /api/docs/`. No tiene caso de error porque es documentación estática, sin errores de negocio.
 - **Stores**: Crear, listar, actualizar, obtener por id, eliminar por id, con errores 400 por id con formato inválido, 400 por falta de datos obligatorios y 404 por tienda inexistente.
-- **Products**: Crear, listar, obtener por id, actualizar, eliminar por id, con errores 400 por falta de campos obligatorios, 400 por valor de precio inválido y 404 por producto no encontrado.
+- **Products**: Crear, listar, obtener por id, actualizar, eliminar por id, con errores 400 por falta de campos obligatorios, 400 por valor de precio inválido y 404 por producto no encontrado. Default de limit en 10, limit válido, página 2 y tope de 50".
 - **Rutas inexistentes**: 404 con el formato de error definido.
+- **Health**: 503, base desconectada.
 
 Cada test valida el status HTTP y la estructura del body (en los errores, `status`, `error` y `message`).
 
 ### Base de datos de testing
 
 Sí, se requiere una base separada (`ShipNow-api-test`). Antes de cada test, los hooks (`tests/setup.js`) limpian las colecciones, y antes de hacerlo verifican que `NODE_ENV` sea `test` y que la base conectada sea la de testing, para no borrar datos de desarrollo.
+
+`npm test` necesita una MongoDB accesible. Si no tenés una instalada, podés levantar una con Docker:
+
+```bash
+docker run -d --name mongo-test -p 27017:27017 mongo:7
+```
+
+y definir en `.env`: `MONGODB_URI_TEST=mongodb://localhost:27017/ShipNow-api-test`
 
 ### Variables de entorno
 
@@ -733,7 +763,7 @@ Sí, se requiere una base separada (`ShipNow-api-test`). Antes de cada test, los
 Los listados `GET /api/users`, `/api/orders`, `/api/deliveries`, `/api/products` y `/api/stores` no devuelven la colección completa. Aceptan:
 
 - `page`: número de página. Si es inválido, se usa `1`.
-- `limit`: resultados por página. Si es inválido o mayor a `50`, se usa `10`.
+- `limit`: resultados por página. Si es inválido, se usa `10`. Si es mayor a `50`, se recorta a `50`.
 
 Ejemplo: `GET /api/orders?page=2&limit=20`
 
@@ -768,27 +798,31 @@ Criterio: son herramientas de desarrollo. Los mocks escriben datos falsos en la 
 
 ### Docker
 
-Construir la imagen:
+#### Requisitos
+- Docker y Docker Compose instalados.
+
+#### Construir y levantar
+Desde la raíz del proyecto:
 
 ```bash
-docker build -t shipnow-api .
+docker compose up --build
 ```
 
-Ejecutar el contenedor pasando las variables desde un archivo `.env`:
+Esto construye la imagen de la API (Dockerfile multi-stage) y levanta dos servicios:
+- **api**: la API de ShipNow, disponible en `http://localhost:8080`.
+- **mongo**: una base MongoDB propia del compose, con healthcheck. La API espera a que esté "healthy" antes de iniciar.
 
+No hace falta MongoDB Atlas ni tener Mongo instalada: las variables de entorno necesarias (`PORT`, `MONGODB_URI`, `NODE_ENV`) ya están definidas en el `docker-compose.yml`.
+
+#### Segundo plano
 ```bash
-docker run --env-file .env -p 8080:8080 shipnow-api
+docker compose up -d --build
 ```
 
-- La API usa el puerto **8080** (`PORT=8080` en el `.env`; el Dockerfile lo expone con `EXPOSE 8080`).
-- Dentro del contenedor, `localhost` es el propio contenedor. Si MongoDB corre en tu máquina, usá `host.docker.internal` en `MONGODB_URI` (por ejemplo `mongodb://host.docker.internal:27017/ShipNow-api`), o una URI de MongoDB Atlas.
-- Con `NODE_ENV=production`, Swagger queda bloqueado. Para probarlo en el contenedor, ejecutalo con `-e NODE_ENV=development`.
-
-Para probar que funciona:
-
-- Health check: `http://localhost:8080/health`
-- Swagger (con `NODE_ENV=development`): `http://localhost:8080/api/docs`
-- Endpoint principal: `http://localhost:8080/api/products`
+#### Detener
+```bash
+docker compose down
+```
 
 ### Archivos que no deben subirse al repositorio ni a la imagen
 
@@ -796,7 +830,7 @@ Para probar que funciona:
 
 ### Logs y uploads
 
-- Logs: se guardan en `logs/` (solo `error` y `fatal`, 14 días). En el contenedor ese archivo se pierde al borrarlo; el resto de los niveles se ven con `docker logs <contenedor>`.
+- Logs: se guardan en `logs/` dentro del contenedor. Para verlos: `docker compose exec api sh -c "cat logs/combined-*.log"`. Se pierden al borrar el contenedor, salvo que montes un volumen.
 - Uploads: los archivos van a `uploads/` con límite de 5 MB y solo tipos permitidos. No son almacenamiento permanente: al borrar el contenedor se pierden, salvo que montes un volumen (`-v shipnow-uploads:/app/uploads`).
 
 ## Estado actual del proyecto
@@ -823,6 +857,5 @@ carga de archivos con Multer
 Docker
 ```
 
-Durante el curso, la API será mejorada progresivamente para separar responsabilidades, mejorar la mantenibilidad y acercarse a una estructura más profesional.
 
 

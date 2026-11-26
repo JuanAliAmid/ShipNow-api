@@ -11,22 +11,14 @@ import loggerRouter from './routes/logger.router.js';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpecs from './config/swagger.config.js';
 import { createError } from "./utils/apiResponse.js";
-import { env } from "./config/index.js";
 import { block } from "./middlewares/endpointsBloqueds.js";
+import connectedDataBaseController from "./controller/healthCheck.controller.js";
 
 const app = express();
 
 app.use(express.json());
 
-app.get("/health", (_req, res) => {
-  res.json({
-    status: "success",
-    message: "API funcionando",
-    environment: env.nodeEnv,
-    uptime: Math.floor(process.uptime()),
-    timestamp: new Date().toISOString()
-  });
-});
+app.get("/health", connectedDataBaseController);
 
 app.use('/', loggerRouter);
 app.use("/api/users", usersRouter);

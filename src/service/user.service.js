@@ -21,7 +21,7 @@ export const userService = {
       page = Number(page);
       limit = Number(limit);
       page = !Number.isInteger(page) || page <= 0 ? 1 : page;
-      limit = !Number.isInteger(limit) || limit <= 0 || limit > 50 ? 10 : limit;
+      limit = !Number.isInteger(limit) || limit <= 0 ? 10 : Math.min(limit, 50);
       return userRepository.getUsers(page, limit);
    },
 

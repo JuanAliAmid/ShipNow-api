@@ -108,6 +108,10 @@ const errorsDictionary = {
     [ERROR_CODES.ENDPOINT_NOT_AVAILABLE]: {
         statusCode: 403,
         message: 'Endpoint no disponible'
+    },
+    [ERROR_CODES.DATABASE_UNAVAILABLE]: {
+        statusCode: 503,
+        message: 'Base de datos no disponible'
     }
 };
 

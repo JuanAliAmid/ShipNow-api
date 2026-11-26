@@ -3,6 +3,7 @@ import request from 'supertest';
 import app from '../src/app.js';
 import { productFixture } from "./helpers/productFixture.js";
 import mongoose from 'mongoose';
+import ProductModel from '../src/models/product.model.js';
 
 describe('Products API', () => {
     //Create
@@ -99,6 +100,43 @@ describe('Products API', () => {
     });
 });
 
+describe('Products pagination', () => {
+    beforeEach(async () => {
+        const products = Array.from({ length: 60 }, (_, i) => ({
+            name: `producto${i}`,
+            price: 1000,
+            quantity: 1,
+            status: 'available'
+        }));
+        await ProductModel.insertMany(products);
+    });
+
+    it('usa limit 10 por defecto', async () => {
+        const response = await request(app).get('/api/products');
+
+        expect(response.status).to.equal(200);
+        expect(response.body.payload).to.have.lengthOf(10);
+    });
+
+    it('respeta un limit válido', async () => {
+        const response = await request(app).get('/api/products?limit=5');
+
+        expect(response.body.payload).to.have.lengthOf(5);
+    });
+
+    it('la página 2 con limit 50 devuelve el resto', async () => {
+        const response = await request(app).get('/api/products?page=2');
+
+        expect(response.body.payload).to.have.lengthOf(10);
+    });
+
+    it('si limit supera 50, devuelve 50', async () => {
+        const response = await request(app).get('/api/products?limit=100');
+
+        expect(response.body.payload).to.have.lengthOf(50);
+    });
+});
+
 describe('Products API errors', () => {
 
     ['name', 'price', 'quantity'].forEach(camp => {
@@ -148,3 +186,4 @@ describe('Products API errors', () => {
         expect(response.body.message).to.equal('Producto no encontrado');
     });
 });
+

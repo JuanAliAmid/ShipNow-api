@@ -1,0 +1,52 @@
+tags:
+  - name: Health
+    description: Estado de la API
+
+paths:
+  /health:
+    get:
+      summary: Health check de la API
+      description: Informa si la API está funcionando y si la conexión a la base de datos está activa. No recibe parámetros ni body.
+      tags:
+        - Health
+      responses:
+        "200":
+          description: API funcionando y base de datos conectada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: API funcionando
+                  payload:
+                    type: object
+                    properties:
+                      environment:
+                        type: string
+                        example: production
+                      uptime:
+                        type: integer
+                        description: Segundos desde que arrancó la API
+                        example: 2467
+                      timestamp:
+                        type: string
+                        format: date-time
+                        example: "2026-11-25T20:12:59.374Z"
+                      database:
+                        type: string
+                        example: connected
+        "503":
+          description: La base de datos no está disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: error
+                error: DATABASE_UNAVAILABLE
+                message: Base de datos no disponible
