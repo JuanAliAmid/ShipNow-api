@@ -1,6 +1,6 @@
 # ShipNow API
 
-ShipNow API es una aplicación backend construida con Node.js, Express y MongoDB.
+ShipNow API es una aplicación backend construida con Node.js, Express y MongoDB para gestionar la logística de envíos. Permite registrar usuarios con distintos roles (`admin`, `customer`, `store` y `driver`), crear pedidos y asignarlos a entregas, y hacer el seguimiento (tracking) de todo el recorrido mediante los estados del pedido y de la entrega.
 
 ## Tecnologías
 
@@ -869,10 +869,6 @@ docker compose down
 - Logs: se pierden al borrar el contenedor.
 - Uploads: los archivos van a `uploads/` con límite de 5 MB y solo tipos permitidos. Persisten en el volumen `uploads-data`, así que sobreviven a reinicios y a `docker compose down`.
 - Para borrar los datos de Mongo, los uploads y los logs: `docker compose down -v`.
-
-## Estado actual del proyecto
-
-Esta versión de ShipNow ya cuenta con las 4 entidades principales y un sistema de mocking funcional para poblar la base con datos de prueba, aunque todavía no representa una API completamente profesional.
 
 Actualmente el proyecto tiene:
 
