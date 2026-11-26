@@ -134,6 +134,48 @@ describe('Orders API', () => {
   });
 });
 
+describe('Orders pagination', () => {
+  beforeEach(async () => {
+    const orders = Array.from({ length: 60 }, (_, i) => ({
+      customer: new mongoose.Types.ObjectId(),
+      store: new mongoose.Types.ObjectId(),
+      items: [{
+        product: new mongoose.Types.ObjectId(),
+        name: 'producto',
+        quantity: 1,
+        price: 1000
+      }],
+      deliveryAddress: 'Av. test 123',
+      total: 1000
+    }));
+    await OrderModel.insertMany(orders);
+  });
+
+  it('usa limit 10 por defecto', async () => {
+    const response = await request(app).get('/api/orders');
+
+    expect(response.status).to.equal(200);
+    expect(response.body.payload).to.have.lengthOf(10);
+  });
+
+  it('respeta un limit válido', async () => {
+    const response = await request(app).get('/api/orders?limit=5');
+
+    expect(response.body.payload).to.have.lengthOf(5);
+  });
+
+  it('la página 2 con limit 50 devuelve el resto', async () => {
+    const response = await request(app).get('/api/orders?page=2&limit=50');
+
+    expect(response.body.payload).to.have.lengthOf(10);
+  });
+
+  it('si limit supera 50, devuelve 50', async () => {
+    const response = await request(app).get('/api/orders?limit=100');
+
+    expect(response.body.payload).to.have.lengthOf(50);
+  });
+});
 
 describe('Orders API errors', () => {
 

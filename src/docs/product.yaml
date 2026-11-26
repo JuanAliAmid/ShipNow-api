@@ -4,6 +4,38 @@ tags:
 
 paths:
   /api/products:
+    get:
+      tags:
+        - Products
+      summary: Obtener productos con status available
+      description: Devuelve la lista paginada de productos con status available.
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Número de página (si es inválido, se usa 1)
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+            maximum: 50
+          description: Resultados por página (si es inválido, se usa 10; si supera 50, se usa 50)
+      responses:
+        "200":
+          description: Productos obtenidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductsResponse'
+        "500":
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
     post:
       tags:
         - Products
@@ -49,41 +81,97 @@ paths:
                 status: error
                 error: INTERNAL_SERVER_ERROR
                 message: Error interno del servidor 
-    get:
-      tags:
-        - Products
-      summary: Obtener productos con status available
-      description: Devuelve la lista de productos con status available.
+    /api/products/{id}:
       parameters:
-        - in: query
-          name: page
+        - in: path
+          name: id
+          required: true
           schema:
-            type: integer
-            default: 1
-          description: Número de página
-        - in: query
-          name: limit
-          schema:
-            type: integer
-            default: 10
-          description: Resultados por página (por defecto 10; si es inválido o mayor a 50, se usa 10)
-      responses:
-        "200":
-          description: Productos obtenidos
+            type: string
+          description: ID del producto
+      get:
+        tags:
+          - Products
+        summary: Obtener producto por ID
+        responses:
+          "200":
+            description: Producto obtenido
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ProductResponse'
+          "400":
+            description: El formato del ID es inválido
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ErrorResponse'
+                example:
+                  status: error
+                  error: INVALID_DATA
+                  message: El formato de los datos ingresados es incorrecto
+          "404":
+            description: Producto no encontrado
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ErrorResponse'
+                example:
+                  status: error
+                  error: PRODUCT_NOT_FOUND
+                  message: Producto no encontrado
+      put:
+        tags:
+          - Products
+        summary: Actualizar producto
+        requestBody:
+          required: true
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProductsResponse'
-        "500":
-          description:  Error interno del servidor 
-          content: 
-            application/json:
-              schema: 
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                status: error
-                error: INTERNAL_SERVER_ERROR
-                message: Error interno del servidor 
+                $ref: '#/components/schemas/ProductUpdateInput'
+        responses:
+          "200":
+            description: Producto actualizado
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ProductResponse'
+          "400":
+            description: Datos o ID inválidos
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ErrorResponse'
+          "404":
+            description: Producto no encontrado
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ErrorResponse'
+      delete:
+        tags:
+          - Products
+        summary: Eliminar producto
+        responses:
+          "200":
+            description: Producto eliminado
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ProductResponse'
+          "400":
+            description: El formato del ID es inválido
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ErrorResponse'
+          "404":
+            description: Producto no encontrado
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
     Product: 
@@ -137,6 +225,24 @@ components:
         - name
         - price
         - quantity
+      properties:
+        name:
+          type: string
+          example: Producto12
+        price:
+          type: number
+          example: 6000
+        quantity:
+          type: number
+          example: 6
+        status:
+          type: string
+          enum:
+            - available
+            - out of stock
+          example: available
+    ProductUpdateInput:
+      type: object
       properties:
         name:
           type: string

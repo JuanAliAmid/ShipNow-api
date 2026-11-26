@@ -9,6 +9,7 @@ import usersMock from '../mocks/users.mock.js';
 import ordersMock from '../mocks/orders.mock.js';
 import deliveriesMock from '../mocks/deliveries.mock.js';
 import mongoose from 'mongoose';
+import generateIds from '../utils/generateIds.js';
 import storesMock from '../mocks/store.mock.js';
 import ERROR_CODES from '../errors/error.codes.js';
 import logger from '../config/logger.js';
@@ -45,8 +46,8 @@ const users = async (quantity) => {
 const orders = async (quantity) => {
    quantity = qtyConditional(quantity);
 
-   const userIds = Array.from({ length: quantity }, () => { return new mongoose.Types.ObjectId() });
-   const storeIds = Array.from({ length: quantity }, () => { return new mongoose.Types.ObjectId() });
+   const userIds = generateIds(quantity);
+   const storeIds = generateIds(quantity);
    const products = await productRepository.findAll(1, 50);
 
    if (products.length === 0) {
@@ -74,8 +75,8 @@ const drivers = async (quantity) => {
 const deliveries = async (quantity) => {
    quantity = qtyConditional(quantity);
 
-   const orderId = Array.from({ length: quantity }, () => { return new mongoose.Types.ObjectId() })
-   const driverId = Array.from({ length: quantity }, () => { return new mongoose.Types.ObjectId() })
+   const orderId = generateIds(quantity);
+   const driverId = generateIds(quantity)
    const delivery = Array.from({ length: quantity }, (_, index) => {
       return deliveriesMock.generateMockDelivery(orderId[index % orderId.length], driverId[index % driverId.length], index)
    });

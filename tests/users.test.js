@@ -133,6 +133,42 @@ describe('Users API', () => {
     });
 });
 
+describe('Users pagination', () => {
+    beforeEach(async () => {
+        const users = Array.from({ length: 60 }, (_, i) => ({
+            firstName: `user${i}`,
+            lastName: `Test${i}`,
+            email: `nuevo@test${i}.com`,
+            password: `coder123${i}`
+        }));
+        await UserModel.insertMany(users);
+    });
+
+    it('usa limit 10 por defecto', async () => {
+        const response = await request(app).get('/api/users');
+
+        expect(response.status).to.equal(200);
+        expect(response.body.payload).to.have.lengthOf(10);
+    });
+
+    it('respeta un limit válido', async () => {
+        const response = await request(app).get('/api/users?limit=5');
+
+        expect(response.body.payload).to.have.lengthOf(5);
+    });
+
+    it('la página 2 con limit 50 devuelve el resto', async () => {
+        const response = await request(app).get('/api/users?page=2&limit=50');
+
+        expect(response.body.payload).to.have.lengthOf(10);
+    });
+
+    it('si limit supera 50, devuelve 50', async () => {
+        const response = await request(app).get('/api/users?limit=100');
+
+        expect(response.body.payload).to.have.lengthOf(50);
+    });
+});
 
 describe('Users API errors', () => {
     // Faltante de alguno de los 4 campos obligatorios

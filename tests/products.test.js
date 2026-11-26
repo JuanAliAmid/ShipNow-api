@@ -125,7 +125,7 @@ describe('Products pagination', () => {
     });
 
     it('la página 2 con limit 50 devuelve el resto', async () => {
-        const response = await request(app).get('/api/products?page=2');
+        const response = await request(app).get('/api/products?page=2&limit=50');
 
         expect(response.body.payload).to.have.lengthOf(10);
     });

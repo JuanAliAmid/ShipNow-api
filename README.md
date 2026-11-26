@@ -1,6 +1,8 @@
-## Funcionamiento base de la API
+# ShipNow API
 
 ShipNow API es una aplicación backend construida con Node.js, Express y MongoDB.
+
+## Funcionamiento base de la API
 
 En su estado actual, la API permite trabajar con cuatro entidades principales:
 
@@ -683,6 +685,16 @@ En ambos entornos la carpeta logs solo contendrá archivos que registran error y
 - En desarrollo, los logs se muestran en la terminal (los 6 niveles) y también se guardan en archivos.
 - En producción y en test, no hay salida por consola: los logs se guardan solo en archivos.
 
+### Tracking de envíos
+
+En ShipNow, un pedido (`Order`) representa un envío. El seguimiento (tracking) se resuelve con el campo `status`:
+
+- Consultar el estado actual: `GET /api/orders/:oid` y `GET /api/deliveries/:did`.
+- Actualizar el estado: `PUT /api/orders/:oid/status` y `PUT /api/deliveries/:did/status`.
+
+Estados de un pedido: `created`, `picked_up`, `assigned`, `in_transit`, `delivered`, `cancelled`.
+Estados de una entrega: `assigned`, `in_transit`, `delivered`, `cancelled`.
+
 ## Documentación (Swagger)
 
 La documentación interactiva está disponible en `http://localhost:<PORT>/api/docs` con el servidor levantado.
@@ -693,7 +705,7 @@ La documentación interactiva está disponible en `http://localhost:<PORT>/api/d
 - **Orders**: `/api/orders` (incluye `POST /{oid}/receipt`, `multipart/form-data`)
 - **Deliveries**: `/api/deliveries`
 - **Stores**: `/api/stores`
-- **Products**: `/api/products` (solo `GET` y `POST`, lo necesario para obtener ids de productos al crear pedidos)
+- **Products**: `/api/products` y `/api/products/{id}` (`GET`, `POST`, `PUT` y `DELETE`)
 - **Mocks**: `/api/mocks`
 - **Logger**: `/loggerTest`
 - **Health**: `/health` (respuestas 200 y 503)
@@ -756,7 +768,7 @@ y definir en `.env`: `MONGODB_URI_TEST=mongodb://localhost:27017/ShipNow-api-tes
 - `NODE_ENV`: no hace falta definirla, porque `npm test` la fuerza a `test` con `cross-env`.
 - `PORT` y `MONGODB_URI`: no se usan en test. Solo se exigen para levantar el servidor con `npm start` o `npm run dev`.
 
-## Producción y Docker (Módulo 8)
+## Producción y Docker 
 
 ### Paginación
 
@@ -784,7 +796,7 @@ La API valida las variables obligatorias al iniciar: si falta alguna, no arranca
 
 - Local: ver [Instalación y ejecución local](#instalación-y-ejecución-local) (`npm start`).
 - Tests: `npm test` (ver sección Testing).
-- Swagger: `http://localhost:<PORT>/api/docs` (solo fuera de producción).
+- Swagger: `http://localhost:<PORT>/api/docs`.
 
 ### Endpoints internos en producción
 
@@ -830,8 +842,9 @@ docker compose down
 
 ### Logs y uploads
 
-- Logs: se guardan en `logs/` dentro del contenedor. Para verlos: `docker compose exec api sh -c "cat logs/combined-*.log"`. Se pierden al borrar el contenedor, salvo que montes un volumen.
-- Uploads: los archivos van a `uploads/` con límite de 5 MB y solo tipos permitidos. No son almacenamiento permanente: al borrar el contenedor se pierden, salvo que montes un volumen (`-v shipnow-uploads:/app/uploads`).
+- Logs: se guardan en `logs/` dentro del contenedor y persisten en el volumen `logs-data`. Para verlos: `docker compose exec api sh -c "cat logs/combined-*.log"`.
+- Uploads: los archivos van a `uploads/` con límite de 5 MB y solo tipos permitidos. Persisten en el volumen `uploads-data`, así que sobreviven a reinicios y a `docker compose down`.
+- Para borrar los datos de Mongo, los uploads y los logs: `docker compose down -v`.
 
 ## Estado actual del proyecto
 
