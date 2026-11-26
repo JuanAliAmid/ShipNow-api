@@ -81,97 +81,97 @@ paths:
                 status: error
                 error: INTERNAL_SERVER_ERROR
                 message: Error interno del servidor 
-    /api/products/{id}:
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-          description: ID del producto
-      get:
-        tags:
-          - Products
-        summary: Obtener producto por ID
-        responses:
-          "200":
-            description: Producto obtenido
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/ProductResponse'
-          "400":
-            description: El formato del ID es inválido
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/ErrorResponse'
-                example:
-                  status: error
-                  error: INVALID_DATA
-                  message: El formato de los datos ingresados es incorrecto
-          "404":
-            description: Producto no encontrado
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/ErrorResponse'
-                example:
-                  status: error
-                  error: PRODUCT_NOT_FOUND
-                  message: Producto no encontrado
-      put:
-        tags:
-          - Products
-        summary: Actualizar producto
-        requestBody:
-          required: true
+  /api/products/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        description: ID del producto
+    get:
+      tags:
+        - Products
+      summary: Obtener producto por ID
+      responses:
+        "200":
+          description: Producto obtenido
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProductUpdateInput'
-        responses:
-          "200":
-            description: Producto actualizado
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/ProductResponse'
-          "400":
-            description: Datos o ID inválidos
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/ErrorResponse'
-          "404":
-            description: Producto no encontrado
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/ErrorResponse'
-      delete:
-        tags:
-          - Products
-        summary: Eliminar producto
-        responses:
-          "200":
-            description: Producto eliminado
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/ProductResponse'
-          "400":
-            description: El formato del ID es inválido
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/ErrorResponse'
-          "404":
-            description: Producto no encontrado
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/ProductResponse'
+        "400":
+          description: El formato del ID es inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: error
+                error: INVALID_DATA
+                message: El formato de los datos ingresados es incorrecto
+        "404":
+          description: Producto no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: error
+                error: PRODUCT_NOT_FOUND
+                message: Producto no encontrado
+    put:
+      tags:
+        - Products
+      summary: Actualizar producto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductUpdateInput'
+      responses:
+        "200":
+          description: Producto actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        "400":
+          description: Datos o ID inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Producto no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+        - Products
+      summary: Eliminar producto
+      responses:
+        "200":
+          description: Producto eliminado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        "400":
+          description: El formato del ID es inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Producto no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
     Product: 

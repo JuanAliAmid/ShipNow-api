@@ -8,7 +8,6 @@ import { createError } from '../utils/apiResponse.js';
 import usersMock from '../mocks/users.mock.js';
 import ordersMock from '../mocks/orders.mock.js';
 import deliveriesMock from '../mocks/deliveries.mock.js';
-import mongoose from 'mongoose';
 import generateIds from '../utils/generateIds.js';
 import storesMock from '../mocks/store.mock.js';
 import ERROR_CODES from '../errors/error.codes.js';

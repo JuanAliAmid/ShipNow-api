@@ -2,6 +2,31 @@
 
 ShipNow API es una aplicación backend construida con Node.js, Express y MongoDB.
 
+## Tecnologías
+
+**Backend**
+- Node.js y Express: servidor y API REST.
+- MongoDB: base de datos y modelado de entidades.
+- dotenv: carga de variables de entorno, centralizadas en `src/config/index.js`.
+
+**Archivos**
+- Multer: carga de documentos de usuarios y comprobantes de pedidos (límite de 5 MB y validación de tipo).
+- file-type: verificación del tipo real del archivo según su contenido.
+
+**Logging**
+- Winston y winston-daily-rotate-file: logger centralizado con niveles (`fatal`, `error`, `warning`, `info`, `http`, `debug`) y rotación diaria de archivos.
+
+**Documentación**
+- swagger-jsdoc y swagger-ui-express: documentación interactiva en `/api/docs`, definida en `src/docs/*.yaml`.
+
+**Testing**
+- Mocha, Chai y Supertest: tests funcionales de los endpoints.
+- cross-env: define `NODE_ENV=test` de forma compatible con cualquier sistema operativo.
+
+**Desarrollo y despliegue**
+- nodemon: recarga automática en desarrollo (`npm run dev`).
+- Docker y Docker Compose: imagen multi-stage y orquestación de la API junto con MongoDB.
+
 ## Funcionamiento base de la API
 
 En su estado actual, la API permite trabajar con cuatro entidades principales:
@@ -655,7 +680,7 @@ Casos inválidos para probar: un `.txt` (`INVALID_FILE_TYPE`), un archivo de má
 - `error: 1` → para errores que no controlamos como por ejemplo: `un error con status 500`.
 - `warning: 2` → para errores controlados como por ejemplo: `Cantidad inválida` o un `Not found`.
 - `info: 3` → para los casos de éxito como por ejemplo: `Servidor escuchando en el puerto...`.
-- `http: 4` → para capturar información sobre las peticiones que entran o salen del servidor, hoy solo se ejecuta desde `/loggerTest`.
+- `http: 4` → registra cada petición que recibe el servidor (método, URL, status y tiempo de respuesta) mediante el middleware `requestLogger`. Solo se escribe con `LOG_LEVEL=http` o `debug`; con el nivel por defecto de producción (`info`) no se muestra.
 - `debug: 5` → para tener un registro del recorrido de nuestro código, solo está activo en desarrollo.
 
 ### Dónde se guardan los logs
@@ -675,8 +700,7 @@ Se ignoran `logs/*.log` (los registros de errores y fatales) y `logs/*.json` (co
 
 - URL → http://localhost:<PORT>/loggerTest/
 
-Cambiar el entorno con `NODE_ENV` (production = producción y development = desarrollo), reiniciar el servidor y hacer el GET nuevamente.
-En ambos entornos la carpeta logs solo contendrá archivos que registran error y fatal del día.
+En ambos entornos, `error-*.log` contendrá solo los errores y fatales del día, y `combined-*.log` toda la actividad desde el nivel mínimo del entorno.
 
 ### Comportamiento según el entorno
 
@@ -842,7 +866,7 @@ docker compose down
 
 ### Logs y uploads
 
-- Logs: se guardan en `logs/` dentro del contenedor y persisten en el volumen `logs-data`. Para verlos: `docker compose exec api sh -c "cat logs/combined-*.log"`.
+- Logs: se pierden al borrar el contenedor.
 - Uploads: los archivos van a `uploads/` con límite de 5 MB y solo tipos permitidos. Persisten en el volumen `uploads-data`, así que sobreviven a reinicios y a `docker compose down`.
 - Para borrar los datos de Mongo, los uploads y los logs: `docker compose down -v`.
 

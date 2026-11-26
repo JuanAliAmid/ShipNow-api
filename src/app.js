@@ -13,6 +13,7 @@ import swaggerSpecs from './config/swagger.config.js';
 import { createError } from "./utils/apiResponse.js";
 import requestLogger from "./middlewares/requestsLogger.js";
 import connectedDataBaseController from "./controller/healthCheck.controller.js";
+import { block } from "./middlewares/endpointsBloqueds.js";
 
 const app = express();
 
@@ -28,7 +29,7 @@ app.use("/api/stores", storesRouter);
 app.use("/api/orders", ordersRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/mocks", mocksRouter);
-app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
+app.use('/api/docs', block, swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
 
 app.use((_req, _res, next) => {
