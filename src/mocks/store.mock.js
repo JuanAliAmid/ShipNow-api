@@ -10,7 +10,7 @@ const generateMockStores = (ownerIds, quantity) => {
     const stores = [];
     for (let i = 0; i < quantity; i++) {
         const storeId = ownerIds[i % ownerIds.length];
-        stores.push(generateMockStore( i + 1, storeId));
+        stores.push(generateMockStore(i + 1, storeId));
     };
     return stores;
 }

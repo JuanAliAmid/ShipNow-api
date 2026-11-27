@@ -17,6 +17,6 @@ export const env = {
     nodeEnv,
     isProd: nodeEnv === 'production',
     mongodb_uri: nodeEnv === 'test' ? process.env.MONGODB_URI_TEST : process.env.MONGODB_URI,
-    log_level:  process.env.LOG_LEVEL || (nodeEnv === 'production' ? 'info' : 'debug'),
+    log_level: process.env.LOG_LEVEL || (nodeEnv === 'production' ? 'info' : 'debug'),
     base_url: process.env.BASE_URL || `http://localhost:${process.env.PORT}`
 };

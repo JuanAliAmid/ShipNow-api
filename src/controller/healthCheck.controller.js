@@ -1,5 +1,5 @@
 import connectedDataBaseService from "../service/healthCheck.service.js";
-import { successResponse } from "../utils/apiResponse.js"; 
+import { successResponse } from "../utils/apiResponse.js";
 
 const connectedDataBaseController = (req, res, next) => {
     try {

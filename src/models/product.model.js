@@ -17,7 +17,7 @@ const productSchema = mongoose.Schema(
             required: true
         },
         status: {
-            type:String,
+            type: String,
             enum: [PRODUCT_STATUS.AVAILABLE, PRODUCT_STATUS.OUT_OF_STOCK],
             default: PRODUCT_STATUS.AVAILABLE
         }

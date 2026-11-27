@@ -3,7 +3,7 @@ import { successResponse } from '../utils/apiResponse.js';
 
 export const getOrders = async (req, res, next) => {
   try {
-    const {page, limit} = req.query;
+    const { page, limit } = req.query;
     const orders = await orderService.getOrders(page, limit);
     successResponse(res, { message: 'Lista de ordenes', payload: orders });
   } catch (error) {

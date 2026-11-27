@@ -19,7 +19,7 @@ describe("Health API", () => {
         await mongoose.disconnect();
         try {
             const response = await request(app).get("/health");
-    
+
             expect(response.status).to.equal(503);
             expect(response.body.status).to.equal('error');
             expect(response.body.error).to.equal('DATABASE_UNAVAILABLE');

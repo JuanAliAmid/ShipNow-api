@@ -177,7 +177,7 @@ const saveMocks = async (type, qty) => {
          case 'storeOwner':
 
             const store = usersMock.generateMockUserWithStoreRole(qty);
-            
+
             const storeSave = await userRepository.createMany(store);
 
             logger.info(`storeOwners guardados correctamente`);
