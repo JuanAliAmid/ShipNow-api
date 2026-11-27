@@ -19,10 +19,28 @@ export const deliveryController = {
             next(error);
         };
     },
+    create: async (req, res, next) => {
+
+        try {
+            const delivery = await deliveryService.create(req.body);
+            successResponse(res, { statusCode: 201, message: 'Delivery creado', payload: delivery });
+        } catch (error) {
+            next(error);
+        };
+    },
     updateStatus: async (req, res, next) => {
         try {
             const delivery = await deliveryService.updateStatus(req.params.did, req.body.status)
             successResponse(res, { message: 'Estado actualizado', payload: delivery });
+        } catch (error) {
+            next(error);
+        };
+    },
+    delete: async (req, res, next) => {
+        const { did } = req.params;
+        try {
+            const delivery = await deliveryService.delete(did);
+            successResponse(res, { message: 'Tienda eliminada', payload: delivery });
         } catch (error) {
             next(error);
         };

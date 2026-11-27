@@ -22,7 +22,7 @@ paths:
             type: integer
             default: 10
             maximum: 50
-          description: Resultados por página (si es inválido, se usa 10; si supera 50, se usa 50)
+          description: Resultados por página (por defecto 10; si es inválido se usa 10, y si es mayor a 50 se usa 50)
       responses:
         "200":
           description: Productos obtenidos

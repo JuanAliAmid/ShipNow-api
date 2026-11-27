@@ -13,6 +13,15 @@ export const deliveryService = {
         const deliveries = await deliveryRepository.findAll(page, limit);
         return deliveries;
     },
+    create: async (deliveryData) => {
+        const { order, driver } = deliveryData
+        if (!order || !driver) {
+            throw createError(ERROR_CODES.REQUIRED_FIELDS);
+        };
+        const delivery = await deliveryRepository.create(deliveryData);
+
+        return delivery;
+    },
     getById: async (id) => {
         const delivery = await deliveryRepository.findById(id);
 
@@ -31,6 +40,14 @@ export const deliveryService = {
 
         if (!delivery) {
             logger.warning(`Delivery con id: ${id} no encontrado`);
+            throw createError(ERROR_CODES.DELIVERY_NOT_FOUND);
+        };
+        return delivery;
+    },
+    delete: async (id) => {
+        const delivery = await deliveryRepository.delete(id);
+
+        if (!delivery) {
             throw createError(ERROR_CODES.DELIVERY_NOT_FOUND);
         };
         return delivery;

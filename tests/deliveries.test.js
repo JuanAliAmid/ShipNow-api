@@ -3,6 +3,7 @@ import request from 'supertest';
 import app from '../src/app.js';
 import { deliveriesFixture } from './helpers/deliveriesFixture.js';
 import mongoose from "mongoose";
+import deliveryModel from '../src/models/delivery.model.js';
 
 describe('Deliveries API', () => {
 
@@ -53,6 +54,41 @@ describe('Deliveries API', () => {
             expect(putResponse.body.payload.status).to.equal(newStatus);
             expect(putResponse.body.payload).to.be.an('object');
         });
+    });
+});
+
+describe('Delivery pagination', () => {
+    beforeEach(async () => {
+        const deliveries = Array.from({ length: 60 }, (_, i) => ({
+            order: new mongoose.Types.ObjectId(),
+            driver: new mongoose.Types.ObjectId(),
+        }));
+        await deliveryModel.insertMany(deliveries);
+    });
+
+    it('usa limit 10 por defecto', async () => {
+        const response = await request(app).get('/api/deliveries');
+
+        expect(response.status).to.equal(200);
+        expect(response.body.payload).to.have.lengthOf(10);
+    });
+
+    it('respeta un limit válido', async () => {
+        const response = await request(app).get('/api/deliveries?limit=5');
+
+        expect(response.body.payload).to.have.lengthOf(5);
+    });
+
+    it('la página 2 con limit 50 devuelve el resto', async () => {
+        const response = await request(app).get('/api/deliveries?page=2&limit=50');
+
+        expect(response.body.payload).to.have.lengthOf(10);
+    });
+
+    it('si limit supera 50, devuelve 50', async () => {
+        const response = await request(app).get('/api/deliveries?limit=100');
+
+        expect(response.body.payload).to.have.lengthOf(50);
     });
 });
 

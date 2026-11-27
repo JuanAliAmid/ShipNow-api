@@ -113,6 +113,43 @@ describe('Stores API', () => {
     });
 });
 
+describe('Store pagination', () => {
+    beforeEach(async () => {
+        const stores = Array.from({ length: 60 }, (_, i) => ({
+            name: `store${i}`,
+            address: `address${i}`,
+            owner: new mongoose.Types.ObjectId(),
+        }));
+        await StoreModel.insertMany(stores);
+    });
+
+    it('usa limit 10 por defecto', async () => {
+        const response = await request(app).get('/api/stores');
+
+        expect(response.status).to.equal(200);
+        expect(response.body.payload).to.have.lengthOf(10);
+    });
+
+    it('respeta un limit válido', async () => {
+        const response = await request(app).get('/api/stores?limit=5');
+
+        expect(response.body.payload).to.have.lengthOf(5);
+    });
+
+    it('la página 2 con limit 50 devuelve el resto', async () => {
+        const response = await request(app).get('/api/stores?page=2&limit=50');
+
+        expect(response.body.payload).to.have.lengthOf(10);
+    });
+
+    it('si limit supera 50, devuelve 50', async () => {
+        const response = await request(app).get('/api/stores?limit=100');
+
+        expect(response.body.payload).to.have.lengthOf(50);
+    });
+});
+
+
 describe('Stores API errors', () => {
 
     //400 Por falta de datos

@@ -761,7 +761,7 @@ La app (`app.js`) está separada del arranque del servidor, así que los tests l
 
 - **Health**: Estado de la API.
 - **Users**: Crear, listar, obtener por id, actualizar y eliminar, con errores (campos faltantes, usuario inexistente, id con formato inválido y email duplicado en post y put).
-- **Deliveries**: Listar, obtener por id y actualizar estado por id, con errores (delivery inexistente, valor de status inválido).
+- **Deliveries**: Listar, crear, obtener por id, actualizar estado por id y eliminar por id, con errores (delivery inexistente, valor de status inválido).
 - **Orders**: Crear, listar, obtener por id, actualizar estado y eliminar, con errores (datos incompletos, items vacíos, cantidad inválida en un item, recurso inexistente, estado inválido, stock insuficiente, formato de id inválido en get, put de estado y delete).
 - **Mocks**: GET de usuarios, orders, deliveries y drivers mock y POST `/seed` (comprueba que se guardó en la base), con errores por cantidad inválida en el GET de users, orders, deliveries y drivers y en el seed (`INVALID_QUANTITY`), tipo inexistente (`TYPE_NOT_FOUND`) y datos previos faltantes en el seed (`USER_NOT_FOUND`, `STORE_NOT_FOUND`, `PRODUCT_NOT_FOUND`, `ORDER_NOT_FOUND`, `DRIVERS_NOT_FOUND`), más el GET de orders sin productos cargados (`NO_SAVED_PRODUCTS`).
 - **Carga de archivos**: documentos de usuario y comprobantes de pedido. Cada test arma un PNG de 1x1 píxel en memoria (`Buffer` desde base64), así que no hacen falta archivos en el repo, y un `afterEach` borra el archivo subido. Cubren la carga exitosa y los errores (sin archivo, `documentType` inválido o vacío).
@@ -870,25 +870,7 @@ docker compose down
 - Uploads: los archivos van a `uploads/` con límite de 5 MB y solo tipos permitidos. Persisten en el volumen `uploads-data`, así que sobreviven a reinicios y a `docker compose down`.
 - Para borrar los datos de Mongo, los uploads y los logs: `docker compose down -v`.
 
-Actualmente el proyecto tiene:
 
-```txt
-app.js
-server.js
-models
-routes
-mocks
-controllers
-services
-repositories
-config/db.js
-middleware global de errores
-config/logger.js (Winston)
-Swagger
-tests automatizados
-carga de archivos con Multer
-Docker
-```
 
 
 
