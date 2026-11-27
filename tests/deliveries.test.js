@@ -4,8 +4,33 @@ import app from '../src/app.js';
 import { deliveriesFixture } from './helpers/deliveriesFixture.js';
 import mongoose from "mongoose";
 import deliveryModel from '../src/models/delivery.model.js';
+import { USER_ROLES } from '../src/constants/constants.js';
+import UserModel from '../src/models/user.model.js';
 
 describe('Deliveries API', () => {
+
+    describe('Create delivery', () => {
+        it('crea y persiste un delivery', async () => {
+
+            const body = await deliveriesFixture();
+
+            const newDelivery = {
+                order: body.order.toString(),
+                driver: body.driver.toString(),
+                notes: 'Dejar en puerta'
+            };
+
+            const response = await request(app).post('/api/deliveries/').send(newDelivery);
+
+            console.log(response.body)
+            expect(response.status).to.equal(201);
+            expect(response.body.status).to.equal('success');
+            expect(response.body.payload).to.have.property('_id');
+            expect(response.body.payload.driver).to.equal(body.driver.toString());
+            expect(response.body.payload.order).to.equal(body.order.toString());
+            expect(response.body.payload.status).to.equal('assigned');
+        });
+    });
 
     //Get all
     describe('Delivery list', () => {
@@ -54,6 +79,32 @@ describe('Deliveries API', () => {
             expect(putResponse.body.payload.status).to.equal(newStatus);
             expect(putResponse.body.payload).to.be.an('object');
         });
+    });
+
+    //Delete by id
+    describe('Delete driver by id', () => {
+        it('debería responder con un driver eliminado por id', async () => {
+
+            const body = await deliveriesFixture();
+            const response = await request(app).delete(`/api/deliveries/${body._id.toString()}`).send(body);
+
+            expect(response.status).to.equal(200);
+            expect(response.body.status).to.equal('success');
+
+            const getResponse = await request(app).get(`/api/deliveries/${body._id.toString()}`);
+
+            expect(getResponse.status).to.equal(404);
+            expect(getResponse.body.status).to.equal('error');
+            expect(getResponse.body.error).to.equal('DELIVERY_NOT_FOUND');
+        });
+
+        it('deberia de responder 404 por delivery no encontrado', async () => {
+            const response = await request(app).delete(`/api/deliveries/${new mongoose.Types.ObjectId().toString()}`);
+
+            expect(response.status).to.equal(404);
+            expect(response.body.status).to.equal('error');
+            expect(response.body.error).to.equal('DELIVERY_NOT_FOUND');
+        })
     });
 });
 
@@ -108,6 +159,49 @@ describe('Deliveries API errors', () => {
         expect(response.body.message).to.equal('Delivery no encontrado');
     });
 
+    //Orden no encontrada
+    it("responde 404 si la orden no existe", async () => {
+
+        const body = await deliveriesFixture();
+
+        const response = await request(app).post('/api/deliveries').send({
+            order: new mongoose.Types.ObjectId().toString(),
+            driver: body.driver.toString()
+        });
+
+        expect(response.status).to.equal(404);
+        expect(response.body.status).to.equal('error');
+        expect(response.body.error).to.equal('ORDER_NOT_FOUND');
+        expect(response.body.message).to.equal('Orden no encontrada');
+    });
+
+    //Campos faltantes
+    it("responde 400 si faltan campos requeridos", async () => {
+
+        const response = await request(app).post('/api/deliveries').send();
+
+        expect(response.status).to.equal(400);
+        expect(response.body.status).to.equal('error');
+        expect(response.body.error).to.equal('REQUIRED_FIELDS');
+        expect(response.body.message).to.equal('Faltan datos obligatorios');
+    });
+
+    //Driver no encontrado
+    it("responde 404 si el driver no existe", async () => {
+
+        const body = await deliveriesFixture();
+
+        const response = await request(app).post('/api/deliveries').send({
+            order: body.order.toString(),
+            driver: new mongoose.Types.ObjectId().toString()
+        });
+
+        expect(response.status).to.equal(404);
+        expect(response.body.status).to.equal('error');
+        expect(response.body.error).to.equal('DRIVERS_NOT_FOUND');
+        expect(response.body.message).to.equal('Drivers no encontrados');
+    });
+
     //Delivery no encontrado de update
     it("responde 404 si el delivery a actualizar no existe", async () => {
 
@@ -119,6 +213,29 @@ describe('Deliveries API errors', () => {
         expect(response.body.error).to.equal('DELIVERY_NOT_FOUND');
         expect(response.body.message).to.equal('Delivery no encontrado');
     });
+
+    //Driver con otro rol
+    it('responde 404 si tiene un rol que no sea driver', async () => {
+        const body = await deliveriesFixture()
+        const driver = await UserModel.create({
+            firstName: "Usuario1",
+            lastName: "Demo1",
+            email: "user3@test.com",
+            password: "coder123",
+            role: USER_ROLES.USER
+        });
+
+        const response = await request(app).post(`/api/deliveries`).send({
+            order: body.order.toString(),
+            driver: driver._id.toString()
+        });
+
+        expect(response.status).to.equal(404);
+        expect(response.body.status).to.equal('error');
+        expect(response.body.error).to.equal('DRIVERS_NOT_FOUND');
+        expect(response.body.message).to.equal('Drivers no encontrados');
+    });
+
 
     //El valor del actualizacion de estado es incorrecto
     it('responde 400 si el estado actualizado contiene un valor incorrecto', async () => {

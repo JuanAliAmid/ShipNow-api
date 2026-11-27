@@ -273,7 +273,6 @@ describe('Users API errors', () => {
     it("responde 400 si el no se recibió un archivo", async () => {
 
         const body = await userFixture();
-        const nada = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg'
         const response = await request(app)
             .post(`/api/users/${body._id}/documents`)
             .field('documentType', 'document');

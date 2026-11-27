@@ -39,6 +39,45 @@ paths:
                 status: error
                 error: INTERNAL_SERVER_ERROR
                 message: Error interno del servidor
+    post:
+      tags:
+        - Deliveries
+      summary: Crear Deliverys
+      description: Crea un delivery
+      responses: 
+        "200":
+          description: Delivery creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeliveryResponse'    
+        "404":
+          description: Usuario no encontrado o Drivers no encontrados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                UserNotFound:
+                  value:
+                    status: error
+                    error: USER_NOT_FOUND
+                    message: Usuario no encontrado
+                  DriversNotFound:
+                    value:
+                    status: error
+                    error: DRIVERS_NOT_FOUND
+                    message: Drivers no encontrados
+        "500":
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example: 
+                status: error
+                error: INTERNAL_SERVER_ERROR
+                message: Error interno del servidor
 
   /api/deliveries/{did}:
     parameters:

@@ -40,7 +40,7 @@ export const deliveryController = {
         const { did } = req.params;
         try {
             const delivery = await deliveryService.delete(did);
-            successResponse(res, { message: 'Tienda eliminada', payload: delivery });
+            successResponse(res, { message: 'Delivery eliminado', payload: delivery });
         } catch (error) {
             next(error);
         };

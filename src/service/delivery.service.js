@@ -3,6 +3,9 @@ import logger from '../config/logger.js';
 import { deliveryRepository } from '../repository/delivery.repository.js';
 import { createError } from '../utils/apiResponse.js';
 import { DELIVERY_STATUS } from '../constants/constants.js';
+import { userRepository } from '../repository/user.repository.js';
+import { USER_ROLES } from '../constants/constants.js';
+import { orderRepository } from '../repository/order.repository.js';
 
 export const deliveryService = {
     getAll: async (page, limit) => {
@@ -18,6 +21,17 @@ export const deliveryService = {
         if (!order || !driver) {
             throw createError(ERROR_CODES.REQUIRED_FIELDS);
         };
+
+        const driverFound = await userRepository.findById(driver);
+        if (!driverFound || driverFound.role !== USER_ROLES.DRIVER) {
+            throw createError(ERROR_CODES.DRIVERS_NOT_FOUND);
+        };
+
+        const orderFound = await orderRepository.findById(order);
+        if (!orderFound) {
+            throw createError(ERROR_CODES.ORDER_NOT_FOUND);
+        };
+
         const delivery = await deliveryRepository.create(deliveryData);
 
         return delivery;
