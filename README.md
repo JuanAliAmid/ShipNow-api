@@ -699,7 +699,7 @@ Se ignoran `logs/*.log` (los registros de errores y fatales) porque cambian todo
 
 - URL → http://localhost:<PORT>/loggerTest/
 
-En ambos entornos, `error.log` contendrá solo los errores y fatales del día, y `combined.log` toda la actividad desde el nivel mínimo del entorno.
+En ambos entornos, `error.log` contendrá solo los errores y fatales registrados, y `combined.log` toda la actividad desde el nivel mínimo del entorno.
 
 ### Comportamiento según el entorno
 

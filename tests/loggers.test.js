@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import request from 'supertest';
 import app from '../src/app.js';
 import logger from '../src/config/logger.js';
+import fs from 'fs'
 
 describe('Loggers', () => {
     it('deberia de responder con status 200', async () => {
@@ -14,7 +15,7 @@ describe('Loggers', () => {
 });
 
 describe('Logger files', () => {
-    if ('crea error.log y combined.log', async () => {
+    it ('crea error.log y combined.log', async () => {
         logger.error('prueba');
         await new Promise((resolve) => setTimeout(resolve, 300));
 
