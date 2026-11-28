@@ -1,5 +1,4 @@
 import winston from "winston";
-import DailyRotateFile from "winston-daily-rotate-file";
 import { env } from "../config/index.js";
 
 const levelCustom = { levels: { fatal: 0, error: 1, warning: 2, info: 3, http: 4, debug: 5 } };
@@ -20,21 +19,21 @@ if (env.nodeEnv === 'development') {
     logger.add(new winston.transports.Console());
 };
 
-const errorRotateTransport = new DailyRotateFile({
-    filename: "logs/error-%DATE%.log",
-    datePattern: "YYYY-MM-DD",
+const errorFileTransport = new winston.transports.File({
+    filename: "logs/error.log",
     level: "error",
-    maxFiles: "14d"
+    maxsize: 5 * 1024 * 1024,
+    maxFiles: 5
 });
 
-const combinedRotateTransport = new DailyRotateFile({
-    filename: "logs/combined-%DATE%.log",
-    datePattern: "YYYY-MM-DD",
-    maxFiles: "14d"
+const combinedFileTransport = new winston.transports.File({
+    filename: "logs/combined.log",
+    maxsize: 5 * 1024 * 1024,
+    maxFiles: 5
 });
 
-logger.add(errorRotateTransport);
-logger.add(combinedRotateTransport);
+logger.add(errorFileTransport);
+logger.add(combinedFileTransport);
 
-export { errorRotateTransport };
+export { errorFileTransport };
 export default logger;

@@ -14,6 +14,7 @@ import { createError } from "./utils/apiResponse.js";
 import requestLogger from "./middlewares/requestsLogger.js";
 import connectedDataBaseController from "./controller/healthCheck.controller.js";
 import { block } from "./middlewares/endpointsBloqueds.js";
+import { env } from "./config/index.js";
 
 const app = express();
 
@@ -29,7 +30,9 @@ app.use("/api/stores", storesRouter);
 app.use("/api/orders", ordersRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/mocks", mocksRouter);
-app.use('/api/docs', block, swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
+if(env.enableDocs) {
+  app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
+};
 
 
 app.use((_req, _res, next) => {

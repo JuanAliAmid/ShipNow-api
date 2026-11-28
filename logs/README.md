@@ -1,2 +1,6 @@
-En esta carpeta se guardan los archivos diarios con los `errores` y `fatales` de cada día.
-Los archivos se guardan bajo el nombre de `error-YYYY-MM-DD.log`, no aparecen en `GitHub` porque estan ginorados desde el gitignore como el archivo `json` que `winston-daily-rotate-file` genera para llevar la cuenta de qué logs borrar al rotar.
+En esta carpeta se guardan los logs de la API:
+
+- `error.log`: errores y fatales.
+- `combined.log`: toda la actividad desde el nivel mínimo del entorno.
+
+Cada archivo rota al superar los 5 MB y se conservan hasta 5. Los `.log` no se suben a GitHub porque están ignorados en el `.gitignore`.

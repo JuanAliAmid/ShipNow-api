@@ -21,6 +21,7 @@ services:
       MONGODB_URI: mongodb://mongo:27017/ShipNow-api
       PORT: 8080
       NODE_ENV: production
+      ENABLE_DOCS: "true"
     volumes:
       - uploads-data:/app/uploads
 

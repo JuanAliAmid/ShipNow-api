@@ -15,6 +15,7 @@ for (const key of required) {
 export const env = {
     port: Number(process.env.PORT),
     nodeEnv,
+    enableDocs: process.env.ENABLE_DOCS ? process.env.ENABLE_DOCS === 'true' : nodeEnv !== 'production',
     isProd: nodeEnv === 'production',
     mongodb_uri: nodeEnv === 'test' ? process.env.MONGODB_URI_TEST : process.env.MONGODB_URI,
     log_level: process.env.LOG_LEVEL || (nodeEnv === 'production' ? 'info' : 'debug'),

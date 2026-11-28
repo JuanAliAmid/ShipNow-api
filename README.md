@@ -14,7 +14,7 @@ ShipNow API es una aplicación backend construida con Node.js, Express y MongoDB
 - file-type: verificación del tipo real del archivo según su contenido.
 
 **Logging**
-- Winston y winston-daily-rotate-file: logger centralizado con niveles (`fatal`, `error`, `warning`, `info`, `http`, `debug`) y rotación diaria de archivos.
+- Winston: logger centralizado con niveles (`fatal`, `error`, `warning`, `info`, `http`, `debug`) y rotación diaria de archivos.
 
 **Documentación**
 - swagger-jsdoc y swagger-ui-express: documentación interactiva en `/api/docs`, definida en `src/docs/*.yaml`.
@@ -672,7 +672,6 @@ Casos inválidos para probar: un `.txt` (`INVALID_FILE_TYPE`), un archivo de má
 ### Herramientas
 
 - Winston
-- winston-daily-rotate-file
 
 ### Niveles
 
@@ -685,22 +684,22 @@ Casos inválidos para probar: un `.txt` (`INVALID_FILE_TYPE`), un archivo de má
 
 ### Dónde se guardan los logs
 
-Se guardan en la carpeta `logs/` de la raíz, con rotación diaria y 14 días de retención:
+Se guardan en la carpeta `logs/` de la raíz, con rotación por tamaño (5 MB por archivo, hasta 5 archivos):
 
-- `error-YYYY-MM-DD.log`: solo los niveles `error` y `fatal`.
-- `combined-YYYY-MM-DD.log`: toda la actividad desde el nivel mínimo del entorno (`debug` en desarrollo, `info` en producción).
+- `error.log`: solo los niveles `error` y `fatal`.
+- `combined.log`: toda la actividad desde el nivel mínimo del entorno (`debug` en desarrollo, `info` en producción).
 
-Cada día se crea un archivo nuevo y pasados 14 días se borran solos.
+Al superar los 5 MB el archivo se rota y se conservan hasta 5.
 
 ### Archivos ignorados en Git
 
-Se ignoran `logs/*.log` (los registros de errores y fatales) y `logs/*.json` (control de rotación) porque cambian todo el tiempo, pueden tener información sensible y cada entorno tiene sus propios archivos.
+Se ignoran `logs/*.log` (los registros de errores y fatales) porque cambian todo el tiempo, pueden tener información sensible y cada entorno tiene sus propios archivos.
 
 ### Cómo probar el logger
 
 - URL → http://localhost:<PORT>/loggerTest/
 
-En ambos entornos, `error-*.log` contendrá solo los errores y fatales del día, y `combined-*.log` toda la actividad desde el nivel mínimo del entorno.
+En ambos entornos, `error.log` contendrá solo los errores y fatales del día, y `combined.log` toda la actividad desde el nivel mínimo del entorno.
 
 ### Comportamiento según el entorno
 
