@@ -22,7 +22,6 @@ describe('Deliveries API', () => {
 
             const response = await request(app).post('/api/deliveries/').send(newDelivery);
 
-            console.log(response.body)
             expect(response.status).to.equal(201);
             expect(response.body.status).to.equal('success');
             expect(response.body.payload).to.have.property('_id');
