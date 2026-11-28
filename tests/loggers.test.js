@@ -15,7 +15,7 @@ describe('Loggers', () => {
 });
 
 describe('Logger files', () => {
-    it ('crea error.log y combined.log', async () => {
+    it('crea error.log y combined.log', async () => {
         logger.error('prueba');
         await new Promise((resolve) => setTimeout(resolve, 300));
 

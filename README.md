@@ -623,6 +623,7 @@ Si Mongo no está disponible al iniciar el servidor, la API no levanta y se cier
 ## Carga de archivos (Multer)
 
 La API permite subir documentos de usuario y comprobantes de pedido con [Multer](https://github.com/expressjs/multer) (`middlewares/upload.middleware.js`).
+En ShipNow un pedido (`Order`) representa un envío, por eso los comprobantes se asocian a los pedidos.
 
 ### Endpoints
 
