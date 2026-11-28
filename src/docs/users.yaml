@@ -8,7 +8,7 @@ paths:
       tags:
         - Users
       summary: Listar usuarios
-      description: Obtiene un lista de usuarios
+      description: Obtiene una lista de usuarios
       parameters:
         - in: query
           name: page

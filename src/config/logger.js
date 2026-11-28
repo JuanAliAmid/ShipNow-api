@@ -23,13 +23,15 @@ const errorFileTransport = new winston.transports.File({
     filename: "logs/error.log",
     level: "error",
     maxsize: 5 * 1024 * 1024,
-    maxFiles: 5
+    maxFiles: 5,
+    tailable: true
 });
 
 const combinedFileTransport = new winston.transports.File({
     filename: "logs/combined.log",
     maxsize: 5 * 1024 * 1024,
-    maxFiles: 5
+    maxFiles: 5,
+    tailable: true
 });
 
 logger.add(errorFileTransport);

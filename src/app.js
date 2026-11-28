@@ -13,7 +13,6 @@ import swaggerSpecs from './config/swagger.config.js';
 import { createError } from "./utils/apiResponse.js";
 import requestLogger from "./middlewares/requestsLogger.js";
 import connectedDataBaseController from "./controller/healthCheck.controller.js";
-import { block } from "./middlewares/endpointsBloqueds.js";
 import { env } from "./config/index.js";
 
 const app = express();

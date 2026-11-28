@@ -14,7 +14,7 @@ ShipNow API es una aplicación backend construida con Node.js, Express y MongoDB
 - file-type: verificación del tipo real del archivo según su contenido.
 
 **Logging**
-- Winston: logger centralizado con niveles (`fatal`, `error`, `warning`, `info`, `http`, `debug`) y rotación diaria de archivos.
+- Winston: logger centralizado con niveles (`fatal`, `error`, `warning`, `info`, `http`, `debug`) y rotación de archivos por tamaño.
 
 **Documentación**
 - swagger-jsdoc y swagger-ui-express: documentación interactiva en `/api/docs`, definida en `src/docs/*.yaml`.
@@ -812,6 +812,7 @@ Ejemplo: `GET /api/orders?page=2&limit=20`
 | `MONGODB_URI_TEST` | Solo en test | URI de la base de testing. |
 | `LOG_LEVEL` | No | Nivel mínimo de logs. Por defecto: `info` en producción y `debug` en el resto. |
 | `BASE_URL` | No | URL base que usa Swagger. Por defecto: `http://localhost:<PORT>`. |
+| `ENABLE_DOCS` | No | Habilita Swagger en `/api/docs`. Por defecto: activo fuera de producción y apagado en producción. Con `ENABLE_DOCS=true` se activa también en producción; en el `docker-compose.yml` está en `true` para facilitar la revisión. En un despliegue real se deja en `false` o sin definir. |
 
 La API valida las variables obligatorias al iniciar: si falta alguna, no arranca y muestra un error indicando cuál. No se usa JWT ni servicios externos, por eso no hay variables para eso. `.env.example` tiene los nombres de todas las variables, sin valores.
 
@@ -827,7 +828,8 @@ Con `NODE_ENV=production` quedan **restringidos** (responden con el error `ENDPO
 
 - `/loggerTest`
 - `/api/mocks/*` (incluido `POST /api/mocks/seed`)
-- `/api/docs` (Swagger)
+
+Swagger (`/api/docs`) se controla con la variable `ENABLE_DOCS`: en producción no se monta salvo que se defina `ENABLE_DOCS=true` (si no se monta, responde `ROUTE_NOT_FOUND`). El `docker-compose.yml` lo activa para poder revisar la documentación.
 
 Criterio: son herramientas de desarrollo. Los mocks escriben datos falsos en la base, el logger de prueba genera errores artificiales y Swagger expone la estructura completa de la API. `GET /health` queda abierto y solo devuelve estado, entorno, uptime y timestamp.
 

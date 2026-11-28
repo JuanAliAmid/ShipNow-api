@@ -369,7 +369,7 @@ components:
           example: success
         message: 
           type: string
-          example: Deliverys generados
+          example: Entregas generadas
         payload:
           type: array
           items:

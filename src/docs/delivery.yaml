@@ -7,7 +7,7 @@ paths:
     get:
       tags:
         - Deliveries
-      summary: Listar Deliverys
+      summary: Listar entregas
       description: Obtiene una lista de deliverys
       parameters:
         - in: query
@@ -42,7 +42,7 @@ paths:
     post:
       tags:
         - Deliveries
-      summary: Crear Deliverys
+      summary: Crear entregas
       description: Crea un delivery
       requestBody:
         required: true
